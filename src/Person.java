@@ -1,14 +1,13 @@
-import java.time.LocalDate;
-
 public class Person {
     private String firstName ;
     private String lastName;
     private String birthDay ;
     private String nationalCode;
-    private String adders;
+    private String address;
     private String phoneNum;
 
-    public Person(String firstName , String lastName , String birthDay , String nationalCode , String adders , String phoneNum){
+    public Person(){}
+    public Person(String firstName , String lastName , String birthDay , String nationalCode , String address , String phoneNum){
         validphoneNum(phoneNum);
         validNationalCode(nationalCode);
 
@@ -16,7 +15,7 @@ public class Person {
         this.lastName = lastName;
         this.birthDay = birthDay;
         this.nationalCode = nationalCode;
-        this.adders = adders;
+        this.address = address;
         this.phoneNum = phoneNum;
     }
 
@@ -50,8 +49,8 @@ public class Person {
         return nationalCode;
     }
 
-    public String getAdders(){
-        return adders;
+    public String getAddress(){
+        return address;
     }
 
     public String getPhoneNum(){
@@ -64,8 +63,20 @@ public class Person {
         this.phoneNum = phoneNum;
     }
 
-    public void setAdders(String adders) {
-        this.adders = adders;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    //toString
+
+    @Override
+    public String toString(){
+        return "Name: " +firstName +
+                " "+ lastName+
+                "\nNational Id: " + nationalCode +
+                "\nBirthday: "+ birthDay +
+                "\nphone number: "+ phoneNum +
+                "\nAddress: "+ address;
     }
 
 }
