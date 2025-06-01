@@ -1,6 +1,6 @@
-import Account.Account;
-import Account.CurrentAccount;
-import Account.ShortTermAccount;
+import account.Account;
+import account.CurrentAccount;
+import account.ShortTermAccount;
 
 public class Main {
     public static void main(String[] args) {

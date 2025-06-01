@@ -1,8 +1,10 @@
+package person;
+
 import java.util.List;
 import java.util.ArrayList;
-import Account.Account;
+import account.Account;
 
-public class Customer extends Person{
+public class Customer extends Person {
     private String customerId;
     private List<Account> accounts ;
     private List<String> messageBox;
@@ -53,7 +55,7 @@ public class Customer extends Person{
 
     @Override
     public String toString(){
-        return super.toString()+"\nCustomer ID: " +customerId +
+        return super.toString()+"\nPerson.Customer ID: " +customerId +
                 "\n number of accounts: " + accounts.size() +
                 "\n Number of messages: " + messageBox.size();
     }
