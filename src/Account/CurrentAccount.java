@@ -11,7 +11,7 @@ public class CurrentAccount extends Account {
 
     @Override
     public int calculateInterest() {
-        // حساب جاری سودی ندارد
+
         return 0;
     }
 }

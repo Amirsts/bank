@@ -12,7 +12,7 @@ public class ShortTermAccount extends Account {
     @Override
     public int calculateInterest() {
         if (balance > 100_000) {
-            return (int)(balance * 0.05);  // 5% سود سالیانه
+            return (int)(balance * 0.05);
         }
         return 0;
     }

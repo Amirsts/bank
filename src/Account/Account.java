@@ -1,8 +1,8 @@
 package Account;
 
 public abstract class Account {
-    protected String accountNumber; // 13 رقمی، یکتا
-    protected int balance; // موجودی (باید ≥ 0 باشد)
+    protected String accountNumber;
+    protected int balance;
 
     public Account(String accountNumber, int balance) {
         if (accountNumber == null || !accountNumber.matches("\\d{13}")) {
@@ -47,7 +47,6 @@ public abstract class Account {
                 " to account " + toAccount.getAccountNumber() + " transferred successfully.");
     }
 
-    // برای گرفتن سود (فقط در حساب‌های خاص فعال میشه)
     public abstract int calculateInterest();
 }
 
