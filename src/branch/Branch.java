@@ -95,7 +95,7 @@ public class Branch  {
         }
         return null;
     }
-    
+
     public void displayCustomers(){
         System.out.println("Customers list:"+ branchNumber + ":");
         for (Customer cus : customers){

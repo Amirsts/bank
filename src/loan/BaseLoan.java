@@ -9,6 +9,7 @@ public abstract class BaseLoan {
     protected int customerShare;        // Percentage
     protected int penaltyRate;          // Late penalty percentage
     protected Customer borrower;        // Borrower customer
+    private boolean active = true;
 
     public BaseLoan(int loanAmount, int duration, int governmentShare,
                     int customerShare, int penaltyRate, Customer borrower) {
@@ -49,6 +50,13 @@ public abstract class BaseLoan {
     // Abstract method to calculate the total refund amount
     public abstract int calculateTotalRepayment();
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void closeLoan() {
+        this.active = false;
+    }
     @Override
     public String toString() {
         return "Loan{" +

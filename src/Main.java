@@ -25,18 +25,7 @@ import person.Customer;
 
 public class Main {
     public static void main(String[] args) {
-        Customer customer = new Customer("Ali", "Karimi");
 
-        NormalLoan normalLoan = new NormalLoan(1_000_000, 12, customer);
-        TashilatLoan tashilatLoan = new TashilatLoan(2_000_000, 24, customer);
-
-        System.out.println("Normal Loan:");
-        System.out.println("Repayment: " + normalLoan.calculateTotalRepayment());
-        System.out.println("Penalty for 2 months delay: " + normalLoan.calculatePenalty(2));
-
-        System.out.println("\nTashilat Loan:");
-        System.out.println("Repayment: " + tashilatLoan.calculateTotalRepayment());
-        System.out.println("Penalty for 1 month delay: " + tashilatLoan.calculatePenalty(1));
     }
 }
 

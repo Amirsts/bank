@@ -3,12 +3,14 @@ package person;
 import java.util.List;
 import java.util.ArrayList;
 import account.Account;
+import loan.BaseLoan;
 
 public class Customer extends Person {
     private String customerId;
     private List<Account> accounts ;
     private List<String> messageBox;
-
+    private List<BaseLoan> loans ;
+    private boolean isActive;
 
     public Customer(String firstName ,String lastName , String birthDay , String nationalId
             , String address , String phoneNum , String customerId  ){
@@ -17,6 +19,7 @@ public class Customer extends Person {
         this.customerId = customerId;
         this.accounts = new ArrayList<>();
         this.messageBox = new ArrayList<>();
+        this.loans = new ArrayList<>();
     }
 
     //getters
@@ -27,6 +30,17 @@ public class Customer extends Person {
     public List<Account> getAccounts(){
         return accounts;
     }
+
+    public List<BaseLoan> getActiveLoans() {
+        List<BaseLoan> activeLoans = new ArrayList<>();
+        for (BaseLoan loan : loans) {
+            if (loan.isActive()) {
+                activeLoans.add(loan);
+            }
+        }
+        return activeLoans;
+    }
+
 
     //methods
     public Account findAccount(String accountNumber){
@@ -49,6 +63,10 @@ public class Customer extends Person {
             messageBox.add("Request to close thr account:" + accountNumber +"registered");
         }
         messageBox.add("Error: The requested account was not found.");
+    }
+
+    public void addLoan(BaseLoan loan) {
+        loans.add(loan);
     }
 
     //toString
