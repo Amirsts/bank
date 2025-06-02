@@ -8,9 +8,9 @@ import loan.BaseLoan;
 public class Teller extends Employee{
 
     public Teller (String firstName , String lastName , String birthDay , String nationalCode
-            , String address , String phoneNum , String employeeId , long salary){
+            , String address , String phoneNum , String employeeId){
 
-        super(firstName , lastName , birthDay , nationalCode , address , phoneNum , employeeId , salary);
+        super(firstName , lastName , birthDay , nationalCode , address , phoneNum , employeeId ,40000000 );
     }
 
     @Override
