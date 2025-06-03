@@ -22,22 +22,55 @@ public class Teller extends Employee{
             processCloseAccount(accountNumber);
 
         }else if (request.startsWith("loan request:")){
-            String loanDetails = request.substring("loan request:".length());
-            sendLoanRequestToAssistant(loanDetails);
+            sendLoanRequestToAssistant(request);
         }else {
             System.out.println("Invalid request!!!");
         }
 
     }
 
+
+
     private void processCloseAccount(String accountNumber){
         System.out.println("Reviewing account closing request, account number:" + accountNumber);
 
-        /* --- --- this part probably will be completed --- ---*/
+        if (getEmployeeId() == null){
+            System.out.println("Error: The recipient is not assigned to any branch.");
+            return;
+        }
+
+        Account account = getAssignedBranch().findAccount(accountNumber);
+        if (account == null){
+            System.out.println("Error: No account with this number found!!!");
+            return;
+        }
 
 
-        System.out.println("If the account is current without a loan, the request will be referred to the Manager or AssistantManager.");
+        Customer owner = account.getOwner();
+        if (owner == null){
+            System.out.println("Account doesn't have owner ");
+            return;
+        }
+
+        if (!owner.getActiveLoans().isEmpty()){
+            System.out.println("It is not possible to close the account: the customer has an active loan.");
+            return;
+        }
+
+        String msg = "close account:" + accountNumber;
+        if (getAssignedBranch().getAssistantManager() != null ){
+            getAssignedBranch().getAssistantManager().receiveRequest(msg);
+            System.out.println("The request to close the account was referred to the assistant manager.");
+        }else if (getAssignedBranch().getBranchManager() != null){
+            getAssignedBranch().getBranchManager().receiveRequest(msg);
+            System.out.println("The request to close the account was referred to the branch manager.");
+        }else {
+            System.out.println("Referral not possible: There is no deputy or branch manager.");
+        }
+
     }
+
+
 
     private void sendLoanRequestToAssistant(String loanDetails){
         if(getAssignedBranch() == null || getAssignedBranch().getBranchNumber() == null){

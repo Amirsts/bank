@@ -66,8 +66,8 @@ public class Branch  {
         teller.setAssignedBranch(this);
     }
 
-    boolean removeTeller(String telleId){
-      return tellers.removeIf(t-> t.getEmployeeId().equals(telleId) );
+    boolean removeTeller(String tellerId){
+      return tellers.removeIf(t-> t.getEmployeeId().equals(tellerId) );
     }
 
     public void addAccount(Account account){

@@ -1,10 +1,13 @@
 package account;
 
-public abstract class Account {
-    protected String accountNumber;
-    protected int balance;
+import person.Customer;
 
-    public Account(String accountNumber, int balance) {
+public abstract class Account {
+    private String accountNumber;
+    int balance;
+    private Customer owner;
+
+    public Account(String accountNumber , Customer owner, int balance ) {
         if (accountNumber == null || !accountNumber.matches("\\d{13}")) {
             throw new IllegalArgumentException("Account number must be 13 digits.");
         }
@@ -12,6 +15,7 @@ public abstract class Account {
             throw new IllegalArgumentException("Balance cannot be negative.");
         }
         this.accountNumber = accountNumber;
+        this.owner = owner;
         this.balance = balance;
     }
 
@@ -21,6 +25,14 @@ public abstract class Account {
 
     public int getBalance() {
         return balance;
+    }
+
+    public Customer getOwner(){
+        return owner;
+    }
+
+    public void setOwner(Customer owner) {
+        this.owner = owner;
     }
 
     public void deposit(int amount) {

@@ -113,9 +113,9 @@ public class Bank {
         System.out.println("Branches of "+ name +":");
         for (Branch b : branches){
             System.out.println("Branch: " + b.getBranchNumber());
-            System.out.println("Manager: " + b.getBranchManager() != null ? b.getBranchManager().getFirstName() : "not modified ");
-            System.out.println("Assistant manager: " + b.getAssistantManager() != null ? b.getAssistantManager().getFirstName() : "not modified");
-            System.out.println("Tellers: "+ b.getTellers().size());
+            System.out.println("Manager: " + (b.getBranchManager() != null ? b.getBranchManager().getFullName() : "not modified "));
+            System.out.println("Assistant manager: " + ( b.getAssistantManager() != null ? b.getAssistantManager().getFullName() : "not modified"));
+            System.out.println("Tellers: "+( b.getTellers().size()));
             System.out.println("---------------------------------");
         }
     }

@@ -1,9 +1,11 @@
 package account;
 
+import person.Customer;
+
 public class ShortTermAccount extends Account {
 
-    public ShortTermAccount(String accountNumber, int balance) {
-        super(accountNumber, balance);
+    public ShortTermAccount(String accountNumber , Customer owner , int balance) {
+        super(accountNumber, owner , balance);
         if (!accountNumber.startsWith("02")) {
             throw new IllegalArgumentException("Short-term account number must start with '02'.");
         }

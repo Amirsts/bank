@@ -1,5 +1,6 @@
 package branch;
 
+import person.Customer;
 import person.Employee;
 
 public class AssistantManager extends Employee {
@@ -15,6 +16,7 @@ public class AssistantManager extends Employee {
         System.out.println("The branch assistant is reviewing the request:" + request);
 
         if (request.startsWith("loan request:")) {
+
             boolean hasActiveLoan = checkIfCustomerHasActiveLoan();
 
             if (hasActiveLoan) {
@@ -35,7 +37,15 @@ public class AssistantManager extends Employee {
     }
 
     private boolean checkIfCustomerHasActiveLoan(){
-        /*this prat will be completed*/
+        if(getAssignedBranch() == null) return false;
+        for (Customer c : getAssignedBranch().getCustomers()){
+            if (!c.getActiveLoans().isEmpty()){
+
+                System.out.println("Customer: " + getFullName() + "have an active loan.");
+                return true;
+            }
+
+        }
         return false;
     }
 }

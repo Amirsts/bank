@@ -1,31 +1,74 @@
-//import account.Account;
-//import account.CurrentAccount;
-//import account.ShortTermAccount;
-//
-//public class Main {
-//    public static void main(String[] args) {
-//        Account acc1 = new CurrentAccount("0100000000001", 1_000_000);
-//        Account acc2 = new ShortTermAccount("0200000000001", 500_000);
-//
-//        System.out.println("Balance acc1: " + acc1.getBalance());
-//        System.out.println("Balance acc2: " + acc2.getBalance());
-//
-//        acc1.transfer(acc2, 200_000);
-//
-//        System.out.println("Balance acc1 after transfer: " + acc1.getBalance());
-//        System.out.println("Balance acc2 after transfer: " + acc2.getBalance());
-//
-//        System.out.println("Interest for acc1: " + acc1.calculateInterest());
-//        System.out.println("Interest for acc2: " + acc2.calculateInterest());
-//    }
-//}
+import account.Account;
+import account.CurrentAccount;
 import loan.NormalLoan;
-import loan.TashilatLoan;
+import loan.*;
 import person.Customer;
+
+import bank.Bank;
+import branch.*;
 
 public class Main {
     public static void main(String[] args) {
+        // 1. ساخت بانک و شعبه
+        Bank bank = new Bank();
+        Branch branch = new Branch("101");
+        bank.addBranch(branch);
+
+        // 2. افزودن کارمندان
+        BranchManager bm = new BranchManager("زهرا", "کریمی", "1985-02-12", "0011223344", "تهران", "09120000000", "BM101");
+        AssistantManager am = new AssistantManager("رضا", "احمدی", "1987-05-20", "1122334455", "تهران", "09121234567", "AM101");
+        Teller teller = new Teller("سارا", "محمدی", "1990-01-01", "2233445566", "تهران", "09128889999", "T101");
+
+        branch.setBranchManager(bm);
+        branch.setAssistantManager(am);
+        branch.addTeller(teller);
+
+        bank.addEmployee(bm);
+        bank.addEmployee(am);
+        bank.addEmployee(teller);
+
+        // 3. افزودن مشتری
+        Customer customer = new Customer("علی", "رضایی", "1995-10-10", "3344556677", "تهران", "09121112222", "C001");
+        branch.addCustomer(customer);
+        bank.addCustomer(customer);
+
+        // 4. باز کردن حساب برای مشتری
+        Account acc1 = new CurrentAccount("0100012345678" , customer ,1_000_000);
+        customer.openAccount(acc1);
+        branch.addAccount(acc1);
+
+        // 5. درخواست وام
+        BaseLoan loan = new NormalLoan(300_000_000, 12 , customer); // وام عادی
+        customer.addLoan(loan);
+        teller.handleRequest("loan request:" + loan.toString());
+
+        // 6. بررسی وام توسط معاون
+        if (!am.getMessageBox().isEmpty()) {
+            String amRequest = am.getMessageBox().get(0);
+            am.handleRequest(amRequest);
+        }
+
+        // 7. بررسی نهایی توسط رئیس
+        if (!bm.getMessageBox().isEmpty()) {
+            String bmRequest = bm.getMessageBox().get(0);
+            bm.handleRequest(bmRequest);
+        }
+
+        // 8. نمایش وام‌های فعال مشتری
+        System.out.println("\n📌 وام‌های فعال مشتری:");
+        for (BaseLoan l : customer.getActiveLoans()) {
+            System.out.println(l);
+        }
+
+        // 9. نمایش موجودی کل بانک
+        System.out.println("\n💰 موجودی کل بانک: " + bank.getTotalBankBalance() + " تومان");
+
+        // 10. نمایش خلاصه
+        System.out.println("\n📊 اطلاعات شعبه و مشتریان:");
+        bank.displayBranches();
+        bank.displayCustomers();
 
     }
 }
+
 
