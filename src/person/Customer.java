@@ -4,8 +4,9 @@ import java.util.List;
 import java.util.ArrayList;
 import account.Account;
 import loan.BaseLoan;
+import interfaces.*;
 
-public class Customer extends Person {
+public class Customer extends Person implements Displayable , Loanable {
     private String customerId;
     private List<Account> accounts ;
     private List<String> messageBox;
@@ -69,6 +70,20 @@ public class Customer extends Person {
         loans.add(loan);
     }
 
+    @Override
+    public boolean isEligibleForLoan(){
+        return getActiveLoans().isEmpty();
+    }
+
+    @Override
+    public double getLoanCeiling(){
+        return 500_000_000;
+    }
+
+    @Override
+    public void displayInfo(){
+        System.out.println("Customer: " + getFullName() + "National Code: " + getNationalCode());
+    }
     //toString
 
     @Override

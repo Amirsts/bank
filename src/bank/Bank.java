@@ -2,16 +2,16 @@ package bank;
 
 import branch.Branch;
 import loan.BaseLoan;
-import person.Customer;
-import person.Employee;
-import person.Person;
+import person.*;
 import account.Account;
+import interfaces.Displayable;
+
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Bank {
+public class Bank implements Displayable{
 
     private final String name = "Bit Bank";
     private List<Branch> branches;
@@ -135,5 +135,13 @@ public class Bank {
             allLoans.addAll(c.getActiveLoans());
         }
         return allLoans;
+    }
+
+    @Override
+    public void displayInfo(){
+        System.out.println("Number of branches: " + branches.size());
+        System.out.println("Number of employees: " + employees.size());
+        System.out.println("Number of customers: " + customers.size());
+        System.out.println("Total bank balance: " + getTotalBankBalance());
     }
 }

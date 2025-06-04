@@ -3,8 +3,9 @@ package person;
 import branch.Branch;
 import java.util.ArrayList;
 import java.util.List;
+import interfaces.Displayable;
 
-public abstract class Employee extends Person {
+public abstract class Employee extends Person implements Displayable{
     private String employeeId;
     private long salary;
     private Branch assignedBranch;
@@ -52,8 +53,6 @@ public abstract class Employee extends Person {
         messageBox.clear();
     }
 
-    public abstract void handleRequest(String request);
-
     @Override
 
     public String toString(){
@@ -61,5 +60,10 @@ public abstract class Employee extends Person {
                 "Person.Employee Id: " +employeeId +
                 "Monthly salary: "+ salary+
                 "Workplace branch: "+ (assignedBranch != null ? assignedBranch.getBranchNumber() :"Not identified!");
+    }
+
+    @Override
+    public void displayInfo(){
+
     }
 }

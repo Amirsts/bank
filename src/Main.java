@@ -39,8 +39,9 @@ public class Main {
 
         // 5. درخواست وام
         BaseLoan loan = new NormalLoan(300_000_000, 12 , customer); // وام عادی
-        customer.addLoan(loan);
+
         teller.handleRequest("loan request:" + loan.toString());
+
 
         // 6. بررسی وام توسط معاون
         if (!am.getMessageBox().isEmpty()) {

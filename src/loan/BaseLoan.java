@@ -59,7 +59,7 @@ public abstract class BaseLoan {
     }
     @Override
     public String toString() {
-        return "Loan{" +
+        return "\nLoan{" +
                 "amount=" + loanAmount +
                 ", duration=" + duration +
                 ", borrower=" + borrower.getFullName() +

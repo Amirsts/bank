@@ -3,9 +3,9 @@ package branch;
 import person.Customer;
 import person.Employee;
 import account.Account;
-import loan.BaseLoan;
+import interfaces.RequestHandler;
 
-public class Teller extends Employee{
+public class Teller extends Employee implements RequestHandler{
 
     public Teller (String firstName , String lastName , String birthDay , String nationalCode
             , String address , String phoneNum , String employeeId){
@@ -72,12 +72,12 @@ public class Teller extends Employee{
 
 
 
-    private void sendLoanRequestToAssistant(String loanDetails){
+    private void sendLoanRequestToAssistant(String request){
         if(getAssignedBranch() == null || getAssignedBranch().getBranchNumber() == null){
             System.out.println("Error: Branch or branch assistant not specified !");
             return;
         }
         System.out.println("Loan application sent to the branch assistant...");
-        //getAssignedBranch().grtAssistantManager().receiveRequest("Loan request:" + loanDetails);
+        getAssignedBranch().getAssistantManager().receiveRequest(request);
     }
 }

@@ -5,8 +5,9 @@ import person.Customer;
 
 import java.util.ArrayList;
 import java.util.List;
+import interfaces.Displayable;
 
-public class Branch  {
+public class Branch implements Displayable {
 
     private String branchNumber;
     private BranchManager branchManager;
@@ -94,6 +95,13 @@ public class Branch  {
             }
         }
         return null;
+    }
+
+    @Override
+    public void displayInfo(){
+        System.out.println("Branch number:" + branchNumber);
+        System.out.println("Manager" + (branchManager != null ? branchManager.getFullName() : " not identified!?!"));
+        System.out.println("Cuostomers:" + customers.size() + "people");
     }
 
     public void displayCustomers(){

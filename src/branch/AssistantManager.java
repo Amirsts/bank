@@ -2,8 +2,9 @@ package branch;
 
 import person.Customer;
 import person.Employee;
+import interfaces.RequestHandler;
 
-public class AssistantManager extends Employee {
+public class AssistantManager extends Employee implements RequestHandler     {
 
     public AssistantManager (String firstName , String lastName , String birthDay , String nationalCode
             , String address , String phoneNum , String employeeId){
@@ -13,7 +14,7 @@ public class AssistantManager extends Employee {
 
     @Override
     public void handleRequest(String request){
-        System.out.println("The branch assistant is reviewing the request:" + request);
+        System.out.println("The branch assistant is reviewing the request: \n" + request);
 
         if (request.startsWith("loan request:")) {
 
@@ -25,7 +26,7 @@ public class AssistantManager extends Employee {
                 System.out.println("The request was approved and referred to the branch manager.");
 
                 if (getAssignedBranch() != null && getAssignedBranch().getBranchManager() != null) {
-                    getAssignedBranch().getBranchManager().receiveRequest("Finally loan request: " + request);
+                    getAssignedBranch().getBranchManager().receiveRequest("Finally loan request:" + request);
                 } else {
                     System.out.println("Error: Branch manager not defined");
                 }
@@ -41,7 +42,7 @@ public class AssistantManager extends Employee {
         for (Customer c : getAssignedBranch().getCustomers()){
             if (!c.getActiveLoans().isEmpty()){
 
-                System.out.println("Customer: " + getFullName() + "have an active loan.");
+                System.out.println("Customer: " + c.getFullName() + " have an active loan.");
                 return true;
             }
 
