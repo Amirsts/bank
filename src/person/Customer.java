@@ -6,7 +6,7 @@ import account.Account;
 import loan.BaseLoan;
 import interfaces.*;
 
-public class Customer extends Person implements Displayable , Loanable {
+public class Customer extends Person implements Displayable , Loanable , Payable {
     private String customerId;
     private List<Account> accounts ;
     private List<String> messageBox;
@@ -83,6 +83,43 @@ public class Customer extends Person implements Displayable , Loanable {
     @Override
     public void displayInfo(){
         System.out.println("Customer: " + getFullName() + "National Code: " + getNationalCode());
+    }
+
+
+    @Override
+    public void pay(double amount){
+        System.out.println("customer:" + getFullName() + "is paying" + amount + "Tomans");
+
+        for (BaseLoan loan : loans){
+            if(amount <= 0) break;
+            double due = loan.getRemainingAmount();
+
+            if (amount >= due){
+                loan.pay(due);
+                amount -= due;
+            }else {
+                loan.pay(amount);
+                amount = 0;
+            }
+        }
+
+        if (amount > 0) {
+            if (!accounts.isEmpty()) {
+                accounts.get(0).deposit(amount);
+                System.out.println(" The excess amount was returned to the customer's account..");
+            } else {
+                System.out.println("Customer does not have a bank account. Additional amount could not be saved.");
+            }
+        }
+    }
+
+    @Override
+    public double getDueAmount(){
+        double totalDue = 0 ;
+        for (BaseLoan loan : loans){
+            totalDue += loan.getRemainingAmount();
+        }
+        return totalDue;
     }
     //toString
 

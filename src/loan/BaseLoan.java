@@ -10,6 +10,9 @@ public abstract class BaseLoan {
     protected int penaltyRate;          // Late penalty percentage
     protected Customer borrower;        // Borrower customer
     private boolean active = true;
+    private double totalAmount;
+    private double paidAmount = 0;
+
 
     public BaseLoan(int loanAmount, int duration, int governmentShare,
                     int customerShare, int penaltyRate, Customer borrower) {
@@ -42,6 +45,17 @@ public abstract class BaseLoan {
         return borrower;
     }
 
+    public double getPaidAmount() {
+        return paidAmount;
+    }
+
+    public double getTotalAmount (){
+        return totalAmount;
+    }
+    public double getRemainingAmount(){
+        return totalAmount - paidAmount;
+    }
+
     // Calculate the total amount of the penalty in case of delay (monthly)
     public int calculatePenalty(int delayInMonths) {
         return (loanAmount * penaltyRate / 100) * delayInMonths;
@@ -57,6 +71,12 @@ public abstract class BaseLoan {
     public void closeLoan() {
         this.active = false;
     }
+    public void pay(double amount){
+        this.paidAmount += amount;
+        System.out.println("amount: " + amount + "Toman was paid on the loan.");
+
+    }
+
     @Override
     public String toString() {
         return "\nLoan{" +
