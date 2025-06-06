@@ -17,44 +17,39 @@ public class AssistantManager extends Employee implements RequestHandler     {
     }
 
     @Override
-    public void handleRequest(Request request){
-        System.out.println("The branch assistant is reviewing the request: \n" + request);
+    public void handleRequest(Request request) {
+        System.out.println("The branch assistant is reviewing the request:\n" + request);
 
         if (request.getType() == RequestType.LOAN_REQUEST) {
-            boolean hasActiveLoan = request.getSender().isEligibleForLoan();
-            if (hasActiveLoan) {
+            if (!request.getSender().isEligibleForLoan()) {
                 System.out.println("Request rejected: Customer has an active loan");
-                request.setStatus("Rejected");
+                request.setStatus("rejected");
             } else {
                 System.out.println("The request was approved and referred to the branch manager.");
-                request.setStatus("approved by assistance");
+                request.setStatus("approved by assistant");
                 getAssignedBranch().getBranchManager().receiveRequest(request);
             }
         }
 
-        else if (request.getType() == RequestType.CLOSE_ACCOUNT){
-            String message = request.getMessage();
-            String[] parts = message.split(":");
-            if (parts.length <  2){
-                System.out.println("invalid format");
-                request.setStatus("rejected - invalid format");
+        else if (request.getType() == RequestType.CLOSE_ACCOUNT) {
+            String accountNumber = request.getAccountNumber();
+
+            if (accountNumber == null || accountNumber.isEmpty()) {
+                System.out.println("Account number is missing or invalid");
+                request.setStatus("rejected - invalid account number");
                 return;
             }
 
-            String accountNumber = parts[1].trim();
-
-
-            // checking again for account owner
             Account account = getAssignedBranch().findAccount(accountNumber);
 
-            if ( account == null || account.getOwner() == null || !account.getOwner().equals(request.getSender())) {
-                System.out.println("Account is not valid or belongs to the customer. ");
+            if (account == null || account.getOwner() == null || !account.getOwner().equals(request.getSender())) {
+                System.out.println("Account is not valid or doesn't belong to the customer.");
                 request.setStatus("rejected");
                 return;
             }
 
-            System.out.println("The account closure request was approved and referred to the administrator.");
-            request.setStatus("approved by assistance");
+            System.out.println("The account closure request was approved and referred to the branch manager.");
+            request.setStatus("approved by assistant");
             getAssignedBranch().getBranchManager().receiveRequest(request);
         }
 
@@ -63,4 +58,5 @@ public class AssistantManager extends Employee implements RequestHandler     {
             request.setStatus("rejected");
         }
     }
+
 }

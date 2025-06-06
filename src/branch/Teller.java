@@ -20,7 +20,7 @@ public class Teller extends Employee implements RequestHandler{
         System.out.println("Teller is reviewing the request:" + request);
 
         if (request.getType() == RequestType.CLOSE_ACCOUNT){
-            String accountNumber = request.getMessage();
+            String accountNumber = request.getAccountNumber();
             processCloseAccount(accountNumber);
 
         }else if (request.getType() == RequestType.LOAN_REQUEST){

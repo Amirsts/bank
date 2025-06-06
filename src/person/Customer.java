@@ -66,6 +66,7 @@ public class Customer extends Person implements Displayable , Loanable , Payable
                 RequestType.OPEN_ACCOUNT,
                 "Request to open an account at: " + account1.getAccountNumber(),
                 this
+
         );
 
         messageBox.add(req);
@@ -79,7 +80,8 @@ public class Customer extends Person implements Displayable , Loanable , Payable
             Request req = new Request(
                     RequestType.CLOSE_ACCOUNT,
                     "Request to close account number: " + accountNumber,
-                    this
+                    this,
+                    accountNumber
             );
 
             messageBox.add(req);

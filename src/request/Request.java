@@ -10,42 +10,53 @@ public class Request {
     private Customer sender;
     private String status;
     private LocalDateTime timestamp;
+    private String accountNumber;
 
-    public Request(RequestType type , String message , Customer sender){
+
+    public Request(RequestType type, String message, Customer sender, String accountNumber) {
         this.type = type;
         this.message = message;
         this.sender = sender;
+        this.accountNumber = accountNumber;
         this.status = "pending";
-        this.timestamp = LocalDateTime.of(2025 , 05 , 15 , 12 , 30);
+        this.timestamp = LocalDateTime.now();
     }
 
-    //getters  & setters
-    public RequestType getType(){
+    public Request(RequestType type, String message, Customer sender) {
+        this(type, message, sender, null);
+    }
+
+    // getters
+    public RequestType getType() {
         return type;
     }
 
-    public String getMessage(){
+    public String getMessage() {
         return message;
     }
 
-    public Customer getSender(){
+    public Customer getSender() {
         return sender;
     }
 
-    public String getStatus(){
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getStatus() {
         return status;
     }
 
-    public LocalDateTime getTimestamp(){
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setStatus(String status){
+    public void setStatus(String status) {
         this.status = status;
     }
 
     @Override
-    public String toString(){
-        return "(" + type + ")" + "||| sender" + sender.getFullName() + "||| status" + status;
+    public String toString() {
+        return "(" + type + ") ||| sender: " + sender.getFullName() + " ||| status: " + status;
     }
 }
