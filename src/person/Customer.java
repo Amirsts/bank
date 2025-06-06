@@ -44,6 +44,10 @@ public class Customer extends Person implements Displayable , Loanable , Payable
         return activeLoans;
     }
 
+    public List<Request> getMessageBox(){
+        return messageBox;
+    }
+
 
     //methods
     public Account findAccount(String accountNumber){
@@ -88,6 +92,11 @@ public class Customer extends Person implements Displayable , Loanable , Payable
 
     public void addLoan(BaseLoan loan) {
         loans.add(loan);
+    }
+
+    public void removeAccount(String accountNumber){
+        accounts.removeIf( acc -> acc.getAccountNumber().equals(accountNumber));
+        System.out.println("Account" + accountNumber + "deleted from customer's accounts");
     }
 
     @Override

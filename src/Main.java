@@ -4,13 +4,16 @@ import loan.NormalLoan;
 import loan.*;
 import person.Customer;
 import request.Request;
+import request.RequestType;
 
 import bank.Bank;
 import branch.*;
-import request.RequestType;
 
 public class Main {
     public static void main(String[] args) {
+
+        System.out.println("🏦 ساخت بانک و اطلاعات اولیه...");
+
         // 1. ساخت بانک و شعبه
         Bank bank = new Bank();
         Branch branch = new Branch("101");
@@ -35,44 +38,68 @@ public class Main {
         bank.addCustomer(customer);
 
         // 4. باز کردن حساب برای مشتری
-        Account acc1 = new CurrentAccount("0100012345678" , customer ,1_000_000);
+        Account acc1 = new CurrentAccount("0100012345678", customer, 1_000_000);
         customer.openAccount(acc1);
         branch.addAccount(acc1);
 
-        // 5. درخواست وام
-        BaseLoan loan = new NormalLoan(300_000_000, 12 , customer); // وام عادی
+        // 5. ارسال درخواست بستن حساب توسط مشتری
+        System.out.println("\n📥 مرحله 1: ارسال درخواست بستن حساب توسط مشتری...");
+        customer.closeAccount(acc1.getAccountNumber());
 
-        Request req = new Request(RequestType.LOAN_REQUEST  , loan.toString() , customer );
-        teller.handleRequest(req);
+        // 6. بررسی توسط Teller
+        if (!customer.getMessageBox().isEmpty()) {
+            Request closeRequest = null;
+            for (Request req : customer.getMessageBox()) {
+                if (req.getType() == RequestType.CLOSE_ACCOUNT) {
+                    closeRequest = req;
+                    break;
+                }
+            }
 
+            if (closeRequest != null) {
+                teller.handleRequest(closeRequest);
+            } else {
+                System.out.println("❗ هیچ درخواست بستن حسابی در messageBox یافت نشد.");
+            }
+        }
 
-        // 6. بررسی وام توسط معاون
+        // 7. بررسی توسط Assistant Manager
         if (!am.getMessageBox().isEmpty()) {
-            Request amRequest = am.getMessageBox().get(0);
+            Request amRequest = am.getMessageBox().remove(0); // حذف بعد از پردازش
             am.handleRequest(amRequest);
         }
 
-        // 7. بررسی نهایی توسط رئیس
+        // 8. بررسی نهایی توسط Branch Manager
         if (!bm.getMessageBox().isEmpty()) {
-            Request bmRequest = bm.getMessageBox().get(0);
+            Request bmRequest = bm.getMessageBox().remove(0);
             bm.handleRequest(bmRequest);
         }
 
-        // 8. نمایش وام‌های فعال مشتری
-        System.out.println("\n📌 وام‌های فعال مشتری:");
-        for (BaseLoan l : customer.getActiveLoans()) {
-            System.out.println(l);
+        // 9. بررسی نتیجه نهایی
+        System.out.println("\n🔍 بررسی لیست حساب‌های مشتری:");
+        if (customer.getAccounts().isEmpty()) {
+            System.out.println("✅ حساب مشتری با موفقیت بسته شد.");
+        } else {
+            for (Account acc : customer.getAccounts()) {
+                System.out.println("🔸 " + acc.getAccountNumber());
+            }
         }
 
-        // 9. نمایش موجودی کل بانک
+        System.out.println("\n🔍 بررسی لیست حساب‌های شعبه:");
+        if (branch.getAccounts().isEmpty()) {
+            System.out.println("✅ حساب از لیست شعبه نیز حذف شد.");
+        } else {
+            for (Account acc : branch.getAccounts()) {
+                System.out.println("🔸 " + acc.getAccountNumber());
+            }
+        }
+
+        // 10. نمایش موجودی کل بانک
         System.out.println("\n💰 موجودی کل بانک: " + bank.getTotalBankBalance() + " تومان");
 
-        // 10. نمایش خلاصه
+        // 11. نمایش خلاصه اطلاعات
         System.out.println("\n📊 اطلاعات شعبه و مشتریان:");
         bank.displayBranches();
         bank.displayCustomers();
-
     }
 }
-
-

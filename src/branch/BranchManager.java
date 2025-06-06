@@ -1,5 +1,6 @@
 package branch;
 
+import account.Account;
 import person.Employee;
 import person.Customer;
 import loan.*;
@@ -22,31 +23,45 @@ public class BranchManager extends Employee implements RequestHandler {
            request.setStatus("approved");
            request.getSender().addLoan(new NormalLoan(300_000_00 , 12, request.getSender()));
             System.out.println("Loan approved and added to customer.");
-            for (Customer c : getAssignedBranch().getCustomers()) {
-                if (!c.getActiveLoans().isEmpty()) continue;
-
-                BaseLoan approvedLoan = new NormalLoan(300_000_000, 12, c);
-                c.addLoan(approvedLoan);
-                System.out.println("✅ Loan added to customer: " + c.getFullName());
-                break;
-            }
-
-
-        }else if (request.getType() == RequestType.CLOSE_ACCOUNT){
-            System.out.println("Account closed after final approval");
-        }else {
-            System.out.println("Request type for branch manager not defined");
         }
 
-    }
+        else if (request.getType() == RequestType.CLOSE_ACCOUNT){
+            String message = request.getMessage();
+            String[] parts = message.split(":");
+            if (parts.length < 2){
+                System.out.println("request format is invalid");
+                request.setStatus("rejected - invalid format");
+                return;
+            }
 
-    public void processLoanApproval(String loanDetail){
+            String accountNumber = parts[1].trim();
 
-        System.out.println("Final loan review completed: sufficient balance and ceiling met");
-    }
+            Account account = getAssignedBranch().findAccount(accountNumber);
+            if (account == null){
+                System.out.println("Account did not find");
+                request.setStatus("rejected - account not found");
+                return;
+            }
 
-    public void processCloseAccount(String accountNumber){
-        System.out.println("accountnumber" + accountNumber + "Closed successfully ");
+            Customer owner = account.getOwner();
+            if (owner == null || !owner.equals(request.getSender())){
+                System.out.println("The account does not belong to this customer.");
+                request.setStatus("rejected - not owner");
+                return;
+            }
+
+            //delete from customer & branch
+            owner.removeAccount(accountNumber);
+            getAssignedBranch().removeAccount(accountNumber);
+
+            System.out.println("account closed");
+            request.setStatus("account closed");
+        }
+
+        else {
+            System.out.println("Unknown request.");
+            request.setStatus("rejected");
+        }
     }
 }
 

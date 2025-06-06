@@ -97,6 +97,11 @@ public class Branch implements Displayable {
         return null;
     }
 
+    public void removeAccount(String accountNumber){
+        accounts.removeIf(acc -> acc.getAccountNumber().equals(accountNumber));
+        System.out.println("Account" + accountNumber + "deleted from the branch's accounts");
+    }
+
     @Override
     public void displayInfo(){
         System.out.println("Branch number:" + branchNumber);
