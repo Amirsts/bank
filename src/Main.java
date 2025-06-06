@@ -3,9 +3,11 @@ import account.CurrentAccount;
 import loan.NormalLoan;
 import loan.*;
 import person.Customer;
+import request.Request;
 
 import bank.Bank;
 import branch.*;
+import request.RequestType;
 
 public class Main {
     public static void main(String[] args) {
@@ -40,18 +42,19 @@ public class Main {
         // 5. درخواست وام
         BaseLoan loan = new NormalLoan(300_000_000, 12 , customer); // وام عادی
 
-        teller.handleRequest("loan request:" + loan.toString());
+        Request req = new Request(RequestType.LOAN_REQUEST  , loan.toString() , customer );
+        teller.handleRequest(req);
 
 
         // 6. بررسی وام توسط معاون
         if (!am.getMessageBox().isEmpty()) {
-            String amRequest = am.getMessageBox().get(0);
+            Request amRequest = am.getMessageBox().get(0);
             am.handleRequest(amRequest);
         }
 
         // 7. بررسی نهایی توسط رئیس
         if (!bm.getMessageBox().isEmpty()) {
-            String bmRequest = bm.getMessageBox().get(0);
+            Request bmRequest = bm.getMessageBox().get(0);
             bm.handleRequest(bmRequest);
         }
 

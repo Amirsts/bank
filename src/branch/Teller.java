@@ -4,6 +4,8 @@ import person.Customer;
 import person.Employee;
 import account.Account;
 import interfaces.RequestHandler;
+import request.Request;
+import request.RequestType;
 
 public class Teller extends Employee implements RequestHandler{
 
@@ -14,14 +16,14 @@ public class Teller extends Employee implements RequestHandler{
     }
 
     @Override
-    public void handleRequest(String request){
+    public void handleRequest(Request request){
         System.out.println("Teller is reviewing the request:" + request);
 
-        if (request.startsWith("close account:")){
-            String accountNumber = request.split(":")[1];
+        if (request.getType() == RequestType.CLOSE_ACCOUNT){
+            String accountNumber = request.getMessage();
             processCloseAccount(accountNumber);
 
-        }else if (request.startsWith("loan request:")){
+        }else if (request.getType() == RequestType.LOAN_REQUEST){
             sendLoanRequestToAssistant(request);
         }else {
             System.out.println("Invalid request!!!");
@@ -56,13 +58,15 @@ public class Teller extends Employee implements RequestHandler{
             System.out.println("It is not possible to close the account: the customer has an active loan.");
             return;
         }
+            Request request = new Request(
+                    RequestType.CLOSE_ACCOUNT , "Request to close account no" + accountNumber , owner);
 
-        String msg = "close account:" + accountNumber;
+       // String msg = "close account:" + accountNumber;
         if (getAssignedBranch().getAssistantManager() != null ){
-            getAssignedBranch().getAssistantManager().receiveRequest(msg);
+            getAssignedBranch().getAssistantManager().receiveRequest(request);
             System.out.println("The request to close the account was referred to the assistant manager.");
         }else if (getAssignedBranch().getBranchManager() != null){
-            getAssignedBranch().getBranchManager().receiveRequest(msg);
+            getAssignedBranch().getBranchManager().receiveRequest(request);
             System.out.println("The request to close the account was referred to the branch manager.");
         }else {
             System.out.println("Referral not possible: There is no deputy or branch manager.");
@@ -72,7 +76,7 @@ public class Teller extends Employee implements RequestHandler{
 
 
 
-    private void sendLoanRequestToAssistant(String request){
+    private void sendLoanRequestToAssistant(Request request){
         if(getAssignedBranch() == null || getAssignedBranch().getBranchNumber() == null){
             System.out.println("Error: Branch or branch assistant not specified !");
             return;

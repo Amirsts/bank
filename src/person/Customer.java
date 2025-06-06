@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import account.Account;
 import loan.BaseLoan;
 import interfaces.*;
+import request.*;
+
 
 public class Customer extends Person implements Displayable , Loanable , Payable {
     private String customerId;
     private List<Account> accounts ;
-    private List<String> messageBox;
+    private List<Request> messageBox;
     private List<BaseLoan> loans ;
     private boolean isActive;
 
@@ -53,18 +55,36 @@ public class Customer extends Person implements Displayable , Loanable , Payable
         return null;
     }
 
-    public void openAccount(Account account1){
+    public void openAccount(Account account1) {
         accounts.add(account1);
-        messageBox.add("Request to open an account with the number:" + account1.getAccountNumber() + "registered");
+
+        Request req = new Request(
+                RequestType.OPEN_ACCOUNT,
+                "Request to open an account at: " + account1.getAccountNumber(),
+                this
+        );
+
+        messageBox.add(req);
+        System.out.println("The account opening request has been registered.");
     }
 
-    public void closeAccount(String accountNumber){
-        Account temp1 = findAccount(accountNumber);
-        if (temp1 != null){
-            messageBox.add("Request to close thr account:" + accountNumber +"registered");
+    public void closeAccount(String accountNumber) {
+        Account temp = findAccount(accountNumber);
+
+        if (temp != null) {
+            Request req = new Request(
+                    RequestType.CLOSE_ACCOUNT,
+                    "Request to close account number: " + accountNumber,
+                    this
+            );
+
+            messageBox.add(req);
+            System.out.println("The request to close the account has been registered.");
+        } else {
+            System.out.println("Error: The requested account could not be found.");
         }
-        messageBox.add("Error: The requested account was not found.");
     }
+
 
     public void addLoan(BaseLoan loan) {
         loans.add(loan);

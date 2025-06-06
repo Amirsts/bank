@@ -1,7 +1,8 @@
 package interfaces;
+import request.Request;
 
 public interface RequestHandler {
 
-    void handleRequest(String request);
+    void handleRequest(Request request);
 
 }

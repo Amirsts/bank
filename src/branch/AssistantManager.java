@@ -3,6 +3,8 @@ package branch;
 import person.Customer;
 import person.Employee;
 import interfaces.RequestHandler;
+import request.Request;
+import request.RequestType;
 
 public class AssistantManager extends Employee implements RequestHandler     {
 
@@ -13,10 +15,10 @@ public class AssistantManager extends Employee implements RequestHandler     {
     }
 
     @Override
-    public void handleRequest(String request){
+    public void handleRequest(Request request){
         System.out.println("The branch assistant is reviewing the request: \n" + request);
 
-        if (request.startsWith("loan request:")) {
+        if (request.getType() == RequestType.LOAN_REQUEST) {
 
             boolean hasActiveLoan = checkIfCustomerHasActiveLoan();
 
@@ -26,7 +28,7 @@ public class AssistantManager extends Employee implements RequestHandler     {
                 System.out.println("The request was approved and referred to the branch manager.");
 
                 if (getAssignedBranch() != null && getAssignedBranch().getBranchManager() != null) {
-                    getAssignedBranch().getBranchManager().receiveRequest("Finally loan request:" + request);
+                    getAssignedBranch().getBranchManager().receiveRequest(request);
                 } else {
                     System.out.println("Error: Branch manager not defined");
                 }

@@ -4,6 +4,8 @@ import person.Employee;
 import person.Customer;
 import loan.*;
 import interfaces.RequestHandler;
+import request.Request;
+import request.RequestType;
 
 public class BranchManager extends Employee implements RequestHandler {
     public BranchManager(String firstName , String lastName , String birthDay , String nationalCode
@@ -13,12 +15,13 @@ public class BranchManager extends Employee implements RequestHandler {
     }
 
     @Override
-    public void handleRequest(String request){
+    public void handleRequest(Request request){
         System.out.println("The branch manager is reviewing the request: " + request);
 
-        if (request.startsWith("Finally loan request:")){
-            String loanDetail = request.substring("Request for final loan approval:".length());
-
+        if (request.getType() == RequestType.LOAN_REQUEST){
+           request.setStatus("approved");
+           request.getSender().addLoan(new NormalLoan(300_000_00 , 12, request.getSender()));
+            System.out.println("Loan approved and added to customer.");
             for (Customer c : getAssignedBranch().getCustomers()) {
                 if (!c.getActiveLoans().isEmpty()) continue;
 
@@ -28,10 +31,9 @@ public class BranchManager extends Employee implements RequestHandler {
                 break;
             }
 
-            processLoanApproval(loanDetail);
-        }else if (request.startsWith("close account:")){
-            String accountNumber = request.split(":")[1];
-            processCloseAccount(accountNumber);
+
+        }else if (request.getType() == RequestType.CLOSE_ACCOUNT){
+            System.out.println("Account closed after final approval");
         }else {
             System.out.println("Request type for branch manager not defined");
         }

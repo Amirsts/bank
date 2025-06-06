@@ -4,12 +4,13 @@ import branch.Branch;
 import java.util.ArrayList;
 import java.util.List;
 import interfaces.Displayable;
+import request.*;
 
 public abstract class Employee extends Person implements Displayable{
     private String employeeId;
     private long salary;
     private Branch assignedBranch;
-    private List<String> messageBox;
+    private List<Request> messageBox;
 
 
     public Employee (String firstName , String lastName , String birthDay , String nationalCode
@@ -36,7 +37,7 @@ public abstract class Employee extends Person implements Displayable{
         return assignedBranch;
     }
 
-    public List<String> getMessageBox(){
+    public List<Request> getMessageBox(){
         return messageBox;
     }
 
@@ -45,7 +46,7 @@ public abstract class Employee extends Person implements Displayable{
     }
 
     //methods
-    public void receiveRequest(String request){
+    public void receiveRequest(Request request){
         messageBox.add(request);
     }
 
