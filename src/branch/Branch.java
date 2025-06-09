@@ -77,7 +77,7 @@ public class Branch implements Displayable {
 
     public Account findAccount(String accountnumber){
         for (Account temp : accounts){
-            if (temp.getAccountNumber().equals(accountnumber)){
+            if (temp.getAccountId().equals(accountnumber)){
                 return  temp;
             }
         }
@@ -98,7 +98,7 @@ public class Branch implements Displayable {
     }
 
     public void removeAccount(String accountNumber){
-        accounts.removeIf(acc -> acc.getAccountNumber().equals(accountNumber));
+        accounts.removeIf(acc -> acc.getAccountId().equals(accountNumber));
         System.out.println("Account" + accountNumber + "deleted from the branch's accounts");
     }
 

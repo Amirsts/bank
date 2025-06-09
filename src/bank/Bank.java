@@ -5,6 +5,7 @@ import loan.BaseLoan;
 import person.*;
 import account.Account;
 import interfaces.Displayable;
+import exceptions.*;
 
 
 import java.time.LocalDate;
@@ -98,6 +99,81 @@ public class Bank implements Displayable{
         return logs;
     }
 
+    //unique check unit
+
+    public boolean isNationalCodeUnique(String nationalCode){
+        for (Customer customer : customers){
+            if (customer.getNationalCode().equals(nationalCode)){ return false;}
+        }
+        for (Employee employee : employees){
+            if (employee.getNationalCode().equals(nationalCode)){return false;}
+        }
+        return true;
+    }
+
+    public boolean  isPhoneNumberUnique(String phoneNumber){
+        for (Customer c : customers){
+            if (c.getPhoneNum().equals(phoneNumber)){return false;}
+        }
+
+        for (Employee e : employees){
+            if (e.getPhoneNum().equals(phoneNumber)){return false;}
+        }
+        return true;
+    }
+
+    public boolean isCustomerIdUnique(String customerId){
+        for (Customer c : customers){
+            if (c.getCustomerId().equals(customerId)){return false;}
+        }
+        return true;
+    }
+
+    public boolean isEmployeeIdUnique(String employeeId){
+        for (Employee e :employees){
+            if (e.getEmployeeId().equals(employeeId)){return false;}
+        }
+        return true;
+    }
+
+    public boolean isAccountIdUnique(String accountId){
+        for (Branch branch:branches){
+            for (Account a : branch.getAccounts()){
+                if (a.getAccountId().equals(accountId)){return false;} //The nested for was inevitable , AmirMohammad is sad
+            }
+        }
+        return true;
+    }
+
+    public Account findAccountGlobal(String accountNumber) {
+        for (Branch branch : branches) {
+            for (Account a : branch.getAccounts()) {
+                if (a.getAccountId().equals(accountNumber)) {
+                    return a;
+                }
+            }
+        }
+        return null;
+    }
+
+
+
+
+    public void transferBetweenCustomers(String fromAccountNumber, String toAccountNumber, int amount, String password)
+            throws AccountNotFoundException, IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
+
+        Account from = findAccountGlobal(fromAccountNumber);
+        Account to = findAccountGlobal(toAccountNumber);
+
+        if (from == null || to == null)
+            throw new AccountNotFoundException("One of the accounts was not found.");
+
+        from.secureWithdraw(amount, password);
+        to.deposit(amount);
+
+            System.out.println(" Successful transfer between customers: " + amount + " Tooman");
+    }
+
     //time
     public LocalDate getCurrentDate() {
         return currentDate;
@@ -107,6 +183,7 @@ public class Bank implements Displayable{
         currentDate = currentDate.plusDays(days);
         log("time updated :"+ currentDate);
     }
+
 
     //display
     public void displayBranches(){

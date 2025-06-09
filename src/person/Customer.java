@@ -3,6 +3,7 @@ package person;
 import java.util.List;
 import java.util.ArrayList;
 import account.Account;
+import exceptions.*;
 import loan.BaseLoan;
 import interfaces.*;
 import request.*;
@@ -50,9 +51,24 @@ public class Customer extends Person implements Displayable , Loanable , Payable
 
 
     //methods
+
+    public void transferBetweenOwnAccounts(String fromAcc, String toAcc, int amount, String password)
+            throws AccountNotFoundException, IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
+
+        Account from = findAccount(fromAcc);
+        Account to = findAccount(toAcc);
+
+        if (from == null || to == null)
+            throw new AccountNotFoundException("One of the accounts was not found.\n");
+
+        from.secureWithdraw(amount, password);
+        to.deposit(amount);
+
+        System.out.println("Successful transfer between your own accounts: " + amount + " Tooman");
+    }
     public Account findAccount(String accountNumber){
         for (Account temp : accounts){
-            if (temp.getAccountNumber().equals(accountNumber)){
+            if (temp.getAccountId().equals(accountNumber)){
                 return temp;
             }
         }
@@ -64,7 +80,7 @@ public class Customer extends Person implements Displayable , Loanable , Payable
 
         Request req = new Request(
                 RequestType.OPEN_ACCOUNT,
-                "Request to open an account at: " + account1.getAccountNumber(),
+                "Request to open an account at: " + account1.getAccountId(),
                 this
 
         );
@@ -97,7 +113,7 @@ public class Customer extends Person implements Displayable , Loanable , Payable
     }
 
     public void removeAccount(String accountNumber){
-        accounts.removeIf( acc -> acc.getAccountNumber().equals(accountNumber));
+        accounts.removeIf( acc -> acc.getAccountId().equals(accountNumber));
         System.out.println("Account" + accountNumber + "deleted from customer's accounts");
     }
 
@@ -118,7 +134,7 @@ public class Customer extends Person implements Displayable , Loanable , Payable
 
 
     @Override
-    public void pay(double amount){
+    public void pay(int amount){
         System.out.println("customer:" + getFullName() + "is paying" + amount + "Tomans");
 
         for (BaseLoan loan : loans){

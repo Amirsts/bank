@@ -1,6 +1,6 @@
 package interfaces;
 
 public interface Payable {
-    void pay(double amount);
+    void pay(int amount);
     double getDueAmount();
 }

@@ -1,7 +1,5 @@
 import account.Account;
 import account.CurrentAccount;
-import loan.NormalLoan;
-import loan.*;
 import person.Customer;
 import request.Request;
 import request.RequestType;
@@ -44,7 +42,7 @@ public class Main {
 
         // 5. ارسال درخواست بستن حساب توسط مشتری
         System.out.println("\n📥 مرحله 1: ارسال درخواست بستن حساب توسط مشتری...");
-        customer.closeAccount(acc1.getAccountNumber());
+        customer.closeAccount(acc1.getAccountId());
 
         // 6. بررسی توسط Teller
         if (!customer.getMessageBox().isEmpty()) {
@@ -81,7 +79,7 @@ public class Main {
             System.out.println("✅ حساب مشتری با موفقیت بسته شد.");
         } else {
             for (Account acc : customer.getAccounts()) {
-                System.out.println("🔸 " + acc.getAccountNumber());
+                System.out.println("🔸 " + acc.getAccountId());
             }
         }
 
@@ -90,7 +88,7 @@ public class Main {
             System.out.println("✅ حساب از لیست شعبه نیز حذف شد.");
         } else {
             for (Account acc : branch.getAccounts()) {
-                System.out.println("🔸 " + acc.getAccountNumber());
+                System.out.println("🔸 " + acc.getAccountId());
             }
         }
 
