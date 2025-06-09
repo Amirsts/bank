@@ -59,7 +59,7 @@ public class Teller extends Employee implements RequestHandler{
             return;
         }
             Request request = new Request(
-                    RequestType.CLOSE_ACCOUNT , "Request to close account no" + accountNumber , owner);
+                    RequestType.CLOSE_ACCOUNT , "Request to close account no" + accountNumber , owner ,accountNumber);
 
        // String msg = "close account:" + accountNumber;
         if (getAssignedBranch().getAssistantManager() != null ){
