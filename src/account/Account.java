@@ -30,6 +30,7 @@ public abstract class Account {
     }
 
     public int getBalance() {
+        balance -= 1000;
         return balance;
     }
 
@@ -48,7 +49,7 @@ public abstract class Account {
         balance += amount;
     }
 
-    public void secureWithdraw(double amount, String inputPassword)
+    public void secureWithdraw(int amount, String inputPassword)
             throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
 
         if (!this.passWord.equals(inputPassword)) {
@@ -68,12 +69,12 @@ public abstract class Account {
     }
 
 
-   /* public void transfer(Account toAccount, int amount) {
-        this.secureWithdraw(amount);
+    public void transfer(Account toAccount, int amount , String passWord) throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
+        this.secureWithdraw(amount , passWord );
         toAccount.deposit(amount);
         System.out.println("Amount " + amount + " from account " + this.accountId +
                 " to account " + toAccount.getAccountId() + " transferred successfully.");
-    }*/
+    }
 
     public abstract int calculateInterest();
 }

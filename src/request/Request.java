@@ -11,6 +11,7 @@ public class Request {
     private String status;
     private LocalDateTime timestamp;
     private String accountNumber;
+    private String currentLevel;
 
 
     public Request(RequestType type, String message, Customer sender, String accountNumber) {
@@ -55,8 +56,15 @@ public class Request {
         this.status = status;
     }
 
+
+
     @Override
     public String toString() {
         return "(" + type + ") ||| sender: " + sender.getFullName() + " ||| status: " + status;
     }
+
+    public void setCurrentLevel(String manager) {
+        this.currentLevel = manager;
+    }
+
 }

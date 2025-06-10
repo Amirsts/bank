@@ -1,20 +1,27 @@
 package person;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+
 import account.Account;
 import exceptions.*;
 import loan.BaseLoan;
 import interfaces.*;
 import request.*;
-
+import message.MessageBox;
 
 public class Customer extends Person implements Displayable , Loanable , Payable {
     private String customerId;
     private List<Account> accounts ;
-    private List<Request> messageBox;
+    private MessageBox messageBox;
     private List<BaseLoan> loans ;
     private boolean isActive;
+    private Map<LocalDate, Integer> dailyTransfers ;
+
+
 
     public Customer(String firstName ,String lastName , String birthDay , String nationalId
             , String address , String phoneNum , String customerId  ){
@@ -22,8 +29,9 @@ public class Customer extends Person implements Displayable , Loanable , Payable
 
         this.customerId = customerId;
         this.accounts = new ArrayList<>();
-        this.messageBox = new ArrayList<>();
+        this.messageBox = new MessageBox();
         this.loans = new ArrayList<>();
+        this.dailyTransfers = new HashMap<>();
     }
 
     //getters
@@ -45,15 +53,28 @@ public class Customer extends Person implements Displayable , Loanable , Payable
         return activeLoans;
     }
 
-    public List<Request> getMessageBox(){
+    public MessageBox getMessageBox() {
         return messageBox;
     }
 
 
     //methods
 
+    public void recordTransfer(int amount, LocalDate date) throws DailyTransferLimitExceededException {
+        int transferred = dailyTransfers.getOrDefault(date, 0);
+
+        if (transferred + amount > 10_000_000) {
+            throw new DailyTransferLimitExceededException("The daily transfer limit of 10 million Tomans has been exceeded.");
+        }
+
+        dailyTransfers.put(date, transferred + amount);
+    }
+
+
     public void transferBetweenOwnAccounts(String fromAcc, String toAcc, int amount, String password)
-            throws AccountNotFoundException, IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
+            throws AccountNotFoundException, IncorrectPasswordException,
+            InvalidAmountException, InsufficientBalanceException,
+            DailyTransferLimitExceededException {
 
         Account from = findAccount(fromAcc);
         Account to = findAccount(toAcc);
@@ -61,14 +82,18 @@ public class Customer extends Person implements Displayable , Loanable , Payable
         if (from == null || to == null)
             throw new AccountNotFoundException("One of the accounts was not found.\n");
 
+        LocalDate testDate = LocalDate.of(2025,6,9);
+        recordTransfer(amount , testDate );
+
         from.secureWithdraw(amount, password);
         to.deposit(amount);
 
         System.out.println("Successful transfer between your own accounts: " + amount + " Tooman");
     }
+
     public Account findAccount(String accountNumber){
         for (Account temp : accounts){
-            if (temp.getAccountId().equals(accountNumber)){
+            if (temp.getAccountId().trim().equals(accountNumber.trim())) {
                 return temp;
             }
         }
@@ -78,30 +103,25 @@ public class Customer extends Person implements Displayable , Loanable , Payable
     public void openAccount(Account account1) {
         accounts.add(account1);
 
-        Request req = new Request(
+        messageBox.addRequest(new Request(
                 RequestType.OPEN_ACCOUNT,
                 "Request to open an account at: " + account1.getAccountId(),
                 this
+        ));
 
-        );
-
-        messageBox.add(req);
-        System.out.println("The account opening request has been registered.");
     }
 
     public void closeAccount(String accountNumber) {
         Account temp = findAccount(accountNumber);
 
         if (temp != null) {
-            Request req = new Request(
+            messageBox.addRequest(new Request(
                     RequestType.CLOSE_ACCOUNT,
                     "Request to close account number: " + accountNumber,
                     this,
                     accountNumber
-            );
+            ));
 
-            messageBox.add(req);
-            System.out.println("The request to close the account has been registered.");
         } else {
             System.out.println("Error: The requested account could not be found.");
         }
@@ -135,7 +155,7 @@ public class Customer extends Person implements Displayable , Loanable , Payable
 
     @Override
     public void pay(int amount){
-        System.out.println("customer:" + getFullName() + "is paying" + amount + "Tomans");
+        System.out.println("customer: " + getFullName() + " is paying " + amount + "Tomans");
 
         for (BaseLoan loan : loans){
             if(amount <= 0) break;

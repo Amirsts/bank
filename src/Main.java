@@ -1,102 +1,144 @@
-import account.Account;
 import account.CurrentAccount;
+import bank.Bank;
+import branch.Branch;
+import branch.BranchManager;
+import branch.AssistantManager;
+import branch.Teller;
 import person.Customer;
 import request.Request;
 import request.RequestType;
-
-import bank.Bank;
-import branch.*;
+import loan.NormalLoan;
+import exceptions.*;
+import java.time.LocalDate;
 
 public class Main {
     public static void main(String[] args) {
-
-        System.out.println("🏦 ساخت بانک و اطلاعات اولیه...");
-
-        // 1. ساخت بانک و شعبه
+        // ========================
+        // ۱. ایجاد بانک و شعبه‌ها
+        // ========================
         Bank bank = new Bank();
-        Branch branch = new Branch("101");
-        bank.addBranch(branch);
 
-        // 2. افزودن کارمندان
-        BranchManager bm = new BranchManager("زهرا", "کریمی", "1985-02-12", "0011223344", "تهران", "09120000000", "BM101");
-        AssistantManager am = new AssistantManager("رضا", "احمدی", "1987-05-20", "1122334455", "تهران", "09121234567", "AM101");
-        Teller teller = new Teller("سارا", "محمدی", "1990-01-01", "2233445566", "تهران", "09128889999", "T101");
+        // ایجاد شعبه با شماره "001"
+        Branch branch = new Branch("001");
 
-        branch.setBranchManager(bm);
-        branch.setAssistantManager(am);
+        // ایجاد مدیر شعبه
+        BranchManager branchManager = new BranchManager(
+                "Ali", "Rezayi", "1990-01-01", "1234567890",
+                "Tehran, Iran", "09121234567", "BM001"
+        );
+        branch.setBranchManager(branchManager);
+
+        // ایجاد دستیار شعبه
+        AssistantManager assistantManager = new AssistantManager(
+                "Sara", "Karimi", "1988-03-22", "1122334455",
+                "Isfahan, Iran", "09120123456", "AM001"
+        );
+        branch.setAssistantManager(assistantManager);
+
+        // ایجاد تحویل‌دار (Teller) و اختصاص به شعبه
+        Teller teller = new Teller(
+                "Mohammad", "Ahmadi", "1992-05-14", "0987654321",
+                "Mashhad, Iran", "09127834567", "TL001"
+        );
         branch.addTeller(teller);
 
-        bank.addEmployee(bm);
-        bank.addEmployee(am);
-        bank.addEmployee(teller);
+        // افزودن شعبه به بانک
+        bank.addBranch(branch);
 
-        // 3. افزودن مشتری
-        Customer customer = new Customer("علی", "رضایی", "1995-10-10", "3344556677", "تهران", "09121112222", "C001");
-        branch.addCustomer(customer);
+        // ========================
+        // ۲. ایجاد مشتری و حساب‌ها
+        // ========================
+        Customer customer = new Customer(
+                "Reza", "Moazeni", "1985-07-20", "1029384756",
+                "Shiraz, Iran", "09134567890", "CUST001"
+        );
         bank.addCustomer(customer);
 
-        // 4. باز کردن حساب برای مشتری
-        Account acc1 = new CurrentAccount("0100012345678", customer, 1_000_000);
-        customer.openAccount(acc1);
-        branch.addAccount(acc1);
+        // ایجاد حساب جاری برای مشتری
+        CurrentAccount currentAccount = new CurrentAccount(
+                "0101234567892", customer, 1000000, "pass123"
+        );
+        branch.addAccount(currentAccount);
+        customer.openAccount(currentAccount);
 
-        // 5. ارسال درخواست بستن حساب توسط مشتری
-        System.out.println("\n📥 مرحله 1: ارسال درخواست بستن حساب توسط مشتری...");
-        customer.closeAccount(acc1.getAccountId());
+        // ایجاد یک حساب دیگر برای تست انتقال بین حساب‌های مشتری
+        CurrentAccount secondAccount = new CurrentAccount(
+                "0109876543212", customer, 5000000, "pass456"
+        );
+        branch.addAccount(secondAccount);
+        customer.openAccount(secondAccount);
 
-        // 6. بررسی توسط Teller
-        if (!customer.getMessageBox().isEmpty()) {
-            Request closeRequest = null;
-            for (Request req : customer.getMessageBox()) {
-                if (req.getType() == RequestType.CLOSE_ACCOUNT) {
-                    closeRequest = req;
-                    break;
-                }
-            }
-
-            if (closeRequest != null) {
-                teller.handleRequest(closeRequest);
-            } else {
-                System.out.println("❗ هیچ درخواست بستن حسابی در messageBox یافت نشد.");
-            }
+        // ========================
+        // ۳. تست انتقال بین حساب‌های مشتری
+        // ========================
+        System.out.println("---- Testing transfer between own accounts ----");
+        try {
+            customer.transferBetweenOwnAccounts("0101234567892", "0109876543212", 500000, "pass123");
+        } catch (AccountNotFoundException | IncorrectPasswordException | InvalidAmountException |
+                 InsufficientBalanceException | DailyTransferLimitExceededException ex) {
+            System.out.println("Transfer failed: " + ex.getMessage());
         }
 
-        // 7. بررسی توسط Assistant Manager
-        if (!am.getMessageBox().isEmpty()) {
-            Request amRequest = am.getMessageBox().remove(0); // حذف بعد از پردازش
-            am.handleRequest(amRequest);
-        }
+        // ========================
+        // ۴. تست درخواست بستن حساب
+        // ========================
+        System.out.println("\n---- Testing close account request ----");
+        customer.closeAccount("0101234567892");
 
-        // 8. بررسی نهایی توسط Branch Manager
-        if (!bm.getMessageBox().isEmpty()) {
-            Request bmRequest = bm.getMessageBox().remove(0);
-            bm.handleRequest(bmRequest);
-        }
-
-        // 9. بررسی نتیجه نهایی
-        System.out.println("\n🔍 بررسی لیست حساب‌های مشتری:");
-        if (customer.getAccounts().isEmpty()) {
-            System.out.println("✅ حساب مشتری با موفقیت بسته شد.");
+        // در اینجا درخواست بستن حساب به جعبه پیام مشتری اضافه شده است.
+        // شبیه‌سازی پردازش درخواست توسط تحویل‌دار (Teller)
+        Request closeRequest = customer.getMessageBox().getAllRequests().stream()
+                .filter(r -> r.getType() == RequestType.CLOSE_ACCOUNT)
+                .findFirst().orElse(null);
+        if (closeRequest != null) {
+            teller.handleRequest(closeRequest);
         } else {
-            for (Account acc : customer.getAccounts()) {
-                System.out.println("🔸 " + acc.getAccountId());
-            }
+            System.out.println("No close account request found.");
         }
 
-        System.out.println("\n🔍 بررسی لیست حساب‌های شعبه:");
-        if (branch.getAccounts().isEmpty()) {
-            System.out.println("✅ حساب از لیست شعبه نیز حذف شد.");
-        } else {
-            for (Account acc : branch.getAccounts()) {
-                System.out.println("🔸 " + acc.getAccountId());
-            }
+        // ========================
+        // ۵. تست درخواست وام
+        // ========================
+        System.out.println("\n---- Testing loan request ----");
+        Request loanRequest = new Request(RequestType.LOAN_REQUEST, "Please approve my loan", customer);
+        // ثبت درخواست وام در جعبه پیام مشتری
+        customer.getMessageBox().addRequest(loanRequest);
+        // تحویل‌دار درخواست وام را دریافت کرده و آن را به دستیار شعبه ارجاع می‌دهد.
+        teller.handleRequest(loanRequest);
+
+        // ========================
+        // ۶. تست انتشار و پردازش پرداخت وام
+        // ========================
+        System.out.println("\n---- Testing loan payment ----");
+        NormalLoan normalLoan = new NormalLoan(300_000_000, 12, customer);
+        customer.addLoan(normalLoan);
+        System.out.println("Due amount before payment: " + customer.getDueAmount());
+        // پرداخت مبلغی به وام
+        customer.pay(10_000_000);
+        System.out.println("Due amount after payment: " + customer.getDueAmount());
+
+        // ========================
+        // ۷. تست محدودیت انتقال روزانه
+        // ========================
+        System.out.println("\n---- Testing daily transfer limit ----");
+        try {
+            // انتقالاتی به روز جاری
+            customer.recordTransfer(9_000_000, LocalDate.now());
+            // این انتقال باعث تجاوز از سقف 10 میلیون تومان می‌شود
+            customer.recordTransfer(2_000_000, LocalDate.now());
+        } catch (DailyTransferLimitExceededException e) {
+            System.out.println("Daily transfer limit exceeded: " + e.getMessage());
         }
 
-        // 10. نمایش موجودی کل بانک
-        System.out.println("\n💰 موجودی کل بانک: " + bank.getTotalBankBalance() + " تومان");
+        // ========================
+        // ۸. نمایش پیام‌ها و اطلاعات نهایی
+        // ========================
+        System.out.println("\n---- Customer's MessageBox ----");
+        customer.getMessageBox().printAll();
 
-        // 11. نمایش خلاصه اطلاعات
-        System.out.println("\n📊 اطلاعات شعبه و مشتریان:");
+        System.out.println("\n---- Final Display Info ----");
+        branch.displayInfo();
+        customer.displayInfo();
         bank.displayBranches();
         bank.displayCustomers();
     }

@@ -145,6 +145,13 @@ public class Bank implements Displayable{
         return true;
     }
 
+    public boolean isBranchNumberUnique(String branchNumber){
+        for (Branch b : branches){
+            if (b.getBranchNumber().equals(branchNumber)){return false;}
+        }
+        return true;
+    }
+
     public Account findAccountGlobal(String accountNumber) {
         for (Branch branch : branches) {
             for (Account a : branch.getAccounts()) {

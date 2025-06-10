@@ -10,7 +10,7 @@ public abstract class BaseLoan {
     protected int penaltyRate;          // Late penalty percentage
     protected Customer borrower;        // Borrower customer
     private boolean active = true;
-    private double totalAmount;
+    protected double totalAmount;
     private double paidAmount = 0;
 
 
@@ -62,7 +62,7 @@ public abstract class BaseLoan {
     }
 
     // Abstract method to calculate the total refund amount
-    public abstract int calculateTotalRepayment();
+    public abstract double calculateTotalRepayment();
 
     public boolean isActive() {
         return active;

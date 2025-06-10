@@ -6,82 +6,126 @@ import account.Account;
 import interfaces.RequestHandler;
 import request.Request;
 import request.RequestType;
+import message.MessageBox;
 
-public class Teller extends Employee implements RequestHandler{
+public class Teller extends Employee implements RequestHandler {
 
-    public Teller (String firstName , String lastName , String birthDay , String nationalCode
-            , String address , String phoneNum , String employeeId){
+    private MessageBox messageBox = new MessageBox();
 
-        super(firstName , lastName , birthDay , nationalCode , address , phoneNum , employeeId ,40000000 );
+    public Teller(String firstName, String lastName, String birthDay, String nationalCode,
+                  String address, String phoneNum, String employeeId) {
+
+        super(firstName, lastName, birthDay, nationalCode, address, phoneNum, employeeId, 40000000);
+    }
+
+    public MessageBox getMessageBox() {
+        return messageBox;
     }
 
     @Override
-    public void handleRequest(Request request){
-        System.out.println("Teller is reviewing the request:" + request);
+    public void handleRequest(Request request) {
+        System.out.println("🏦 Teller is reviewing the request:\n" + request);
 
-        if (request.getType() == RequestType.CLOSE_ACCOUNT){
-            String accountNumber = request.getAccountNumber();
-            processCloseAccount(accountNumber);
-
-        }else if (request.getType() == RequestType.LOAN_REQUEST){
+        if (request.getType() == RequestType.CLOSE_ACCOUNT) {
+            processCloseAccount(request);
+        } else if (request.getType() == RequestType.LOAN_REQUEST) {
             sendLoanRequestToAssistant(request);
-        }else {
-            System.out.println("Invalid request!!!");
+        } else {
+            System.out.println("❌ Invalid request type!");
+            request.setStatus("rejected");
+            request.getSender().getMessageBox().addRequest(
+                    new Request(RequestType.OTHER, "❌ Your request was rejected by the teller (invalid type).", request.getSender())
+            );
         }
 
+        messageBox.removeRequest(request); // ✅ Always clean up after handling
     }
 
+    private void processCloseAccount(Request request) {
+        String accountNumber = request.getAccountNumber();
+        System.out.println("📋 Reviewing account closing request, account number: " + accountNumber);
 
-
-    private void processCloseAccount(String accountNumber){
-        System.out.println("Reviewing account closing request, account number:" + accountNumber);
-
-        if (getEmployeeId() == null){
-            System.out.println("Error: The recipient is not assigned to any branch.");
+        if (getEmployeeId() == null) {
+            System.out.println("❌ Error: The recipient is not assigned to any branch.");
             return;
         }
 
         Account account = getAssignedBranch().findAccount(accountNumber);
-        if (account == null){
-            System.out.println("Error: No account with this number found!!!");
+        if (account == null) {
+            System.out.println("❌ Error: No account with this number found.");
+            request.setStatus("rejected - account not found");
+            request.getSender().getMessageBox().addRequest(
+                    new Request(RequestType.CLOSE_ACCOUNT, "❌ Account not found.", request.getSender())
+            );
             return;
         }
-
 
         Customer owner = account.getOwner();
-        if (owner == null){
-            System.out.println("Account doesn't have owner ");
+        if (owner == null) {
+            System.out.println("❌ Account has no owner.");
+            request.setStatus("rejected - no owner");
+            request.getSender().getMessageBox().addRequest(
+                    new Request(RequestType.CLOSE_ACCOUNT, "❌ Account has no owner.", request.getSender())
+            );
             return;
         }
 
-        if (!owner.getActiveLoans().isEmpty()){
-            System.out.println("It is not possible to close the account: the customer has an active loan.");
+        if (!owner.getActiveLoans().isEmpty()) {
+            System.out.println("⛔ Cannot close the account: customer has active loan.");
+            request.setStatus("rejected - active loan exists");
+            request.getSender().getMessageBox().addRequest(
+                    new Request(RequestType.CLOSE_ACCOUNT, "⛔ Your request to close the account was rejected (active loan exists).", request.getSender())
+            );
             return;
         }
-            Request request = new Request(
-                    RequestType.CLOSE_ACCOUNT , "Request to close account no" + accountNumber , owner ,accountNumber);
 
-       // String msg = "close account:" + accountNumber;
-        if (getAssignedBranch().getAssistantManager() != null ){
-            getAssignedBranch().getAssistantManager().receiveRequest(request);
-            System.out.println("The request to close the account was referred to the assistant manager.");
-        }else if (getAssignedBranch().getBranchManager() != null){
-            getAssignedBranch().getBranchManager().receiveRequest(request);
-            System.out.println("The request to close the account was referred to the branch manager.");
-        }else {
-            System.out.println("Referral not possible: There is no deputy or branch manager.");
+        // Forwarding request
+        if (getAssignedBranch().getAssistantManager() != null) {
+            request.setStatus("forwarded to assistant");
+            request.setCurrentLevel("assistant");
+            getAssignedBranch().getAssistantManager().getMessageBox().addRequest(request);
+            System.out.println("📨 The request to close the account was referred to the assistant manager.");
+
+            request.getSender().getMessageBox().addRequest(
+                    new Request(RequestType.CLOSE_ACCOUNT, "✅ Your account closure request was forwarded to assistant manager.", request.getSender())
+            );
+
+        } else if (getAssignedBranch().getBranchManager() != null) {
+            request.setStatus("forwarded to manager");
+            request.setCurrentLevel("manager");
+            getAssignedBranch().getBranchManager().getMessageBox().addRequest(request);
+            System.out.println("📨 The request to close the account was referred to the branch manager.");
+
+            request.getSender().getMessageBox().addRequest(
+                    new Request(RequestType.CLOSE_ACCOUNT, "✅ Your account closure request was forwarded to branch manager.", request.getSender())
+            );
+        } else {
+            System.out.println("❌ Referral not possible: No assistant or branch manager found.");
+            request.setStatus("rejected - no handler available");
+            request.getSender().getMessageBox().addRequest(
+                    new Request(RequestType.CLOSE_ACCOUNT, "❌ Request failed: No available manager to handle the request.", request.getSender())
+            );
         }
-
     }
 
-
-
-    private void sendLoanRequestToAssistant(Request request){
-        if(getAssignedBranch() == null || getAssignedBranch().getBranchNumber() == null){
-            System.out.println("Error: Branch or branch assistant not specified !");
+    private void sendLoanRequestToAssistant(Request request) {
+        if (getAssignedBranch() == null || getAssignedBranch().getBranchNumber() == null) {
+            System.out.println("❌ Error: Branch or branch assistant not specified!");
+            request.setStatus("rejected - no branch");
+            request.getSender().getMessageBox().addRequest(
+                    new Request(RequestType.LOAN_REQUEST, "❌ Loan request failed: no valid branch assigned.", request.getSender())
+            );
             return;
         }
-        System.out.println("Loan application sent to the branch assistant...");
-        getAssignedBranch().getAssistantManager().receiveRequest(request);
+
+        request.setStatus("forwarded to assistant");
+        request.setCurrentLevel("assistant");
+        getAssignedBranch().getAssistantManager().getMessageBox().addRequest(request);
+
+        request.getSender().getMessageBox().addRequest(
+                new Request(RequestType.LOAN_REQUEST, "✅ Your loan request was forwarded to assistant manager.", request.getSender())
+        );
+
+        System.out.println("📨 Loan application sent to the branch assistant...");
     }
 }
