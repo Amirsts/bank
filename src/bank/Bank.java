@@ -8,6 +8,7 @@ import interfaces.Displayable;
 import exceptions.*;
 
 
+import javax.swing.plaf.PanelUI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,11 +86,14 @@ public class Bank implements Displayable{
     public int getTotalBankBalance(){
         return branches.stream()
                 .flatMap(b -> b.getAccounts().stream())
-                .mapToInt(Account::getBalance)
+                .mapToInt(Account::getBalanceForbank)
                 .sum();
     }
 
     //reports
+    public List<Branch> getBranches(){
+        return branches;
+    }
     public void log(String message){
         logs.add("'" + currentDate + "'" + message);
         System.out.println(message);
@@ -98,6 +102,7 @@ public class Bank implements Displayable{
     public List<String> getLogs(){
         return logs;
     }
+
 
     //unique check unit
 
@@ -194,15 +199,18 @@ public class Bank implements Displayable{
 
     //display
     public void displayBranches(){
-        System.out.println("Branches of "+ name +":");
+        System.out.println(",,, ,,, BANK DISPLAY INFO ,,, ,,,");
+        System.out.println("Branches of "+ name +":\n");
         for (Branch b : branches){
             System.out.println("Branch: " + b.getBranchNumber());
             System.out.println("Manager: " + (b.getBranchManager() != null ? b.getBranchManager().getFullName() : "not modified "));
             System.out.println("Assistant manager: " + ( b.getAssistantManager() != null ? b.getAssistantManager().getFullName() : "not modified"));
             System.out.println("Tellers: "+( b.getTellers().size()));
-            System.out.println("---------------------------------");
+            System.out.println("...........................");
         }
+        System.out.println("------END OF BANK DISPLAY INFO------");
     }
+
 
     public void displayCustomers(){
         System.out.println("Bsnk customers: ");
@@ -227,5 +235,13 @@ public class Bank implements Displayable{
         System.out.println("Number of employees: " + employees.size());
         System.out.println("Number of customers: " + customers.size());
         System.out.println("Total bank balance: " + getTotalBankBalance());
+    }
+
+    public List<Customer> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(List<Customer> customers) {
+        this.customers = customers;
     }
 }

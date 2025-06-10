@@ -104,9 +104,10 @@ public class Branch implements Displayable {
 
     @Override
     public void displayInfo(){
-        System.out.println("Branch number:" + branchNumber);
-        System.out.println("Manager" + (branchManager != null ? branchManager.getFullName() : " not identified!?!"));
-        System.out.println("Cuostomers:" + customers.size() + "people");
+        System.out.println("... ... BRANCH DISPLAY INFO ... ...");
+        System.out.println("Branch number: " + branchNumber);
+        System.out.println("Manager " + (branchManager != null ? branchManager.getFullName() : " not identified!?!"));
+        System.out.println("Cuostomers: " + customers.size() + " people\n");
     }
 
     public void displayCustomers(){

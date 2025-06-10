@@ -39,7 +39,7 @@ public class Customer extends Person implements Displayable , Loanable , Payable
         return customerId;
     }
 
-    public List<Account> getAccounts(){
+    public List<Account>   getAccounts(){
         return accounts;
     }
 

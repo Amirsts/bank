@@ -33,6 +33,9 @@ public abstract class Account {
         balance -= 1000;
         return balance;
     }
+    public int getBalanceForbank() {
+        return balance;
+    }
 
     public Customer getOwner(){
         return owner;
@@ -55,6 +58,21 @@ public abstract class Account {
         if (!this.passWord.equals(inputPassword)) {
             throw new IncorrectPasswordException("The password entered is incorrect.");
         }
+
+        if (amount <= 0) {
+            throw new InvalidAmountException("amount should be more than zero");
+        }
+
+        if (amount > balance) {
+            throw new InsufficientBalanceException("balance is not enough");
+        }
+
+        balance -= amount;
+        System.out.println("💸 successful withdraw " + amount + " balance Tooman " + balance);
+    }
+
+    public void secureWithdraw(int amount)
+            throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
 
         if (amount <= 0) {
             throw new InvalidAmountException("amount should be more than zero");
