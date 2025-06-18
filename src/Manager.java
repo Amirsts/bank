@@ -2,7 +2,7 @@ package fixingSuggest;
 
 import java.util.ArrayList;
 
-public class Teller {
+public class Manager {
     private static ArrayList<String> box = new ArrayList<>();
 
     public static void newRequest(String request) {
@@ -11,7 +11,18 @@ public class Teller {
 
     public static void acceptRequest(int index) {
         String massage = box.get(index);
-        Manager.newRequest(massage);
+        String name = "";
+        for (int i = 0; i < massage.length(); i++) {
+            if (massage.charAt(i) == ' ') {
+                break;
+            } else {
+                name += massage.charAt(i);
+            }
+        }
+
+        Customer c = Bank.contains(name);
+        c.createFlag = true;
+
         box.remove(index);
     }
 
