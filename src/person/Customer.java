@@ -71,25 +71,6 @@ public class Customer extends Person implements Displayable , Loanable , Payable
     }
 
 
-    public void transferBetweenOwnAccounts(String fromAcc, String toAcc, int amount, String password)
-            throws AccountNotFoundException, IncorrectPasswordException,
-            InvalidAmountException, InsufficientBalanceException,
-            DailyTransferLimitExceededException {
-
-        Account from = findAccount(fromAcc);
-        Account to = findAccount(toAcc);
-
-        if (from == null || to == null)
-            throw new AccountNotFoundException("One of the accounts was not found.\n");
-
-        LocalDate testDate = LocalDate.of(2025,6,9);
-        recordTransfer(amount , testDate );
-
-        from.secureWithdraw(amount, password);
-        to.deposit(amount);
-
-        System.out.println("Successful transfer between your own accounts: " + amount + " Tooman");
-    }
 
     public Account findAccount(String accountNumber){
         for (Account temp : accounts){
@@ -117,8 +98,8 @@ public class Customer extends Person implements Displayable , Loanable , Payable
         if (temp != null) {
             messageBox.addRequest(new Request(
                     RequestType.CLOSE_ACCOUNT,
-                    "Request to close account number: " + accountNumber,
                     this,
+                    "Request to close account number: " + accountNumber,
                     accountNumber
             ));
 

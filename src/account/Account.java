@@ -1,9 +1,11 @@
 package account;
 
-import exceptions.IncorrectPasswordException;
-import exceptions.InsufficientBalanceException;
-import exceptions.InvalidAmountException;
+import exceptions.*;
 import person.Customer;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public abstract class Account {
@@ -11,6 +13,7 @@ public abstract class Account {
     int balance;
     private Customer owner;
     private String passWord;
+    private Map<LocalDate, Integer> dailyTransfers ;
 
     public Account(String accountId, Customer owner, int balance ,String passWord) {
         if (accountId == null || !accountId.matches("\\d{13}")) {
@@ -23,6 +26,7 @@ public abstract class Account {
         this.owner = owner;
         this.balance = balance;
         this.passWord = passWord;
+        this.dailyTransfers = new HashMap<>();
     }
 
     public String getAccountId() {
@@ -71,20 +75,17 @@ public abstract class Account {
         System.out.println("💸 successful withdraw " + amount + " balance Tooman " + balance);
     }
 
-    public void secureWithdraw(int amount)
-            throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
+    public void recordTransfer(int amount, LocalDate date) throws DailyTransferLimitExceededException {
+        int transferred = dailyTransfers.getOrDefault(date, 0);
 
-        if (amount <= 0) {
-            throw new InvalidAmountException("amount should be more than zero");
+        if (transferred + amount > 10_000_000) {
+            throw new DailyTransferLimitExceededException("The daily transfer limit of 10 million Tomans has been exceeded.");
         }
 
-        if (amount > balance) {
-            throw new InsufficientBalanceException("balance is not enough");
-        }
-
-        balance -= amount;
-        System.out.println("💸 successful withdraw " + amount + " balance Tooman " + balance);
+        dailyTransfers.put(date, transferred + amount);
     }
+
+
 
 
     public void transfer(Account toAccount, int amount , String passWord) throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {

@@ -15,17 +15,20 @@ import java.util.List;
 
 public class Bank implements Displayable{
 
-    private final String name = "Bit Bank";
+    public final String name = "Bit Bank";
     private List<Branch> branches;
     private List<Employee> employees;
     private List<Customer> customers;
+    private List<Account> accounts;
     private List<String> logs;
     private LocalDate currentDate;
 
+
     public Bank (){
         this.branches = new ArrayList<>();
-        this.employees = new ArrayList<>();
+        this.accounts = new ArrayList<>();
         this.customers = new ArrayList<>();
+        this.employees = new ArrayList<>();
         this.logs = new ArrayList<>();
         this.currentDate =LocalDate.of(2025,6,2);
     }
@@ -58,6 +61,8 @@ public class Bank implements Displayable{
         customers.add(customer);
         log("customer" + customer.getCustomerId() + "added");
     }
+
+    public void addAccount(Account account){accounts.add(account);}
     //Uniqueness check
     public boolean isNationalIdDuplicate(String nationalId) {
         return customers.stream().anyMatch(c -> c.getNationalCode().equals(nationalId));
@@ -172,13 +177,16 @@ public class Bank implements Displayable{
 
 
     public void transferBetweenCustomers(String fromAccountNumber, String toAccountNumber, int amount, String password)
-            throws AccountNotFoundException, IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
+            throws AccountNotFoundException, IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException, DailyTransferLimitExceededException {
 
         Account from = findAccountGlobal(fromAccountNumber);
         Account to = findAccountGlobal(toAccountNumber);
 
         if (from == null || to == null)
             throw new AccountNotFoundException("One of the accounts was not found.");
+
+        LocalDate testDate = LocalDate.of(2025,6,9);
+        from.recordTransfer(amount , testDate );
 
         from.secureWithdraw(amount, password);
         to.deposit(amount);

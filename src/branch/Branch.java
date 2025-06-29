@@ -102,6 +102,21 @@ public class Branch implements Displayable {
         System.out.println("Account" + accountNumber + "deleted from the branch's accounts");
     }
 
+    public Teller getSolitudeTeller(){
+        int tmp1 , tmp2 ;
+        int indexMin = 0;
+        int min = tellers.get(0).getMessageBox().size();
+
+        for (int i = 0 ; i < tellers.size() ; i++){
+             tmp2 = tellers.get(i).getMessageBox().size();
+             if (min > tmp2 ) {
+                 min = tmp2;
+                 indexMin = i;
+             }
+        }
+        return tellers.get(indexMin);
+    }
+
     @Override
     public void displayInfo(){
         System.out.println("... ... BRANCH DISPLAY INFO ... ...");

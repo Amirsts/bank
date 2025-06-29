@@ -46,7 +46,7 @@ public abstract class Employee extends Person implements Displayable{
     }
 
 
-    public void setAssignedBranch(Branch branch1){
+    public void  setAssignedBranch(Branch branch1){
         this.assignedBranch = branch1 ;
     }
 

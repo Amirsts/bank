@@ -11,11 +11,12 @@ import message.MessageBox;
 public class Teller extends Employee implements RequestHandler {
 
     private MessageBox messageBox = new MessageBox();
+    private String passWord;
 
     public Teller(String firstName, String lastName, String birthDay, String nationalCode,
-                  String address, String phoneNum, String employeeId) {
-
+                  String address, String phoneNum, String employeeId,String passWord) {
         super(firstName, lastName, birthDay, nationalCode, address, phoneNum, employeeId, 40000000);
+        this.passWord = passWord;
     }
 
     public MessageBox getMessageBox() {
@@ -128,4 +129,12 @@ public class Teller extends Employee implements RequestHandler {
 
         System.out.println("📨 Loan application sent to the branch assistant...");
     }
+
+    public boolean isPassWordTrue(String tPass){
+        if (passWord.equals(tPass)){
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -14,7 +14,7 @@ public class Request {
     private String currentLevel;
 
 
-    public Request(RequestType type, String message, Customer sender, String accountNumber) {
+    public Request(RequestType type, Customer sender, String message, String accountNumber) {
         this.type = type;
         this.message = message;
         this.sender = sender;
@@ -24,7 +24,7 @@ public class Request {
     }
 
     public Request(RequestType type, String message, Customer sender) {
-        this(type, message, sender, null);
+        this(type,sender , message, null);
     }
 
     // getters
