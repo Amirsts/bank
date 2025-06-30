@@ -12,13 +12,11 @@ import branch.Teller;
 import person.Customer;
 import request.Request;
 import request.RequestType;
-import loan.NormalLoan;
 import exceptions.*;
-import java.time.LocalDate;
+
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-import java.util.Scanner;
 
 public class MainPage {
     public static void firstPage() {
@@ -42,14 +40,14 @@ public class MainPage {
         // ========================
         Customer customer = new Customer(
                 "Mobin", "Rangsaz", "1985-07-20", "1029384756",
-                "Shiraz, Iran", "09134567890", "mo1384"
+                "Shiraz, Iran", "09134567890", "mo1234"
         );
         bank.addCustomer(customer);
         branch.addCustomer(customer);
 
         Customer customer1 = new Customer(
                 "Amirmohammad", "Mohammadi", "1985-07-20", "1029384756",
-                "Shiraz, Iran", "09134567890", "am1384"
+                "Shiraz, Iran", "09134567890", "am1234"
         );
         bank.addCustomer(customer1);
         branch.addCustomer(customer1);
@@ -290,26 +288,44 @@ public class MainPage {
 
     // متد ثبت مشتری جدید (ثبت نام مشتری از طریق منوی اصلی)
     static void processNewCustomer(Scanner scanner, Bank bank , Branch branch) {
-        System.out.println("\n--- ثبت مشتری جدید ---");
-        System.out.print("نام: ");
-        String firstName = scanner.nextLine();
-        System.out.print("نام خانوادگی: ");
-        String lastName = scanner.nextLine();
-        System.out.print("تاریخ تولد (YYYY-MM-DD): ");
-        String birthDate = scanner.nextLine();
-        System.out.print("کد ملی: ");
-        String nationalCode = scanner.nextLine();
-        System.out.print("آدرس: ");
-        String address = scanner.nextLine();
-        System.out.print("شماره تلفن: ");
-        String phone = scanner.nextLine();
-        System.out.print("Customer ID: ");
-        String customerId = scanner.nextLine();
+        try {
+            System.out.println("\n--- ثبت مشتری جدید ---");
+            System.out.print("نام: ");
+            String firstName = scanner.nextLine();
+            System.out.print("نام خانوادگی: ");
+            String lastName = scanner.nextLine();
+            System.out.print("تاریخ تولد (YYYY-MM-DD): ");
+            String birthDate = scanner.nextLine();
+            System.out.print("کد ملی: ");
+            String nationalCode = scanner.nextLine();
 
-        Customer newCustomer = new Customer(firstName, lastName, birthDate, nationalCode, address, phone, customerId);
-        bank.addCustomer(newCustomer);
-        branch.addCustomer(newCustomer);
-        System.out.println("مشتری جدید با شناسه " + customerId + " ثبت شد.");
+            while (!bank.isNationalCodeUnique(nationalCode)) {
+                System.out.print("کد ملی وارد شده تکراری است\n" + "کد ملی را وارد کنید: ");
+                nationalCode = scanner.nextLine();
+            }
+
+            System.out.print("آدرس: ");
+            String address = scanner.nextLine();
+            System.out.print("شماره تلفن: ");
+            String phone = scanner.nextLine();
+
+            while (!bank.isPhoneNumberUnique(phone)) {
+                System.out.println("شماره تلفن وارد شده تکراری است\n" + "شماره تلفن را وارد کنید: ");
+                phone = scanner.nextLine();
+            }
+
+            System.out.print("Customer ID: ");
+            String customerId = scanner.nextLine();
+
+            Customer newCustomer = new Customer(firstName, lastName, birthDate, nationalCode, address, phone, customerId);
+            bank.addCustomer(newCustomer);
+            branch.addCustomer(newCustomer);
+            System.out.println("مشتری جدید با شناسه " + customerId + " ثبت شد.");
+        }catch (InvalidNationalCodeException e){
+            System.out.println(e.getMessage());
+        }catch (InvalidPhoneNumberException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     // منوی دستیار شعبه: بررسی درخواست‌های بستن حساب و وام، نمایش اطلاعات شعبه
@@ -558,52 +574,88 @@ public class MainPage {
             scanner.nextLine();
             switch(choice) {
                 case 1:
-                    System.out.println("ایجاد تحویل‌دار جدید...");
-                    System.out.print("ID تحویل‌دار: ");
-                    String tellerId = scanner.nextLine();
-                    System.out.print("نام: ");
-                    String tellerFirstName = scanner.nextLine();
-                    System.out.print("نام خانوادگی: ");
-                    String tellerLastName = scanner.nextLine();
-                    System.out.print("تاریخ تولد: ");
-                    String tellerBirthDay = scanner.nextLine();
-                    System.out.print("کد ملی: ");
-                    String tellerNationalCode = scanner.nextLine();
-                    System.out.print("آدرس: ");
-                    String tellerAddress = scanner.nextLine();
-                    System.out.print("شماره تلفن: ");
-                    String tellerPhone = scanner.nextLine();
-                    System.out.println("رمز ورود");
-                    String passWord = scanner.nextLine();
+                    try{
+                        System.out.println("ایجاد تحویل‌دار جدید...");
+                        System.out.print("ID تحویل‌دار: ");
+                        String tellerId = scanner.nextLine();
+                        System.out.print("نام: ");
+                        String tellerFirstName = scanner.nextLine();
+                        System.out.print("نام خانوادگی: ");
+                        String tellerLastName = scanner.nextLine();
+                        System.out.print("تاریخ تولد: ");
+                        String tellerBirthDay = scanner.nextLine();
+                        System.out.print("کد ملی: ");
+                        String tellerNationalCode = scanner.nextLine();
 
-                    Teller newTeller = new Teller(tellerFirstName, tellerLastName, tellerBirthDay,
-                            tellerNationalCode, tellerAddress, tellerPhone, tellerId, passWord);
-                    branch.addTeller(newTeller);
-                    bank.addEmployee(newTeller);
-                    System.out.println("تحویل‌دار جدید با شناسه " + tellerId + " ایجاد شد.");
+                        while (!bank.isNationalCodeUnique(tellerNationalCode)){
+                            System.out.print( "کد ملی وارد شده تکراری است\n" + "کد ملی را وارد کنید: ");
+                            tellerNationalCode = scanner.nextLine();
+                        }
+
+                        System.out.print("آدرس: ");
+                        String tellerAddress = scanner.nextLine();
+                        System.out.print("شماره تلفن: ");
+                        String tellerPhone = scanner.nextLine();
+
+                        while (!bank.isPhoneNumberUnique(tellerPhone)){
+                            System.out.println("شماره تلفن وارد شده تکراری است\n" + "شماره تلفن را وارد کنید: ");
+                            tellerPhone = scanner.nextLine();
+                        }
+
+                        System.out.println("رمز ورود");
+                        String passWord = scanner.nextLine();
+
+                        Teller newTeller = new Teller(tellerFirstName, tellerLastName, tellerBirthDay,
+                                tellerNationalCode, tellerAddress, tellerPhone, tellerId, passWord);
+                        branch.addTeller(newTeller);
+                        bank.addEmployee(newTeller);
+                        System.out.println("تحویل‌دار جدید با شناسه " + tellerId + " ایجاد شد.");
+                    }catch (InvalidNationalCodeException e){
+                        System.out.println( e.getMessage());
+                    }catch (InvalidPhoneNumberException e){
+                        System.out.println( e.getMessage() );
+                    }
                     break;
                 case 2:
-                    System.out.println("ایجاد معاون شعبه جدید...");
-                    System.out.print("شناسه معاون شعبه: ");
-                    String amId = scanner.nextLine();
-                    System.out.print("نام: ");
-                    String amFirstName = scanner.nextLine();
-                    System.out.print("نام خانوادگی: ");
-                    String amLastName = scanner.nextLine();
-                    System.out.print("تاریخ تولد: ");
-                    String amBirthDay = scanner.nextLine();
-                    System.out.print("کد ملی: ");
-                    String amNationalCode = scanner.nextLine();
-                    System.out.print("آدرس: ");
-                    String amAddress = scanner.nextLine();
-                    System.out.print("شماره تلفن: ");
-                    String amPhone = scanner.nextLine();
+                    try {
 
-                    AssistantManager newAM = new AssistantManager(amFirstName, amLastName, amBirthDay,
-                            amNationalCode, amAddress, amPhone, amId);
-                    branch.setAssistantManager(newAM);
-                    bank.addEmployee(newAM);
-                    System.out.println("معاون شعبه جدید با شناسه " + amId + " ایجاد شد.");
+                        System.out.println("ایجاد معاون شعبه جدید...");
+                        System.out.print("شناسه معاون شعبه: ");
+                        String amId = scanner.nextLine();
+                        System.out.print("نام: ");
+                        String amFirstName = scanner.nextLine();
+                        System.out.print("نام خانوادگی: ");
+                        String amLastName = scanner.nextLine();
+                        System.out.print("تاریخ تولد: ");
+                        String amBirthDay = scanner.nextLine();
+                        System.out.print("کد ملی: ");
+                        String amNationalCode = scanner.nextLine();
+
+                        while (!bank.isNationalCodeUnique(amNationalCode)) {
+                            System.out.print("کد ملی وارد شده تکراری است\n" + "کد ملی را وارد کنید: ");
+                            amNationalCode = scanner.nextLine();
+                        }
+
+                        System.out.print("آدرس: ");
+                        String amAddress = scanner.nextLine();
+                        System.out.print("شماره تلفن: ");
+                        String amPhone = scanner.nextLine();
+
+                        while (!bank.isPhoneNumberUnique(amPhone)) {
+                            System.out.println("شماره تلفن وارد شده تکراری است\n" + "شماره تلفن را وارد کنید: ");
+                            amPhone = scanner.nextLine();
+                        }
+
+                        AssistantManager newAM = new AssistantManager(amFirstName, amLastName, amBirthDay,
+                                amNationalCode, amAddress, amPhone, amId);
+                        branch.setAssistantManager(newAM);
+                        bank.addEmployee(newAM);
+                        System.out.println("معاون شعبه جدید با شناسه " + amId + " ایجاد شد.");
+                    }catch (InvalidNationalCodeException e){
+                        System.out.println(e.getMessage());
+                    }catch (InvalidPhoneNumberException e){
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 case 3:
                     branch.displayInfo();

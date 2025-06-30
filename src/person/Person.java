@@ -1,5 +1,8 @@
 package person;
 
+import exceptions.InvalidNationalCodeException;
+import exceptions.InvalidPhoneNumberException;
+
 public class Person {
     private String firstName ;
     private String lastName;
@@ -10,8 +13,8 @@ public class Person {
 
     public Person(){}
     public Person(String firstName , String lastName , String birthDay , String nationalCode , String address , String phoneNum){
-        validphoneNum(phoneNum);
         validNationalCode(nationalCode);
+        validphoneNum(phoneNum);
 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -24,13 +27,13 @@ public class Person {
     //validations
     private void validNationalCode (String nationalCode){
         if (nationalCode == null || !nationalCode.matches("\\d{10}")){
-            throw new IllegalArgumentException("Warning: National Number should be 10 digit !");
+            throw new InvalidNationalCodeException("Warning: National Number should be 10 digit !");
         }
     }
 
     private void validphoneNum (String phoneNum){
-        if (phoneNum == null || !phoneNum.matches("0\\d{10}")){
-            throw new IllegalArgumentException("Warning: Phone number must be started with 0 & 10 digits after that !");
+        if (phoneNum == null || !phoneNum.matches("09\\d{9}")){
+            throw new InvalidPhoneNumberException("Warning: Phone number must be started with 09 & 11 digits after that !");
         }
     }
 
