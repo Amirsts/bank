@@ -43,6 +43,7 @@ public class Customer extends Person implements Displayable , Loanable , Payable
         return accounts;
     }
 
+
     public List<BaseLoan> getActiveLoans() {
         List<BaseLoan> activeLoans = new ArrayList<>();
         for (BaseLoan loan : loans) {
@@ -124,8 +125,13 @@ public class Customer extends Person implements Displayable , Loanable , Payable
     }
 
     @Override
-    public double getLoanCeiling(){
+    public double getNormalLoanCeiling(){
         return 500_000_000;
+    }
+
+    @Override
+    public double getTashilatCeiling(){
+        return 1_000_000_000;
     }
 
     @Override

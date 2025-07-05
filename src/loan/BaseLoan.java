@@ -2,38 +2,37 @@ package loan;
 
 import person.Customer;
 
-public abstract class BaseLoan {
-    protected int loanAmount;           // Loan amount
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public abstract class   BaseLoan {
+    protected double loanAmount;           // Loan amount
     protected int duration;             // Repayment period
-    protected int governmentShare;      // Percentage
-    protected int customerShare;        // Percentage
+    protected double customerShare;        // Percentage
     protected int penaltyRate;          // Late penalty percentage
     protected Customer borrower;        // Borrower customer
     private boolean active = true;
     protected double totalAmount;
     private double paidAmount = 0;
+    private LocalDate ldTime;
 
 
-    public BaseLoan(int loanAmount, int duration, int governmentShare,
-                    int customerShare, int penaltyRate, Customer borrower) {
+    public BaseLoan(double loanAmount, int duration,
+                    double customerShare, int penaltyRate,LocalDate ldTime, Customer borrower) {
         if (loanAmount <= 0 || duration <= 0)
             throw new IllegalArgumentException("Loan amount and duration must be positive.");
-        if (governmentShare < 0 || governmentShare > 100 ||
-                customerShare < 0 || customerShare > 100 ||
-                penaltyRate < 0 || penaltyRate > 100)
-            throw new IllegalArgumentException("Percentages must be between 0 and 100.");
         if (borrower == null)
             throw new IllegalArgumentException("Borrower cannot be null.");
 
         this.loanAmount = loanAmount;
         this.duration = duration;
-        this.governmentShare = governmentShare;
         this.customerShare = customerShare;
         this.penaltyRate = penaltyRate;
+        this.ldTime = ldTime;
         this.borrower = borrower;
     }
 
-    public int getLoanAmount() {
+    public double getLoanAmount() {
         return loanAmount;
     }
 
@@ -57,12 +56,14 @@ public abstract class BaseLoan {
     }
 
     // Calculate the total amount of the penalty in case of delay (monthly)
-    public int calculatePenalty(int delayInMonths) {
+    public double calculatePenalty(int delayInMonths) {
         return (loanAmount * penaltyRate / 100) * delayInMonths;
     }
 
     // Abstract method to calculate the total refund amount
     public abstract double calculateTotalRepayment();
+
+    public abstract  double installmentPerMonth();
 
     public boolean isActive() {
         return active;

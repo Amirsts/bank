@@ -11,11 +11,14 @@ import message.MessageBox;
 public class AssistantManager extends Employee implements RequestHandler {
 
     private MessageBox messageBox = new MessageBox();
+    private String passWord;
 
     public AssistantManager(String firstName, String lastName, String birthDay, String nationalCode,
-                            String address, String phoneNum, String employeeId) {
+                            String address, String phoneNum, String employeeId , String passWord) {
 
         super(firstName, lastName, birthDay, nationalCode, address, phoneNum, employeeId, 700000);
+
+        this.passWord = passWord;
     }
 
     public MessageBox getMessageBox() {

@@ -12,6 +12,8 @@ import javax.swing.plaf.PanelUI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.security.SecureRandom;
+import java.util.Random;
 
 public class Bank implements Displayable{
 
@@ -22,6 +24,7 @@ public class Bank implements Displayable{
     private List<Account> accounts;
     private List<String> logs;
     private LocalDate currentDate;
+    private SecureRandom secureRandom;
 
 
     public Bank (){
@@ -31,6 +34,7 @@ public class Bank implements Displayable{
         this.employees = new ArrayList<>();
         this.logs = new ArrayList<>();
         this.currentDate =LocalDate.of(2025,6,2);
+        this.secureRandom = new SecureRandom();
     }
 
     //add and collect
@@ -63,6 +67,24 @@ public class Bank implements Displayable{
     }
 
     public void addAccount(Account account){accounts.add(account);}
+
+    public String accountNumberCreator(char accountType){
+        long randomPart = (long) (secureRandom.nextDouble() * 1000_000_00000L);
+        String randomPartStr =String.format("%011d" , randomPart);
+
+        if (accountType == '1'){
+            String randomAccountNumber = "01" + randomPartStr;
+            return randomAccountNumber;
+        }else if (accountType == '2'){
+            String randomAccountNumber = "02" + randomPartStr;
+            return randomAccountNumber;
+        }else if (accountType == '3'){
+            String randomAccountNumber = "03" + randomPartStr;
+            return randomAccountNumber;
+        }
+        return null;
+    }
+
     //Uniqueness check
     public boolean isNationalIdDuplicate(String nationalId) {
         return customers.stream().anyMatch(c -> c.getNationalCode().equals(nationalId));

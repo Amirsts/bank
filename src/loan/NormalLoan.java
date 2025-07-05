@@ -2,10 +2,13 @@ package loan;
 
 import person.Customer;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class NormalLoan extends BaseLoan {
 
-    public NormalLoan(int loanAmount, int duration, Customer borrower) {
-        super(loanAmount, duration, 77,23,6, borrower);
+    public NormalLoan(double loanAmount, int duration, LocalDate ldTime , Customer borrower) {
+        super(loanAmount, duration, 1.917,6,ldTime , borrower);
         this.totalAmount = calculateTotalRepayment();
         // 77: governmentShare = 100 - 23
         // 23: customerShare
@@ -16,7 +19,12 @@ public class NormalLoan extends BaseLoan {
     @Override
     public double calculateTotalRepayment() {
         // Only the customer's share will be refunded
-        return (((double) loanAmount) * customerShare) / 100;
+        return (((double) loanAmount) * duration * customerShare) / 100;
+    }
+
+    @Override
+    public double installmentPerMonth(){
+        return calculateTotalRepayment() / duration;
     }
 }
 

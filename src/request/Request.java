@@ -12,6 +12,7 @@ public class Request {
     private LocalDateTime timestamp;
     private String accountNumber;
     private String currentLevel;
+    private double loanAmount;
 
 
     public Request(RequestType type, Customer sender, String message, String accountNumber) {
@@ -27,6 +28,12 @@ public class Request {
         this(type,sender , message, null);
     }
 
+    public Request(RequestType type, Customer sender, String message, String accountNumber ,double loanAmount) {
+        this(type ,sender ,message ,accountNumber);
+        this.loanAmount = loanAmount;
+    }
+
+
     // getters
     public RequestType getType() {
         return type;
@@ -38,6 +45,10 @@ public class Request {
 
     public Customer getSender() {
         return sender;
+    }
+
+    public double getLoanAmount(){
+        return loanAmount;
     }
 
     public String getAccountNumber() {

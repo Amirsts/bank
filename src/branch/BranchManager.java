@@ -9,6 +9,8 @@ import request.Request;
 import request.RequestType;
 import message.MessageBox;
 
+import java.time.LocalDate;
+
 public class BranchManager extends Employee implements RequestHandler {
 
     private MessageBox messageBox = new MessageBox();
@@ -29,7 +31,8 @@ public class BranchManager extends Employee implements RequestHandler {
 
         if (request.getType() == RequestType.LOAN_REQUEST) {
             request.setStatus("approved");
-            request.getSender().addLoan(new NormalLoan(300_000_000, 12, request.getSender()));
+            LocalDate date = LocalDate.now();
+            request.getSender().addLoan(new NormalLoan(300_000_000, 12, date ,request.getSender()));
             request.getSender().getMessageBox().addRequest(
                     new Request(RequestType.LOAN_REQUEST, "✅ Your loan has been approved by the branch manager.",
                             request.getSender()));

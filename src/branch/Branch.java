@@ -60,6 +60,30 @@ public class Branch implements Displayable {
         return customers;
     }
 
+    public double getCurrentShortTermBalance() {
+        double balance = 0;
+
+        for (int i = 0; i < accounts.size(); i++) {
+            String accId = accounts.get(i).getAccountId();
+            if (accId.startsWith("01") || accId.startsWith("02")) {
+                balance += accounts.get(i).getBalance();
+            }
+        }
+
+        return balance;
+    }
+
+
+    public double getQarzAlhasanehBalance(){
+        double balance = 0;
+        for (int i = 0 ; i < accounts.size() ; i++ ){
+            if (accounts.get(i).getAccountId().startsWith("03")){
+                balance += accounts.get(i).getBalance();
+            }
+        }
+
+        return balance;
+    }
 
     //methods
     public void addTeller(Teller teller){
