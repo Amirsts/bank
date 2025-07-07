@@ -19,7 +19,7 @@ public class NormalLoan extends BaseLoan {
     @Override
     public double calculateTotalRepayment() {
         // Only the customer's share will be refunded
-        return (((double) loanAmount) * duration * customerShare) / 100;
+        return ( ((getRemainingAmount()) * customerShare *duration) / 100) + loanAmount ;
     }
 
     @Override

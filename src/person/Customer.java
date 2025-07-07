@@ -13,7 +13,7 @@ import interfaces.*;
 import request.*;
 import message.MessageBox;
 
-public class Customer extends Person implements Displayable , Loanable , Payable {
+public class Customer extends Person implements Displayable , Loanable  {
     private String customerId;
     private List<Account> accounts ;
     private MessageBox messageBox;
@@ -138,44 +138,6 @@ public class Customer extends Person implements Displayable , Loanable , Payable
     public void displayInfo(){
         System.out.println("Customer: " + getFullName() + "National Code: " + getNationalCode());
     }
-
-
-    @Override
-    public void pay(int amount){
-        System.out.println("customer: " + getFullName() + " is paying " + amount + "Tomans");
-
-        for (BaseLoan loan : loans){
-            if(amount <= 0) break;
-            double due = loan.getRemainingAmount();
-
-            if (amount >= due){
-                loan.pay(due);
-                amount -= due;
-            }else {
-                loan.pay(amount);
-                amount = 0;
-            }
-        }
-
-        if (amount > 0) {
-            if (!accounts.isEmpty()) {
-                accounts.get(0).deposit(amount);
-                System.out.println(" The excess amount was returned to the customer's account..");
-            } else {
-                System.out.println("Customer does not have a bank account. Additional amount could not be saved.");
-            }
-        }
-    }
-
-    @Override
-    public double getDueAmount(){
-        double totalDue = 0 ;
-        for (BaseLoan loan : loans){
-            totalDue += loan.getRemainingAmount();
-        }
-        return totalDue;
-    }
-    //toString
 
     @Override
     public String toString(){

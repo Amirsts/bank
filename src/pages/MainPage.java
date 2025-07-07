@@ -9,6 +9,7 @@ import branch.Branch;
 import branch.BranchManager;
 import branch.AssistantManager;
 import branch.Teller;
+import loan.BaseLoan;
 import loan.NormalLoan;
 import loan.TashilatLoan;
 import person.Customer;
@@ -16,6 +17,7 @@ import request.Request;
 import request.RequestType;
 import exceptions.*;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -201,9 +203,10 @@ public class MainPage {
             System.out.println("1. باز کردن حساب جدید");
             System.out.println("2. انتقال وجه ");
             System.out.println("3. ارسال درخواست وام");
-            System.out.println("4. نمایش پیام‌ها");
-            System.out.println("5. نمایش موجودی حساب‌های من");
-            System.out.println("6. بازگشت به منوی اصلی");
+            System.out.println("4.پرداخت اقساط وام");
+            System.out.println("5. نمایش پیام‌ها");
+            System.out.println("6. نمایش موجودی حساب‌های من");
+            System.out.println("7. بازگشت به منوی اصلی");
             System.out.print("انتخاب شما: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -243,7 +246,7 @@ public class MainPage {
                     break;
                 case 3:
                     System.out.println("ارسال درخواست وام...");
-                    System.out.println("متن درخواست وام را وارد کنید:\n" +  "1.وام عادی\n" + "2.وام تسهیلات\n");
+                    System.out.println("نوع وام را انتخاب کنید:\n" +  "1.وام عادی\n" + "2.وام تسهیلات\n");
                     String loanType = scanner.nextLine();
                     while (!(loanType.charAt(0) == '1' ||loanType.charAt(0) == '2')){
                         System.out.println("لطفا فقط عدد گزینه مورد نظر را وارد کنید:");
@@ -269,10 +272,60 @@ public class MainPage {
                     System.out.println("درخواست وام شما ثبت شد.");
                     break;
                 case 4:
+                    if (customer.getActiveLoans().isEmpty()){
+                        System.out.println("شما وام فعالی ندارید");
+                    }else {
+                        BaseLoan loan = customer.getActiveLoans().get(0);
+                        System.out.println(MessageFormat.format("مشخصات وام:\nمبلغ کل وام :{0}\nمیزان کل باز پرداخت شده توسط مشتری:{1}\nمیزان کل باقیمانده اقسط:{2}\nتعداد اقساط باقیمانده:{3}مبلغ قسط ={4}",
+                                loan.getLoanAmount(), loan.getPaidAmount(), loan.getRemainingAmount(), loan.getDuration(), (int) loan.installmentPerMonth()));
+
+                        System.out.println("1.پرداخت قسط" + "\n2.بازگشت" + "\nانتخاب شما:");
+                        int chose = scanner.nextInt();
+                        scanner.nextLine();
+
+                        switch (chose) {
+                            case 1:
+                                System.out.println("تاریخ پرداخت را وارد نمایید مثلا(07/05/2025) :");
+                                String input = scanner.nextLine();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                                LocalDate datePay = LocalDate.parse(input, formatter);
+
+                                //checking for possible penalty
+                                loan.payInstallment(datePay);
+
+                                System.out.println("شماره حساب خود را وارد کنید:");
+                                String accountNumber = scanner.nextLine();
+                                System.out.println("لطفا رمز خود را وارد کنید:");
+                                String accountPassWord = scanner.nextLine();
+                                Account cAccount = customer.findAccount(accountNumber);
+                                try {
+                                    cAccount.secureWithdrawForLoan((int) loan.installmentPerMonth(), accountPassWord);
+                                } catch (IncorrectPasswordException e) {
+                                    System.out.println(e.getMessage());
+                                } catch (InvalidAmountException e) {
+                                    System.out.println(e.getMessage());
+                                } catch (InsufficientBalanceException e) {
+                                    System.out.println(e.getMessage());
+                                }
+
+                                //decrease amount from loan
+                                loan.pay(loan.installmentPerMonth());
+
+
+                                break;
+                            case 2:
+                                break;
+                            default:
+                                break;
+                        }
+
+                    }
+                    break;
+                case 5:
                     System.out.println("نمایش درخواست ‌های مشتری:");
                     customer.getMessageBox().printAll();
                     break;
-                case 5:
+                case 6:
                     System.out.println("نمایش موجودی حساب‌های " + customer.getFullName() + ":");
                     // فرض بر این است که Customer دارای متد getAccounts() است که لیست حساب‌ها را برمی‌گرداند
                     List<Account> accounts = customer.getAccounts();
@@ -284,7 +337,7 @@ public class MainPage {
                         }
                     }
                     break;
-                case 6:
+                case 7:
                     exit = true;
                     break;
                 default:
@@ -596,6 +649,7 @@ public class MainPage {
                                     slcRequest.setStatus("مشتری گرامی درخواست وام عادی شما تایید شد و مبلغ:" +slcRequest.getLoanAmount() + " به حساب شما واریز شد\n" +
                                             "شما موظف به باز پرداخت وام در طی" + duration + "ماه و در هر قسط به میزان:" + normalLoan.installmentPerMonth() + "هستید" );
                                     System.out.println("وام به حساب مشتری واریز شد" + slcRequest.getLoanAmount());
+                                    branch.getBranchManager().getMessageBox().removeRequest(managerRequest);
 
                                 }else {
                                     System.out.println("something went wrong");
@@ -620,6 +674,7 @@ public class MainPage {
                                     slcRequest.setStatus("مشتری گرامی درخواست وام تسهیلات شما تایید شد و مبلغ:" +slcRequest.getLoanAmount() + " به حساب شما واریز شد\n" +
                                             "شما موظف به باز پرداخت وام در طی" + duration + "ماه و در هر قسط به میزان:" + tashilatLoan.installmentPerMonth() + "هستید" );
                                     System.out.println("وام به حساب مشتری واریز شد" + slcRequest.getLoanAmount());
+                                    branch.getBranchManager().getMessageBox().removeRequest(managerRequest);
 
                                 }else {
                                     System.out.println("something went wrong");

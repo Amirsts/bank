@@ -75,6 +75,25 @@ public abstract class Account {
         System.out.println("💸 successful withdraw " + amount + " balance Tooman " + balance);
     }
 
+    public void secureWithdrawForLoan(int amount, String inputPassword)
+            throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
+
+        if (!this.passWord.equals(inputPassword)) {
+            throw new IncorrectPasswordException("The password entered is incorrect.");
+        }
+
+        if (amount <= 0) {
+            throw new InvalidAmountException("amount should be more than zero");
+        }
+
+        if (amount > balance) {
+            throw new InsufficientBalanceException("balance is not enough");
+        }
+
+        balance -= amount;
+        System.out.println("💸 successful withdraw " + amount + " balance Tooman " + balance);
+    }
+
     public void recordTransfer(int amount, LocalDate date) throws DailyTransferLimitExceededException {
         int transferred = dailyTransfers.getOrDefault(date, 0);
 
