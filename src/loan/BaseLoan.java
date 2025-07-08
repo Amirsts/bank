@@ -4,11 +4,10 @@ import person.Customer;
 
 import java.time.LocalDate;
 
-import java.time.format.DateTimeFormatter;
-
 public abstract class   BaseLoan {
     protected double loanAmount;           // Loan amount
-    protected int duration;             // Repayment period
+    protected int duration;// Repayment period
+    protected int fDuration;
     protected double customerShare;        // Percentage
     protected int penaltyRate;          // Late penalty percentage
     protected Customer borrower;        // Borrower customer
@@ -16,6 +15,7 @@ public abstract class   BaseLoan {
     protected double totalAmount;
     private double paidAmount = 0;
     private LocalDate ldTime;
+    private LocalDate nowPayTime;
 
 
     public BaseLoan(double loanAmount, int duration,
@@ -26,11 +26,12 @@ public abstract class   BaseLoan {
             throw new IllegalArgumentException("Borrower cannot be null.");
 
         this.loanAmount = loanAmount;
-        this.totalAmount = loanAmount;
         this.duration = duration;
+        this.fDuration = duration;
         this.customerShare = customerShare;
         this.penaltyRate = penaltyRate;
         this.ldTime = ldTime;
+        this.nowPayTime = ldTime;
         this.borrower = borrower;
 
     }
@@ -39,8 +40,8 @@ public abstract class   BaseLoan {
         return loanAmount;
     }
 
-    public int getDuration() {
-        return duration;
+    public int getfDuration() {
+        return fDuration;
     }
 
     public Customer getBorrower() {
@@ -74,11 +75,12 @@ public abstract class   BaseLoan {
     }
 
 
-    public void pay(double amount) {
+    public void pay(double amount ,LocalDate datePay) {
         if (amount == installmentPerMonth()) {
             this.paidAmount += amount;
             System.out.println("amount: " + amount + "Toman was paid on the loan.");
-            duration--;
+            fDuration--;
+            nowPayTime = datePay;
         }else {
             System.out.println("مبلغ واریزی معتبر نمی باشد");
         }
@@ -86,7 +88,7 @@ public abstract class   BaseLoan {
 
 
 
-    public void payInstallment(LocalDate paymentDate) {
+    public void payInstallment() {
         if (!active) {
             System.out.println("Loan is already closed.");
             return;
@@ -94,26 +96,18 @@ public abstract class   BaseLoan {
 
         double installment = installmentPerMonth();
 
-        // محاسبه تعداد ماه‌های گذشته از تاریخ دریافت وام تا تاریخ پرداخت فعلی
-        int monthsSinceStart = paymentDate.getMonthValue() - ldTime.getMonthValue() +
-                12 * (paymentDate.getYear() - ldTime.getYear());
+        int monthsSinceStart = nowPayTime.getMonthValue() - ldTime.getMonthValue() +
+                12 * (nowPayTime.getYear() - ldTime.getYear());
 
-        // محاسبه تعداد اقساطی که باید تا این تاریخ پرداخت شده باشند
-        int expectedInstallments = Math.min(monthsSinceStart, duration);
+        ldTime = nowPayTime;
 
-        // محاسبه تعداد اقساطی که واقعاً پرداخت شده‌اند
-        int paidInstallments = (int) (paidAmount / installment);
-
-        // بررسی تأخیر
-        int delay = expectedInstallments - paidInstallments;
-        if (delay >= 2) { // یعنی بیش از 60 روز تأخیر داشته
-            double penalty = calculatePenalty(delay);
+        if (monthsSinceStart >= 2) {
+            double penalty = calculatePenalty(monthsSinceStart);
             totalAmount += penalty;
 
-            System.out.println("Penalty of " + penalty + " Toman applied due to " + delay + " months delay.");
+            System.out.println("Penalty of " + penalty + " Toman applied due to " + (monthsSinceStart - 1) + " months delay.");
         }
 
-        // بررسی اینکه آیا وام کامل پرداخت شده
         if (paidAmount >= totalAmount) {
             closeLoan();
             System.out.println("Loan is fully paid and now closed.");

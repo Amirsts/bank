@@ -56,12 +56,12 @@ public class MainPage {
 
         Customer customer1 = new Customer(
                 "Amirmohammad", "Mohammadi", "1985-07-20", "1029384756",
-                "Shiraz, Iran", "09134567890", "am1234"
+                "Shiraz, Iran", "09134567890", "1"
         );
         bank.addCustomer(customer1);
         branch.addCustomer(customer1);
         // ایجاد حساب جاری برای مشتری
-        Teller teller = new Teller("Ali","asghari","1986-12-20", "0965656654","mashad" , "09064563232","ali1234", "1234");
+        Teller teller = new Teller("Ali","asghari","1986-12-20", "0965656654","mashad" , "09064563232","2", "2");
         bank.addEmployee(teller);
         branch.addTeller(teller);
 
@@ -276,8 +276,8 @@ public class MainPage {
                         System.out.println("شما وام فعالی ندارید");
                     }else {
                         BaseLoan loan = customer.getActiveLoans().get(0);
-                        System.out.println(MessageFormat.format("مشخصات وام:\nمبلغ کل وام :{0}\nمیزان کل باز پرداخت شده توسط مشتری:{1}\nمیزان کل باقیمانده اقسط:{2}\nتعداد اقساط باقیمانده:{3}مبلغ قسط ={4}",
-                                loan.getLoanAmount(), loan.getPaidAmount(), loan.getRemainingAmount(), loan.getDuration(), (int) loan.installmentPerMonth()));
+                        System.out.println(MessageFormat.format("مشخصات وام:\nمبلغ کل وام :{0}\nمیزان کل باز پرداخت شده توسط مشتری:{1}\nمیزان کل باقیمانده اقسط:{2}\nتعداد اقساط باقیمانده:{3} مبلغ قسط :{4}",
+                                loan.getLoanAmount(), loan.getPaidAmount(), loan.getRemainingAmount(), loan.getfDuration(), (int) loan.installmentPerMonth()));
 
                         System.out.println("1.پرداخت قسط" + "\n2.بازگشت" + "\nانتخاب شما:");
                         int chose = scanner.nextInt();
@@ -290,8 +290,6 @@ public class MainPage {
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                                 LocalDate datePay = LocalDate.parse(input, formatter);
 
-                                //checking for possible penalty
-                                loan.payInstallment(datePay);
 
                                 System.out.println("شماره حساب خود را وارد کنید:");
                                 String accountNumber = scanner.nextLine();
@@ -308,8 +306,9 @@ public class MainPage {
                                     System.out.println(e.getMessage());
                                 }
 
-                                //decrease amount from loan
-                                loan.pay(loan.installmentPerMonth());
+                                //decrease amount from loan & date of last time pay
+                                loan.pay(loan.installmentPerMonth() , datePay);
+                                loan.payInstallment();
 
 
                                 break;

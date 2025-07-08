@@ -15,16 +15,17 @@ public class NormalLoan extends BaseLoan {
         // 6: penaltyRate
     }
 
+
     // Calculation of the total refund amount by the customer
     @Override
     public double calculateTotalRepayment() {
         // Only the customer's share will be refunded
-        return ( ((getRemainingAmount()) * customerShare *duration) / 100) + loanAmount ;
+        return ( (loanAmount * customerShare *duration) / 100) + loanAmount ;
     }
 
     @Override
-    public double installmentPerMonth(){
-        return calculateTotalRepayment() / duration;
+    public double installmentPerMonth() {
+        return getRemainingAmount() / fDuration;
     }
 }
 
