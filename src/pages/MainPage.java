@@ -206,7 +206,8 @@ public class MainPage {
             System.out.println("4.پرداخت اقساط وام");
             System.out.println("5. نمایش پیام‌ها");
             System.out.println("6. نمایش موجودی حساب‌های من");
-            System.out.println("7. بازگشت به منوی اصلی");
+            System.out.println("7.بستن حساب");
+            System.out.println("8. بازگشت به منوی اصلی");
             System.out.print("انتخاب شما: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -348,7 +349,21 @@ public class MainPage {
                         }
                     }
                     break;
+
                 case 7:
+                    System.out.println("ارسال درخواست بستن حساب..." + "\nشماره حساب مورد نظر را وارد کنید:" );
+                    String acNumber = scanner.nextLine();
+                    if (customer.findAccount(acNumber) == null ){
+                        System.out.println("حساب مورد نظر معتبر نیست");
+                        break;
+                    }
+                    Request closeAccountRequest = new Request(RequestType.CLOSE_ACCOUNT, acNumber, customer);
+                    customer.getMessageBox().addRequest(closeAccountRequest);
+                    currentBranch.getSolitudeTeller().getMessageBox().addRequest(closeAccountRequest);
+                    System.out.println("درخواست بستن حساب شما ثبت شد.");
+                    break;
+
+                case 8:
                     exit = true;
                     break;
                 default:
@@ -486,7 +501,8 @@ public class MainPage {
             System.out.println("1. پردازش واریز/برداشت");
             System.out.println("2. ارجاع درخواست وام به معاون شعبه");
             System.out.println("3. تایید درخواست بازکردن حساب");
-            System.out.println("4. بازگشت به منوی اصلی");
+            System.out.println("4.تایید درخواست بستن حساب");
+            System.out.println("5. بازگشت به منوی اصلی");
             System.out.print("انتخاب شما: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -605,6 +621,38 @@ public class MainPage {
                        }
                     break;
                 case 4:
+                    List<Request> clRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.CLOSE_ACCOUNT);
+                    if (clRequest.isEmpty()){
+                        System.out.println("مشتری در صف انتظار یافت نشد");
+                        break;
+                    }else {
+                        System.out.println(" مشتری های درحال انتظار برای باز شدن حساب");
+                        for (int i = 0 ; i < clRequest.size() ; i++){
+                            Request tmpR = clRequest.get(i);
+                            System.out.println((i + 1)  + "." +tmpR.getSender().getFullName());
+                        }
+                        System.out.println("انتخاب شما:");
+                        int chose = scanner.nextInt();
+                        Customer selectedCustomer = clRequest.get(chose -1).getSender();
+                        Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.CLOSE_ACCOUNT).get(0);
+                        Request sltRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.CLOSE_ACCOUNT).get(chose-1);
+                        String accountID = slcRequest.getMessage();
+
+                        //checking Customer has active loan
+                        if (selectedCustomer.hasActiveLoan()){
+                            System.out.println("مشتری دارای وام فعال است");
+                            slcRequest.setStatus("مشتری گرامی شما دارای وام فعال هستید امکان بسته شدن حساب شما وجود ندارد.");
+                            selectedTeller.getMessageBox().removeRequest(sltRequest);
+                            break;
+                        }
+                        System.out.println("مشتری فاقد وام فعال است حساب با موفقیت بسته شد");
+                        selectedCustomer.removeAccount(accountID);
+                        slcRequest.setStatus("حساب شما با شماره:" + accountID + "با موفقیت بسته شد.");
+                        selectedTeller.getMessageBox().removeRequest(sltRequest);
+                    }
+                    break;
+
+                case 5:
                     exit = true;
                     break;
                 default:

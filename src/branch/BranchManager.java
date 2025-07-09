@@ -18,7 +18,7 @@ public class BranchManager extends Employee implements RequestHandler {
     public BranchManager(String firstName, String lastName, String birthDay, String nationalCode,
                          String address, String phoneNum, String employeeId) {
 
-        super(firstName, lastName, birthDay, nationalCode, address, phoneNum, employeeId, 90000000);
+        super(firstName, lastName, birthDay, nationalCode, address, phoneNum, employeeId, 80000000);
     }
 
     public MessageBox getMessageBox() {

@@ -59,6 +59,15 @@ public class Customer extends Person implements Displayable , Loanable  {
         }
         return activeLoans;
     }
+    public boolean hasActiveLoan(){
+        List<BaseLoan> activeLoans = new ArrayList<>();
+        for (BaseLoan loan : loans) {
+            if (loan.isActive()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public MessageBox getMessageBox() {
         return messageBox;
