@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import account.Account;
+import account.ShortTermAccount;
 import exceptions.*;
 import loan.BaseLoan;
 import interfaces.*;
@@ -16,6 +17,7 @@ import message.MessageBox;
 public class Customer extends Person implements Displayable , Loanable  {
     private String customerId;
     private List<Account> accounts ;
+    private List<ShortTermAccount> shortTermAccounts;
     private MessageBox messageBox;
     private List<BaseLoan> loans ;
     private boolean isActive;
@@ -29,6 +31,7 @@ public class Customer extends Person implements Displayable , Loanable  {
 
         this.customerId = customerId;
         this.accounts = new ArrayList<>();
+        this.shortTermAccounts = new ArrayList<>();
         this.messageBox = new MessageBox();
         this.loans = new ArrayList<>();
         this.dailyTransfers = new HashMap<>();
@@ -43,6 +46,9 @@ public class Customer extends Person implements Displayable , Loanable  {
         return accounts;
     }
 
+    public List<ShortTermAccount> getShortTermAccounts() {
+        return shortTermAccounts;
+    }
 
     public List<BaseLoan> getActiveLoans() {
         List<BaseLoan> activeLoans = new ArrayList<>();
@@ -84,13 +90,10 @@ public class Customer extends Person implements Displayable , Loanable  {
 
     public void openAccount(Account account1) {
         accounts.add(account1);
+    }
 
-        messageBox.addRequest(new Request(
-                RequestType.OPEN_ACCOUNT,
-                "Request to open an account at: " + account1.getAccountId(),
-                this
-        ));
-
+    public void openShortTermAccount(ShortTermAccount shortTermAccount) {
+        shortTermAccounts.add(shortTermAccount);
     }
 
     public void closeAccount(String accountNumber) {

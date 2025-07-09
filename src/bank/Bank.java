@@ -8,12 +8,10 @@ import interfaces.Displayable;
 import exceptions.*;
 
 
-import javax.swing.plaf.PanelUI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.security.SecureRandom;
-import java.util.Random;
 
 public class Bank implements Displayable{
 
@@ -113,7 +111,7 @@ public class Bank implements Displayable{
     public int getTotalBankBalance(){
         return branches.stream()
                 .flatMap(b -> b.getAccounts().stream())
-                .mapToInt(Account::getBalanceForbank)
+                .mapToInt(Account::getBalanceForBank)
                 .sum();
     }
 

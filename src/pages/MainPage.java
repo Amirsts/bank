@@ -326,13 +326,25 @@ public class MainPage {
                     break;
                 case 6:
                     System.out.println("نمایش موجودی حساب‌های " + customer.getFullName() + ":");
+                    System.out.print("تاریخ را وارد کنید (مثلاً 05/07/2025): ");
+                    String input = scanner.nextLine();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDate dateCheckAmount = LocalDate.parse(input, formatter);
+
                     // فرض بر این است که Customer دارای متد getAccounts() است که لیست حساب‌ها را برمی‌گرداند
                     List<Account> accounts = customer.getAccounts();
+                    List<ShortTermAccount> shortTermAccounts = customer.getShortTermAccounts();
                     if (accounts == null || accounts.isEmpty()) {
                         System.out.println("هیچ حسابی برای این مشتری ثبت نشده است.");
                     } else {
                         for (Account accItem : accounts) {
+                            if (accItem.getAccountId().startsWith("02"))
+                                continue;
                             System.out.println("شماره حساب: " + accItem.getAccountId() + " - موجودی: " + accItem.getBalance());
+                        }
+                        for (ShortTermAccount shortTermAccount :shortTermAccounts) {
+                            shortTermAccount.profitCheck(dateCheckAmount);
+                            System.out.println("شماره حساب: " + shortTermAccount.getAccountId() + " - موجودی: " + shortTermAccount.getBalance());
                         }
                     }
                     break;
@@ -494,7 +506,7 @@ public class MainPage {
                     } else {
                         if (op == 1) {
                             acc.deposit(amt);
-                            System.out.println("واریز موفق. موجودی جدید: " + acc.getBalanceForbank());
+                            System.out.println("واریز موفق. موجودی جدید: " + acc.getBalanceForBank());
                         } else if (op == 2) {
                             System.out.print("رمز عبور: ");
                             String pwd = scanner.nextLine();
@@ -570,10 +582,16 @@ public class MainPage {
                                 slcRequest.setStatus("مشتزی گرامی:" + selectedCustomer.getFullName() +"حساب جاری شما با رمز:" + accountPassword + " شماره حساب:" + newAccountNumber + "افتتاح شد");
                                 System.out.print("حساب جاری " + selectedCustomer.getFullName() + "افتتاح شد");
                             }else if (accountType == '2'){
-                                ShortTermAccount newAccount = new ShortTermAccount(newAccountNumber, customer, initialDeposit, accountPassword);
+                                System.out.println("تارخ را وارد کنید مثلا (07/05/2025):");
+                                String input = scanner.nextLine();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                                LocalDate dateOpenAccount = LocalDate.parse(input , formatter);
+
+                                ShortTermAccount newAccount = new ShortTermAccount(newAccountNumber, customer, initialDeposit, accountPassword , dateOpenAccount);
                                 bank.addAccount(newAccount);
                                 branch.addAccount(newAccount);
                                 selectedCustomer.openAccount(newAccount);
+                                selectedCustomer.openShortTermAccount(newAccount);
                                 slcRequest.setStatus("مشتزی گرامی:" + selectedCustomer.getFullName() +"حساب کوتاه مدت شما با رمز:" + accountPassword + " شماره حساب:" + newAccountNumber + "افتتاح شد");
                                 System.out.print("حساب کوتاه مدت " + selectedCustomer.getFullName() + "افتتاح شد");
                             }else if (accountType == '3') {

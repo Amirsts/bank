@@ -37,7 +37,7 @@ public abstract class Account {
         balance -= 1000;
         return balance;
     }
-    public int getBalanceForbank() {
+    public int getBalanceForBank() {
         return balance;
     }
 

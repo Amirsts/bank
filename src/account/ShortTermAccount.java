@@ -2,15 +2,35 @@ package account;
 
 import person.Customer;
 
+import java.time.LocalDate;
+
 public class ShortTermAccount extends Account {
 
-    public ShortTermAccount(String accountNumber , Customer owner , int balance , String passWord) {
+    private LocalDate dateOpenAccount;
+
+
+    public ShortTermAccount(String accountNumber , Customer owner , int balance , String passWord ,LocalDate dateOpenAccount) {
         super(accountNumber, owner , balance , passWord);
         if (!accountNumber.startsWith("02")) {
             throw new IllegalArgumentException("Short-term account number must start with '02'.");
         }
+        this.dateOpenAccount = dateOpenAccount ;
     }
 
+    public int profitCheck(LocalDate dateCheckBalance){
+        int monthsSinceStart = dateCheckBalance.getMonthValue() - dateOpenAccount.getMonthValue() +
+                12 * (dateCheckBalance.getYear() - dateOpenAccount.getYear());
+
+        dateOpenAccount = dateCheckBalance;
+        if (getBalanceForBank() > 100_000 && monthsSinceStart >= 1 ){
+            int profit = (int)(monthsSinceStart * 0.00416  * getBalanceForBank());
+            System.out.println("موجودی قبلی شما :" + balance + "میزان سود شما" + profit );
+            balance += profit;
+            return profit ;
+        }
+        return 0;
+    }
+    
     @Override
     public int calculateInterest() {
         if (balance > 100_000) {

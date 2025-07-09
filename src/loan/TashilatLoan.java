@@ -17,11 +17,12 @@ public class TashilatLoan extends BaseLoan {
 
     @Override
     public double calculateTotalRepayment() {
-        return ( ((getRemainingAmount()) * customerShare *duration) / 100) + loanAmount ;
+        // Only the customer's share will be refunded
+        return ( (loanAmount * customerShare *duration) / 100) + loanAmount ;
     }
 
     @Override
-    public double installmentPerMonth(){
-        return calculateTotalRepayment() / duration;
+    public double installmentPerMonth() {
+        return getRemainingAmount() / fDuration;
     }
 }
