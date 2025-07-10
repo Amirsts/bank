@@ -35,7 +35,7 @@ public class MainPage {
 
         BranchManager branchManager = new BranchManager(
                 "Ali", "Rezayi", "1990-01-01", "1234567890",
-                "Tehran, Iran", "09121234567", "BM001"
+                "Tehran, Iran", "09121234567", "BM001" , "1234"
         );
         branch.setBranchManager(branchManager);
         bank.addEmployee(branchManager);
@@ -224,7 +224,7 @@ public class MainPage {
                     }
                     Request openAccountRequest = new Request(RequestType.OPEN_ACCOUNT, text, customer);
                     customer.getMessageBox().addRequest(openAccountRequest);
-                    currentBranch.getSolitudeTeller().getMessageBox().addRequest(openAccountRequest);
+                    currentBranch.getSolitudeTeller().receiveRequest(openAccountRequest);
                     System.out.println("درخواست ایجاد حساب شما ثبت شد.");
                     break;
                 case 2:
@@ -269,7 +269,7 @@ public class MainPage {
                     double loanAmount = scanner.nextDouble();
                     Request loanRequest = new Request(RequestType.LOAN_REQUEST,customer , loanType ,accounts1.get((slcAccount - 1)).getAccountId(), loanAmount);
                     customer.getMessageBox().addRequest(loanRequest);
-                    currentBranch.getSolitudeTeller().getMessageBox().addRequest(loanRequest);
+                    currentBranch.getSolitudeTeller().receiveRequest(loanRequest);
                     System.out.println("درخواست وام شما ثبت شد.");
                     break;
                 case 4:
@@ -359,7 +359,7 @@ public class MainPage {
                     }
                     Request closeAccountRequest = new Request(RequestType.CLOSE_ACCOUNT, acNumber, customer);
                     customer.getMessageBox().addRequest(closeAccountRequest);
-                    currentBranch.getSolitudeTeller().getMessageBox().addRequest(closeAccountRequest);
+                    currentBranch.getSolitudeTeller().receiveRequest(closeAccountRequest);
                     System.out.println("درخواست بستن حساب شما ثبت شد.");
                     break;
 
@@ -402,6 +402,10 @@ public class MainPage {
 
             System.out.print("Customer ID: ");
             String customerId = scanner.nextLine();
+            while (! bank.isCustomerIdUnique(customerId) ) {
+                System.out.print("Your Customer ID is repetitive enter Customer ID again: ");
+                customerId = scanner.nextLine();
+            }
 
             Customer newCustomer = new Customer(firstName, lastName, birthDate, nationalCode, address, phone, customerId);
             bank.addCustomer(newCustomer);
@@ -419,37 +423,15 @@ public class MainPage {
         boolean exit = false;
         while (!exit) {
             System.out.println("\n--- منوی دستیار شعبه ---");
-            System.out.println("1. بررسی درخواست‌های بستن حساب");
-            System.out.println("2. بررسی درخواست‌های وام");
-            System.out.println("3. نمایش اطلاعات شعبه");
-            System.out.println("4. بازگشت به منوی اصلی");
+            System.out.println("1. بررسی درخواست‌های وام");
+            System.out.println("2. نمایش اطلاعات شعبه");
+            System.out.println("3. بازگشت به منوی اصلی");
             System.out.print("انتخاب شما: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
             switch(choice) {
+
                 case 1:
-                    List<Request> closeRequests = customer.getMessageBox().getAllRequests()
-                            .stream()
-                            .filter(r -> r.getType() == RequestType.CLOSE_ACCOUNT && r.getStatus().equals("pending"))
-                            .collect(Collectors.toList());
-                    if (closeRequests.isEmpty()) {
-                        System.out.println("هیچ درخواست بستن حساب معلقی پیدا نشد.");
-                    } else {
-                        Request req = closeRequests.get(0);
-                        System.out.println("درخواست بستن حساب: " + req.toString());
-                        System.out.print("آیا این درخواست تایید شود؟ (1 = تایید، 2 = رد): ");
-                        int decision = scanner.nextInt();
-                        scanner.nextLine();
-                        if (decision == 1) {
-                            req.setStatus("approved");
-                            System.out.println("درخواست تأیید شد.");
-                        } else {
-                            req.setStatus("rejected");
-                            System.out.println("درخواست رد شد.");
-                        }
-                    }
-                    break;
-                case 2:
                     List<Request> loanRequests = assistantManager.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST);
                     if (loanRequests.isEmpty()) {
                         System.out.println("هیچ درخواست وام معلقی پیدا نشد.");
@@ -468,23 +450,23 @@ public class MainPage {
 
                         if (slcCustomer.isEligibleForLoan()){
                             System.out.println("مشتری دارای وام فعال نیست." + "\nدرخواست وام برای رئیس شعبه ارسال شد");
-                            branch.getBranchManager().getMessageBox().addRequest(slcRequest);
-                            assistantManager.getMessageBox().removeRequest(asistantRequest);
+                            branch.getBranchManager().receiveRequest(slcRequest);
+                            assistantManager.clearMessageBox(asistantRequest);
                             slcRequest.setStatus("درخواست وام شما برای رئیس شعبه ارسال شد");
                         }else {
                             System.out.println("وام های فعال مشتری:");
                             for (int i = 0; i < slcCustomer.getActiveLoans().size(); i++) {
                                 slcCustomer.getActiveLoans().get(i).toString();
                             }
-                            assistantManager.getMessageBox().removeRequest(asistantRequest);
+                            assistantManager.clearMessageBox(asistantRequest);
                             slcRequest.setStatus("شما دارای وام فعال هستید درخواست شما رد شد.");
                         }
                     }
                     break;
-                case 3:
+                case 2:
                     branch.displayInfo();
                     break;
-                case 4:
+                case 3:
                     exit = true;
                     break;
                 default:
@@ -552,8 +534,8 @@ public class MainPage {
                         Customer selectedCustomer = loanRequests.get(chose -1).getSender();
                         Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(0);
                         Request sltRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(chose-1);
-                        selectedTeller.getMessageBox().removeRequest(sltRequest);
-                        assistantManager.getMessageBox().addRequest(slcRequest);
+                        selectedTeller.clearMessageBox(sltRequest);
+                        assistantManager.receiveRequest(slcRequest);
                         slcRequest.setStatus("درخواست به معاون شعبه ارجاع داده شد"+ selectedTeller.getFullName()  +"تحویلدار ");
                         System.out.println("درخواست به معاون شعبه ارجاع داده شد");
 
@@ -585,7 +567,7 @@ public class MainPage {
                             System.out.print("لطفاً رمز عبور حساب را وارد کنید: ");
                             String accountPassword = scanner.nextLine();
 
-                            selectedTeller.getMessageBox().removeRequest(sltRequest);
+                            selectedTeller.clearMessageBox(sltRequest);
 
                             char accountType = slcRequest.getMessage().charAt(0);
                             String newAccountNumber = bank.accountNumberCreator(accountType);
@@ -642,13 +624,13 @@ public class MainPage {
                         if (selectedCustomer.hasActiveLoan()){
                             System.out.println("مشتری دارای وام فعال است");
                             slcRequest.setStatus("مشتری گرامی شما دارای وام فعال هستید امکان بسته شدن حساب شما وجود ندارد.");
-                            selectedTeller.getMessageBox().removeRequest(sltRequest);
+                            selectedTeller.clearMessageBox(sltRequest);
                             break;
                         }
                         System.out.println("مشتری فاقد وام فعال است حساب با موفقیت بسته شد");
                         selectedCustomer.removeAccount(accountID);
                         slcRequest.setStatus("حساب شما با شماره:" + accountID + "با موفقیت بسته شد.");
-                        selectedTeller.getMessageBox().removeRequest(sltRequest);
+                        selectedTeller.clearMessageBox(sltRequest);
                     }
                     break;
 
@@ -714,7 +696,7 @@ public class MainPage {
                                     slcRequest.setStatus("مشتری گرامی درخواست وام عادی شما تایید شد و مبلغ:" +slcRequest.getLoanAmount() + " به حساب شما واریز شد\n" +
                                             "شما موظف به باز پرداخت وام در طی" + duration + "ماه و در هر قسط به میزان:" + normalLoan.installmentPerMonth() + "هستید" );
                                     System.out.println("وام به حساب مشتری واریز شد" + slcRequest.getLoanAmount());
-                                    branch.getBranchManager().getMessageBox().removeRequest(managerRequest);
+                                    branch.getBranchManager().clearMessageBox(managerRequest);
 
                                 }else {
                                     System.out.println("something went wrong");
@@ -739,7 +721,7 @@ public class MainPage {
                                     slcRequest.setStatus("مشتری گرامی درخواست وام تسهیلات شما تایید شد و مبلغ:" +slcRequest.getLoanAmount() + " به حساب شما واریز شد\n" +
                                             "شما موظف به باز پرداخت وام در طی" + duration + "ماه و در هر قسط به میزان:" + tashilatLoan.installmentPerMonth() + "هستید" );
                                     System.out.println("وام به حساب مشتری واریز شد" + slcRequest.getLoanAmount());
-                                    branch.getBranchManager().getMessageBox().removeRequest(managerRequest);
+                                    branch.getBranchManager().clearMessageBox(managerRequest);
 
                                 }else {
                                     System.out.println("something went wrong");
@@ -770,8 +752,10 @@ public class MainPage {
             System.out.println("\n--- منوی رئیس بانک ---");
             System.out.println("1. ایجاد تحویل‌دار جدید");
             System.out.println("2. ایجاد معاون شعبه جدید");
-            System.out.println("3. نمایش اطلاعات شعبه");
-            System.out.println("4. بازگشت به منوی اصلی");
+            System.out.println("3.ایجاد رئیس شعبه جدید");
+            System.out.println("4.ایجاد شعبه جدید");
+            System.out.println("5. نمایش اطلاعات شعبه");
+            System.out.println("6. بازگشت به منوی اصلی");
             System.out.print("انتخاب شما: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -863,9 +847,61 @@ public class MainPage {
                     }
                     break;
                 case 3:
-                    branch.displayInfo();
+                    try {
+                    System.out.println("ایجاد رئیس شعبه جدید...");
+                    System.out.print("شناسه رئیس شعبه: ");
+                    String amId = scanner.nextLine();
+                    System.out.print("نام: ");
+                    String amFirstName = scanner.nextLine();
+                    System.out.print("نام خانوادگی: ");
+                    String amLastName = scanner.nextLine();
+                    System.out.print("تاریخ تولد: ");
+                    String amBirthDay = scanner.nextLine();
+                    System.out.print("کد ملی: ");
+                    String amNationalCode = scanner.nextLine();
+
+                    while (!bank.isNationalCodeUnique(amNationalCode)) {
+                        System.out.print("کد ملی وارد شده تکراری است\n" + "کد ملی را وارد کنید: ");
+                        amNationalCode = scanner.nextLine();
+                    }
+
+                    System.out.print("آدرس: ");
+                    String amAddress = scanner.nextLine();
+                    System.out.print("شماره تلفن: ");
+                    String amPhone = scanner.nextLine();
+
+                    while (!bank.isPhoneNumberUnique(amPhone)) {
+                        System.out.println("شماره تلفن وارد شده تکراری است\n" + "شماره تلفن را وارد کنید: ");
+                        amPhone = scanner.nextLine();
+                    }
+                    System.out.println("رمز ورود");
+                    String passWord = scanner.nextLine();
+
+                    BranchManager Bmanager = new BranchManager(amFirstName, amLastName, amBirthDay,
+                            amNationalCode, amAddress, amPhone, amId , passWord);
+                    branch.setBranchManager(Bmanager);
+                    bank.addEmployee(Bmanager);
+                    System.out.println("معاون شعبه جدید با شناسه " + amId + " ایجاد شد.");
+            }catch (InvalidNationalCodeException e){
+                System.out.println(e.getMessage());
+            }catch (InvalidPhoneNumberException e){
+                System.out.println(e.getMessage());
+            }
                     break;
                 case 4:
+                    System.out.println("شماره شعبه را وارد کنید:");
+                    String branchNumber = scanner.nextLine();
+                    if ( !bank.isBranchNumberUnique(branchNumber)){
+                        System.out.println("شماره شعبه تکراری است دوباره سعی کنید:");
+                        branchNumber = scanner.nextLine();
+                    }
+                    Branch branch1 = new Branch(branchNumber);
+                    System.out.println("شعبه با شماره: " + branchNumber + "ایجاد شد");
+                    break;
+                case 5:
+                    branch.displayInfo();
+                    break;
+                case 6:
                     exit = true;
                     break;
                 default:

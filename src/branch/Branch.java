@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import interfaces.Displayable;
 
+import static java.lang.System.*;
+
 public class Branch implements Displayable {
 
     private String branchNumber;
@@ -123,7 +125,7 @@ public class Branch implements Displayable {
 
     public void removeAccount(String accountNumber){
         accounts.removeIf(acc -> acc.getAccountId().equals(accountNumber));
-        System.out.println("Account" + accountNumber + "deleted from the branch's accounts");
+        out.println("Account" + accountNumber + "deleted from the branch's accounts");
     }
 
     public Teller getSolitudeTeller(){
@@ -141,18 +143,25 @@ public class Branch implements Displayable {
         return tellers.get(indexMin);
     }
 
+    public void branchInfo() {
+        out.println("Branch Manager:" + branchManager.getFullName() + "\nAssistant manager:" + assistantManager.getFullName());
+        for (Teller teller : tellers) {
+            out.println("Teller:" + teller.getFullName());
+        }
+    }
+
     @Override
     public void displayInfo(){
-        System.out.println("... ... BRANCH DISPLAY INFO ... ...");
-        System.out.println("Branch number: " + branchNumber);
-        System.out.println("Manager " + (branchManager != null ? branchManager.getFullName() : " not identified!?!"));
-        System.out.println("Cuostomers: " + customers.size() + " people\n");
+        out.println("... ... BRANCH DISPLAY INFO ... ...");
+        out.println("Branch number: " + branchNumber);
+        out.println("Manager " + (branchManager != null ? branchManager.getFullName() : " not identified!?!"));
+        out.println("Cuostomers: " + customers.size() + " people\n");
     }
 
     public void displayCustomers(){
-        System.out.println("Customers list:"+ branchNumber + ":");
+        out.println("Customers list:"+ branchNumber + ":");
         for (Customer cus : customers){
-            System.out.println(cus.getFirstName() + " " + cus.getLastName() + "nationalCode:" + cus.getNationalCode());
+            out.println(cus.getFirstName() + " " + cus.getLastName() + "nationalCode:" + cus.getNationalCode());
         }
     }
 }

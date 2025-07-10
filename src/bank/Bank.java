@@ -259,10 +259,9 @@ public class Bank implements Displayable{
 
     @Override
     public void displayInfo(){
-        System.out.println("Number of branches: " + branches.size());
-        System.out.println("Number of employees: " + employees.size());
-        System.out.println("Number of customers: " + customers.size());
-        System.out.println("Total bank balance: " + getTotalBankBalance());
+        for (Branch branch : branches){
+            branch.branchInfo();
+        }
     }
 
     public List<Customer> getCustomers() {

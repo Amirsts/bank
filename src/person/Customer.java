@@ -149,6 +149,9 @@ public class Customer extends Person implements Displayable , Loanable  {
     @Override
     public void displayInfo(){
         System.out.println("Customer: " + getFullName() + "National Code: " + getNationalCode());
+        for (Account account : accounts) {
+            System.out.printf("Account number: %sBalance: %d%n", account.getAccountId(), account.getBalance());
+        }
     }
 
     @Override

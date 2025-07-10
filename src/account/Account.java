@@ -2,13 +2,13 @@ package account;
 
 import exceptions.*;
 import person.Customer;
-
+import interfaces.IsPassWordTrue;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public abstract class Account {
+public abstract class Account implements IsPassWordTrue{
     private String accountId;
     int balance;
     private Customer owner;
@@ -59,7 +59,7 @@ public abstract class Account {
     public void secureWithdraw(int amount, String inputPassword)
             throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
 
-        if (!this.passWord.equals(inputPassword)) {
+        if (!isPassWordTrue(inputPassword)) {
             throw new IncorrectPasswordException("The password entered is incorrect.");
         }
 
@@ -75,10 +75,11 @@ public abstract class Account {
         System.out.println("💸 successful withdraw " + amount + " balance Tooman " + balance);
     }
 
+
     public void secureWithdrawForLoan(int amount, String inputPassword)
             throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
 
-        if (!this.passWord.equals(inputPassword)) {
+        if (!isPassWordTrue(inputPassword)) {
             throw new IncorrectPasswordException("The password entered is incorrect.");
         }
 
@@ -104,7 +105,13 @@ public abstract class Account {
         dailyTransfers.put(date, transferred + amount);
     }
 
-
+    @Override
+    public boolean isPassWordTrue(String inpPassWord){
+        if (this.passWord.equals(inpPassWord)){
+            return true;
+        }
+        return false;
+    }
 
 
     public void transfer(Account toAccount, int amount , String passWord) throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {

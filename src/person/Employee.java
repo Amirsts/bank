@@ -3,27 +3,31 @@ package person;
 import branch.Branch;
 import java.util.ArrayList;
 import java.util.List;
+
+import exceptions.InvalidNationalCodeException;
 import interfaces.Displayable;
+import interfaces.IsPassWordTrue;
 import message.MessageBox;
 import request.*;
 import message.MessageBox;
 
-public abstract class Employee extends Person implements Displayable{
+public abstract class Employee extends Person implements Displayable , IsPassWordTrue {
     private String employeeId;
     private long salary;
     private Branch assignedBranch;
     private MessageBox messageBox;
-
+    private String passWord;
 
 
     public Employee (String firstName , String lastName , String birthDay , String nationalCode
-            , String address , String phoneNum , String employeeId , long salary){
+            , String address , String phoneNum , String employeeId , long salary , String passWord){
 
         super(firstName , lastName , birthDay , nationalCode , address , phoneNum );
 
         this.employeeId = employeeId ;
         this.salary = salary;
         this.messageBox = new MessageBox();
+        this.passWord = passWord;
 
     }
 
@@ -46,8 +50,8 @@ public abstract class Employee extends Person implements Displayable{
     }
 
 
-    public void  setAssignedBranch(Branch branch1){
-        this.assignedBranch = branch1 ;
+    public void  setAssignedBranch(Branch branch){
+        this.assignedBranch = branch ;
     }
 
     //methods
@@ -55,8 +59,8 @@ public abstract class Employee extends Person implements Displayable{
         messageBox.addRequest(request);
     }
 
-    public void clearMessageBox(){
-        messageBox.clear();
+    public void clearMessageBox(Request request){
+        messageBox.removeRequest(request);
     }
 
     @Override
@@ -71,5 +75,12 @@ public abstract class Employee extends Person implements Displayable{
     @Override
     public void displayInfo(){
 
+    }
+    @Override
+    public boolean isPassWordTrue(String inpPassWord){
+        if (this.passWord.equals(inpPassWord)){
+            return true;
+        }
+        return false;
     }
 }
