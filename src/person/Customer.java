@@ -14,7 +14,7 @@ import interfaces.*;
 import request.*;
 import message.MessageBox;
 
-public class Customer extends Person implements Displayable , Loanable  {
+public class Customer extends Person implements Displayable , Loanable , FindAccount  {
     private String customerId;
     private List<Account> accounts ;
     private List<ShortTermAccount> shortTermAccounts;
@@ -88,15 +88,6 @@ public class Customer extends Person implements Displayable , Loanable  {
 
 
 
-    public Account findAccount(String accountNumber){
-        for (Account temp : accounts){
-            if (temp.getAccountId().trim().equals(accountNumber.trim())) {
-                return temp;
-            }
-        }
-        return null;
-    }
-
     public void openAccount(Account account1) {
         accounts.add(account1);
     }
@@ -132,11 +123,6 @@ public class Customer extends Person implements Displayable , Loanable  {
     }
 
     @Override
-    public boolean isEligibleForLoan(){
-        return getActiveLoans().isEmpty();
-    }
-
-    @Override
     public double getNormalLoanCeiling(){
         return 500_000_000;
     }
@@ -153,6 +139,16 @@ public class Customer extends Person implements Displayable , Loanable  {
             System.out.printf("Account number: %sBalance: %d%n", account.getAccountId(), account.getBalance());
         }
     }
+    @Override
+    public Account findAccount(String accountNumber){
+        for (Account temp : accounts){
+            if (temp.getAccountId().trim().equals(accountNumber.trim())) {
+                return temp;
+            }
+        }
+        return null;
+    }
+
 
     @Override
     public String toString(){

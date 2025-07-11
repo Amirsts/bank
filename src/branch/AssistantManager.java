@@ -18,7 +18,9 @@ public class AssistantManager extends Employee  {
 
 
     }
-
+    public boolean isEligibleForLoan(Customer customer){
+        return customer.getActiveLoans().isEmpty();
+    }
 
     public MessageBox getMessageBox() {
         return messageBox;

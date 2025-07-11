@@ -2,7 +2,9 @@ import pages.MainPage;
 
 public class Main{
     public static void main(String[] args) {
-        System.out.println("بانک");
+        /* Making this part of project is suggested by ROBIN (Mobin Rangsaz)
+           to have more orderly Main class
+                                                                            */
         MainPage.firstPage();
     }
 }

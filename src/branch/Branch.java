@@ -5,11 +5,11 @@ import person.Customer;
 
 import java.util.ArrayList;
 import java.util.List;
-import interfaces.Displayable;
+import interfaces.*;
 
 import static java.lang.System.*;
 
-public class Branch implements Displayable {
+public class Branch implements Displayable ,FindAccount {
 
     private String branchNumber;
     private BranchManager branchManager;
@@ -101,14 +101,6 @@ public class Branch implements Displayable {
         accounts.add(account);
     }
 
-    public Account findAccount(String accountnumber){
-        for (Account temp : accounts){
-            if (temp.getAccountId().equals(accountnumber)){
-                return  temp;
-            }
-        }
-        return null;
-    }
 
     public void addCustomer(Customer customer){
         customers.add(customer);
@@ -150,6 +142,13 @@ public class Branch implements Displayable {
         }
     }
 
+    public void displayCustomers(){
+        out.println("Customers list:"+ branchNumber + ":");
+        for (Customer cus : customers){
+            out.println(cus.getFirstName() + " " + cus.getLastName() + "nationalCode:" + cus.getNationalCode());
+        }
+    }
+
     @Override
     public void displayInfo(){
         out.println("... ... BRANCH DISPLAY INFO ... ...");
@@ -158,10 +157,15 @@ public class Branch implements Displayable {
         out.println("Cuostomers: " + customers.size() + " people\n");
     }
 
-    public void displayCustomers(){
-        out.println("Customers list:"+ branchNumber + ":");
-        for (Customer cus : customers){
-            out.println(cus.getFirstName() + " " + cus.getLastName() + "nationalCode:" + cus.getNationalCode());
+    @Override
+    public Account findAccount(String accountnumber){
+        for (Account temp : accounts){
+            if (temp.getAccountId().equals(accountnumber)){
+                return  temp;
+            }
         }
+        return null;
     }
+
+
 }

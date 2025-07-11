@@ -1,6 +1,7 @@
 package bank;
 
 import branch.Branch;
+import interfaces.FindAccount;
 import loan.BaseLoan;
 import person.*;
 import account.Account;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.security.SecureRandom;
 
-public class Bank implements Displayable{
+public class Bank implements Displayable , FindAccount {
 
     public final String name = "Bit Bank";
     private List<Branch> branches;
@@ -182,25 +183,13 @@ public class Bank implements Displayable{
         return true;
     }
 
-    public Account findAccountGlobal(String accountNumber) {
-        for (Branch branch : branches) {
-            for (Account a : branch.getAccounts()) {
-                if (a.getAccountId().equals(accountNumber)) {
-                    return a;
-                }
-            }
-        }
-        return null;
-    }
-
-
 
 
     public void transferBetweenCustomers(String fromAccountNumber, String toAccountNumber, int amount, String password)
             throws AccountNotFoundException, IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException, DailyTransferLimitExceededException {
 
-        Account from = findAccountGlobal(fromAccountNumber);
-        Account to = findAccountGlobal(toAccountNumber);
+        Account from = findAccount(fromAccountNumber);
+        Account to = findAccount(toAccountNumber);
 
         if (from == null || to == null)
             throw new AccountNotFoundException("One of the accounts was not found.");
@@ -257,13 +246,6 @@ public class Bank implements Displayable{
         return allLoans;
     }
 
-    @Override
-    public void displayInfo(){
-        for (Branch branch : branches){
-            branch.branchInfo();
-        }
-    }
-
     public List<Customer> getCustomers() {
         return customers;
     }
@@ -271,4 +253,27 @@ public class Bank implements Displayable{
     public void setCustomers(List<Customer> customers) {
         this.customers = customers;
     }
+
+
+
+    @Override
+    public void displayInfo(){
+        for (Branch branch : branches){
+            branch.branchInfo();
+        }
+    }
+
+    @Override
+    public Account findAccount(String accountNumber) {
+        for (Branch branch : branches) {
+            for (Account a : branch.getAccounts()) {
+                if (a.getAccountId().equals(accountNumber)) {
+                    return a;
+                }
+            }
+        }
+        return null;
+    }
+
+
 }
