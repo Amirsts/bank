@@ -73,9 +73,4 @@ public class Request {
     public String toString() {
         return "(" + type + ") ||| sender: " + sender.getFullName() + " ||| status: " + status;
     }
-
-    public void setCurrentLevel(String manager) {
-        this.currentLevel = manager;
-    }
-
 }

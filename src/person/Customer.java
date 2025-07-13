@@ -75,19 +75,6 @@ public class Customer extends Person implements Displayable , Loanable , FindAcc
 
 
     //methods
-
-    public void recordTransfer(int amount, LocalDate date) throws DailyTransferLimitExceededException {
-        int transferred = dailyTransfers.getOrDefault(date, 0);
-
-        if (transferred + amount > 10_000_000) {
-            throw new DailyTransferLimitExceededException("The daily transfer limit of 10 million Tomans has been exceeded.");
-        }
-
-        dailyTransfers.put(date, transferred + amount);
-    }
-
-
-
     public void openAccount(Account account1) {
         accounts.add(account1);
     }

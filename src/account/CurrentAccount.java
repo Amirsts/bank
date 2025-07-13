@@ -11,9 +11,4 @@ public class CurrentAccount extends Account {
         }
     }
 
-    @Override
-    public int calculateInterest() {
-
-        return 0;
-    }
 }

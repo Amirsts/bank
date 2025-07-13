@@ -399,31 +399,31 @@ public class MainPage {
         }
     }
 
-    // متد ثبت مشتری جدید (ثبت نام مشتری از طریق منوی اصلی)
+    // New customer registration method (customer registration via the main menu)
     static void processNewCustomer(Scanner scanner, Bank bank , Branch branch) {
         try {
-            System.out.println("\n--- ثبت مشتری جدید ---");
-            System.out.print("نام: ");
+            System.out.println("\n--- New Customer Registration ---");
+            System.out.print("First name: ");
             String firstName = scanner.nextLine();
-            System.out.print("نام خانوادگی: ");
+            System.out.print("Last name: ");
             String lastName = scanner.nextLine();
-            System.out.print("تاریخ تولد (YYYY-MM-DD): ");
+            System.out.print("Date of birth (YYYY-MM-DD): ");
             String birthDate = scanner.nextLine();
-            System.out.print("کد ملی: ");
+            System.out.print("National Code: ");
             String nationalCode = scanner.nextLine();
 
             while (!bank.isNationalCodeUnique(nationalCode)) {
-                System.out.print("کد ملی وارد شده تکراری است\n" + "کد ملی را وارد کنید: ");
+                System.out.print("The national code entered is duplicate\n" + "Enter the national code: ");
                 nationalCode = scanner.nextLine();
             }
 
-            System.out.print("آدرس: ");
+            System.out.print("Address: ");
             String address = scanner.nextLine();
-            System.out.print("شماره تلفن: ");
+            System.out.print("Phone number: ");
             String phone = scanner.nextLine();
 
             while (!bank.isPhoneNumberUnique(phone)) {
-                System.out.println("شماره تلفن وارد شده تکراری است\n" + "شماره تلفن را وارد کنید: ");
+                System.out.println("The phone number entered is a duplicate\n" + "Enter phone number: ");
                 phone = scanner.nextLine();
             }
 
@@ -437,7 +437,7 @@ public class MainPage {
             Customer newCustomer = new Customer(firstName, lastName, birthDate, nationalCode, address, phone, customerId);
             bank.addCustomer(newCustomer);
             branch.addCustomer(newCustomer);
-            System.out.println("مشتری جدید با شناسه " + customerId + " ثبت شد.");
+            System.out.println("A new customer with ID " + customerId + " was registered.");
         }catch (InvalidNationalCodeException e){
             System.out.println(e.getMessage());
         }catch (InvalidPhoneNumberException e){
@@ -445,15 +445,24 @@ public class MainPage {
         }
     }
 
-    // منوی دستیار شعبه: بررسی درخواست‌های بستن حساب و وام، نمایش اطلاعات شعبه
+    // Branch Assistant Menu: Review account and loan closure requests, display branch information
     static void processAssistantManager(Scanner scanner, Branch curentBranch) {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\n--- منوی دستیار شعبه ---");
-            System.out.println("1. بررسی درخواست‌های وام");
-            System.out.println("2. نمایش اطلاعات شعبه");
-            System.out.println("3. بازگشت به منوی اصلی");
-            System.out.print("انتخاب شما: ");
+            System.out.println("\n--- Branch Assistant Menu ---");
+
+            String[] assistantMenuItems = {
+                    "1. Review Loan Requests",
+                    "2. View Branch Information",
+                    "3. Return to Main Menu"
+            };
+
+            for (String item : assistantMenuItems) {
+                System.out.println(item);
+            }
+
+            System.out.print("Your choice: ");
+
             int choice = scanner.nextInt();
             scanner.nextLine();
             switch(choice) {
@@ -461,14 +470,14 @@ public class MainPage {
                 case 1:
                     List<Request> loanRequests = curentBranch.getAssistantManager().getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST);
                     if (loanRequests.isEmpty()) {
-                        System.out.println("هیچ درخواست وام معلقی پیدا نشد.");
+                        System.out.println("No pending loan applications found.");
                     } else {
-                        System.out.println(" مشتری های درحال انتظار برای دریافت وام");
+                        System.out.println("Customers waiting to receive a loan");
                         for (int i = 0 ; i < loanRequests.size() ; i++){
                             Request tmpLR = loanRequests.get(i);
                             System.out.println((i + 1)  + "." +tmpLR.getSender().getFullName());
                         }
-                        System.out.println("انتخاب شما:");
+                        System.out.println("Your choice:");
                         int chose = scanner.nextInt();
                         Customer selectedCustomer = loanRequests.get(chose -1).getSender();
                         Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(0);
@@ -476,17 +485,17 @@ public class MainPage {
                         Customer slcCustomer = slcRequest.getSender();
 
                         if (curentBranch.getAssistantManager().isEligibleForLoan(selectedCustomer)){
-                            System.out.println("مشتری دارای وام فعال نیست." + "\nدرخواست وام برای رئیس شعبه ارسال شد");
+                            System.out.println("Customer does not have an active loan." + "\nLoan request sent to branch manager");
                             curentBranch.getBranchManager().receiveRequest(slcRequest);
                             curentBranch.getAssistantManager().clearMessageBox(asistantRequest);
-                            slcRequest.setStatus("درخواست وام شما برای رئیس شعبه ارسال شد");
+                            slcRequest.setStatus("Your loan application has been sent to the branch manager");
                         }else {
-                            System.out.println("وام های فعال مشتری:");
+                            System.out.println("Active Customer Loans:");
                             for (int i = 0; i < slcCustomer.getActiveLoans().size(); i++) {
                                 slcCustomer.getActiveLoans().get(i).toString();
                             }
                             curentBranch.getAssistantManager().clearMessageBox(asistantRequest);
-                            slcRequest.setStatus("شما دارای وام فعال هستید درخواست شما رد شد.");
+                            slcRequest.setStatus("You have an active loan. Your application has been denied.");
                         }
                     }
                     break;
@@ -497,7 +506,7 @@ public class MainPage {
                     exit = true;
                     break;
                 default:
-                    System.out.println("گزینه نامعتبر.");
+                    System.out.println("Invalid option.");
             }
         }
     }
@@ -506,65 +515,74 @@ public class MainPage {
     static void processTeller(Scanner scanner , Teller selectedTeller , Branch curentBranch , Bank bank ) {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\nمنوی تحویل‌دار ---" + selectedTeller.getFullName() + "---");
-            System.out.println("1. پردازش واریز/برداشت");
-            System.out.println("2. ارجاع درخواست وام به معاون شعبه");
-            System.out.println("3. تایید درخواست بازکردن حساب");
-            System.out.println("4.تایید درخواست بستن حساب");
-            System.out.println("5. بازگشت به منوی اصلی");
-            System.out.print("انتخاب شما: ");
+            System.out.println("\n--- Teller Menu --- " + selectedTeller.getFullName() + " ---");
+
+            String[] tellerMenuItems = {
+                    "1. Process Deposit/Withdrawal",
+                    "2. Forward Loan Request to Assistant Manager",
+                    "3. Approve Account Opening Request",
+                    "4. Approve Account Closure Request",
+                    "5. Return to Main Menu"
+            };
+
+            for (String item : tellerMenuItems) {
+                System.out.println(item);
+            }
+
+            System.out.print("Your choice: ");
+
             int choice = scanner.nextInt();
             scanner.nextLine();
             switch(choice) {
                 case 1:
-                    System.out.println("انتخاب نوع عملیات: 1. واریز  2. برداشت");
+                    System.out.println("Select operation type: 1. Deposit 2. Withdrawal");
                     int op = scanner.nextInt();
                     scanner.nextLine();
-                    System.out.print("شماره حساب: ");
+                    System.out.print("Account number: ");
                     String accNum = scanner.nextLine();
-                    System.out.print("مبلغ: ");
+                    System.out.print("Amount: ");
                     int amt = scanner.nextInt();
                     scanner.nextLine();
                     CurrentAccount acc = (CurrentAccount) curentBranch.findAccount(accNum);
                     if (acc == null) {
-                        System.out.println("حساب مورد نظر پیدا نشد.");
+                        System.out.println("The requested account was not found.");
                     } else {
                         if (op == 1) {
                             acc.deposit(amt);
-                            System.out.println("واریز موفق. موجودی جدید: " + acc.getBalanceForBank());
+                            System.out.println("Successful deposit. New balance: " + acc.getBalanceForBank());
                         } else if (op == 2) {
-                            System.out.print("رمز عبور: ");
+                            System.out.print("Password: ");
                             String pwd = scanner.nextLine();
                             try {
                                 acc.secureWithdraw(amt, pwd);
                             } catch (IncorrectPasswordException | InvalidAmountException | InsufficientBalanceException ex) {
-                                System.out.println("خطا در برداشت: " + ex.getMessage());
+                                System.out.println("Error in collection: " + ex.getMessage());
                             }
                         } else {
-                            System.out.println("عملیات نامعتبر.");
+                            System.out.println("Invalid operation.");
                         }
                     }
                     break;
                 case 2:
                     List<Request> loanRequests = selectedTeller.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST);
                     if (loanRequests.isEmpty()){
-                        System.out.println("مشتری در صف دریافت وام یافت نشد");
+                        System.out.println("No customer found in loan queue");
                         break;
                     }else {
-                        System.out.println(" مشتری های درحال انتظار برای دریافت وام");
+                        System.out.println("Customers waiting to receive a loan");
                         for (int i = 0 ; i < loanRequests.size() ; i++){
                             Request tmpLR = loanRequests.get(i);
                             System.out.println((i + 1)  + "." +tmpLR.getSender().getFullName());
                         }
-                        System.out.println("انتخاب شما:");
+                        System.out.println("Your choice:");
                         int chose = scanner.nextInt();
                         Customer selectedCustomer = loanRequests.get(chose -1).getSender();
                         Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(0);
                         Request sltRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(chose-1);
                         selectedTeller.clearMessageBox(sltRequest);
                         curentBranch.getAssistantManager().receiveRequest(slcRequest);
-                        slcRequest.setStatus("درخواست به معاون شعبه ارجاع داده شد"+ selectedTeller.getFullName()  +"تحویلدار ");
-                        System.out.println("درخواست به معاون شعبه ارجاع داده شد");
+                            slcRequest.setStatus("Request referred to branch assistant"+ selectedTeller.getFullName() +"Delivery person");
+                        System.out.println("Request referred to the branch deputy");
 
                     }
                     break;
@@ -572,26 +590,26 @@ public class MainPage {
 
                    List<Request> opRequests = selectedTeller.getMessageBox().getRequestsByType(RequestType.OPEN_ACCOUNT);
                    if (opRequests.isEmpty()){
-                       System.out.println("مشتری در صف انتظار یافت نشد");
+                       System.out.println("No customer found in the waiting queue");
                        break;
                        }else {
-                            System.out.println(" مشتری های درحال انتظار برای باز شدن حساب");
+                            System.out.println("Customers waiting for account opening");
                             for (int i = 0 ; i < opRequests.size() ; i++){
                                 Request tmpR = opRequests.get(i);
                                 System.out.println((i + 1)  + "." +tmpR.getSender().getFullName());
                             }
-                            System.out.println("انتخاب شما:");
+                            System.out.println("Your choice:");
                             int chose = scanner.nextInt();
                             Customer selectedCustomer = opRequests.get(chose -1).getSender();
                             Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.OPEN_ACCOUNT).get(0);
                             Request sltRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.OPEN_ACCOUNT).get(chose-1);
 
-                            System.out.println("پیام مشتری: " + slcRequest.getMessage() + "\n" + "عملیات باز کردن حساب در حال اجرا...");
+                            System.out.println("Client Message: " + slcRequest.getMessage() + "\n" + "Account opening operation in progress...");
 
-                            System.out.print("لطفاً مبلغ اولیه واریز را وارد کنید: ");
+                            System.out.print("Please enter the initial deposit amount: ");
                             int initialDeposit = scanner.nextInt();
                             scanner.nextLine();
-                            System.out.print("لطفاً رمز عبور حساب را وارد کنید: ");
+                            System.out.print("Please enter the account password: ");
                             String accountPassword = scanner.nextLine();
 
                             selectedTeller.clearMessageBox(sltRequest);
@@ -604,10 +622,10 @@ public class MainPage {
                                 bank.addAccount(newAccount);
                                 curentBranch.addAccount(newAccount);
                                 selectedCustomer.openAccount(newAccount);
-                                slcRequest.setStatus("مشتزی گرامی:" + selectedCustomer.getFullName() +"حساب جاری شما با رمز:" + accountPassword + " شماره حساب:" + newAccountNumber + "افتتاح شد");
-                                System.out.print("حساب جاری " + selectedCustomer.getFullName() + "افتتاح شد");
+                                slcRequest.setStatus("Dear Customer:" + selectedCustomer.getFullName() +"Your current account with password:" + accountPassword + " Account Number:" + newAccountNumber + "has been opened");
+                                System.out.print("Current account " + selectedCustomer.getFullName() + "opened");
                             }else if (accountType == '2'){
-                                System.out.println("تارخ را وارد کنید مثلا (07/05/2025):");
+                                System.out.println("Enter the date, for example (07/05/2025):");
                                 String input = scanner.nextLine();
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                                 LocalDate dateOpenAccount = LocalDate.parse(input , formatter);
@@ -617,30 +635,30 @@ public class MainPage {
                                 curentBranch.addAccount(newAccount);
                                 selectedCustomer.openAccount(newAccount);
                                 selectedCustomer.openShortTermAccount(newAccount);
-                                slcRequest.setStatus("مشتزی گرامی:" + selectedCustomer.getFullName() +"حساب کوتاه مدت شما با رمز:" + accountPassword + " شماره حساب:" + newAccountNumber + "افتتاح شد");
-                                System.out.print("حساب کوتاه مدت " + selectedCustomer.getFullName() + "افتتاح شد");
+                                slcRequest.setStatus("Dear Customer:" + selectedCustomer.getFullName() +"Your short-term account with password:" + accountPassword + " Account Number:" + newAccountNumber + "has been opened");
+                                System.out.print("Short-term account " + selectedCustomer.getFullName() + "opened");
                             }else if (accountType == '3') {
                                 QarzAlHasanehAccount newAccount = new QarzAlHasanehAccount(newAccountNumber , selectedCustomer , initialDeposit , accountPassword);
                                 bank.addAccount(newAccount);
                                 curentBranch.addAccount(newAccount);
                                 selectedCustomer.openAccount(newAccount);
-                                slcRequest.setStatus("مشتزی گرامی:" + selectedCustomer.getFullName() +"حساب قرض الحسنه شما با رمز:" + accountPassword + " شماره حساب:" + newAccountNumber + "افتتاح شد");
-                                System.out.print("حساب قرض الحسنه " + selectedCustomer.getFullName() + "افتتاح شد");
+                                slcRequest.setStatus("Dear Mushtazi:" + selectedCustomer.getFullName() +"Your Qarz Al-Hasanah account with password:" + accountPassword + " Account Number:" + newAccountNumber + "has been opened");
+                                System.out.print("Qarz Al-Hasanah Account " + selectedCustomer.getFullName() + "Opened");
                             }
                        }
                     break;
                 case 4:
                     List<Request> clRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.CLOSE_ACCOUNT);
                     if (clRequest.isEmpty()){
-                        System.out.println("مشتری در صف انتظار یافت نشد");
+                        System.out.println("No customer found in the waiting queue");
                         break;
                     }else {
-                        System.out.println(" مشتری های درحال انتظار برای باز شدن حساب");
+                        System.out.println("Customers waiting for account opening");
                         for (int i = 0 ; i < clRequest.size() ; i++){
                             Request tmpR = clRequest.get(i);
                             System.out.println((i + 1)  + "." +tmpR.getSender().getFullName());
                         }
-                        System.out.println("انتخاب شما:");
+                        System.out.println("Your choice:");
                         int chose = scanner.nextInt();
                         Customer selectedCustomer = clRequest.get(chose -1).getSender();
                         Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.CLOSE_ACCOUNT).get(0);
@@ -649,14 +667,16 @@ public class MainPage {
 
                         //checking Customer has active loan
                         if (selectedCustomer.hasActiveLoan()){
-                            System.out.println("مشتری دارای وام فعال است");
-                            slcRequest.setStatus("مشتری گرامی شما دارای وام فعال هستید امکان بسته شدن حساب شما وجود ندارد.");
+                            System.out.println("Customer has an active loan");
+                            slcRequest.setStatus("Dear customer, you have an active loan. Your account cannot be closed.");
                             selectedTeller.clearMessageBox(sltRequest);
                             break;
                         }
-                        System.out.println("مشتری فاقد وام فعال است حساب با موفقیت بسته شد");
+                        System.out.println("Customer has no active loan, account closed successfully");
                         selectedCustomer.removeAccount(accountID);
-                        slcRequest.setStatus("حساب شما با شماره:" + accountID + "با موفقیت بسته شد.");
+                        curentBranch.removeAccount(accountID);
+                        bank.removeAccount(accountID);
+                        slcRequest.setStatus("Your account with number: " + accountID + " has been successfully closed.");
                         selectedTeller.clearMessageBox(sltRequest);
                     }
                     break;
@@ -665,34 +685,43 @@ public class MainPage {
                     exit = true;
                     break;
                 default:
-                    System.out.println("گزینه نامعتبر.");
+                    System.out.println("Invalid option.");
             }
         }
     }
 
-    // منوی مدیر شعبه: تایید یا رد درخواست‌های معلق و مشاهده عملکرد کلی شعبه
+    // Branch Manager Menu: Approve or reject pending requests and view overall branch performance
     static void processManager(Scanner scanner, Branch branch, Customer customer ,Bank bank) {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\n--- منوی مدیر شعبه ---");
-            System.out.println("1.مشاهده درخواست های وام");
-            System.out.println("2. مشاهده عملکرد کلی شعبه");
-            System.out.println("3. بازگشت به منوی اصلی");
-            System.out.print("انتخاب شما: ");
+            System.out.println("\n--- Branch Manager Menu ---");
+
+            String[] managerMenuItems = {
+                    "1. View Loan Requests",
+                    "2. View Overall Branch Performance",
+                    "3. Return to Main Menu"
+            };
+
+            for (String item : managerMenuItems) {
+                System.out.println(item);
+            }
+
+            System.out.print("Your choice: ");
+
             int choice = scanner.nextInt();
             scanner.nextLine();
             switch(choice) {
                 case 1:
                     List<Request> mRequests = branch.getBranchManager().getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST);
                     if (mRequests.isEmpty()) {
-                        System.out.println("هیچ درخواست معلقی پیدا نشد.");
+                        System.out.println("No pending requests found.");
                     } else {
-                        System.out.println(" مشتری های درحال انتظار برای دریافت وام");
+                        System.out.println("Customers waiting to receive a loan");
                         for (int i = 0 ; i < mRequests.size() ; i++){
                             Request tmpLR = mRequests.get(i);
                             System.out.println((i + 1)  + "." +tmpLR.getSender().getFullName());
                         }
-                        System.out.println("انتخاب شما:");
+                        System.out.println("Your choice: ");
                         int chose = scanner.nextInt();
                         scanner.nextLine();
                         Customer selectedCustomer = mRequests.get(chose -1).getSender();
@@ -709,10 +738,10 @@ public class MainPage {
                                 if ( (slcRequest.getLoanAmount() < slcCustomer.getNormalLoanCeiling()) &&  //The loan amount was checked to ensure it did not exceed the loan ceiling.
                                      (slcRequest.getLoanAmount() < branch.getCurrentShortTermBalance())) {//The bank was checked to ensure it had sufficient financial resources.
 
-                                    System.out.println("تعداد اقصات ماهانه را واردکنید:");
+                                    System.out.println("Enter the number of monthly installments:");
                                     int duration = scanner.nextInt();
                                     scanner.nextLine();
-                                    System.out.print("تاریخ را وارد کنید (مثلاً 05/07/2025): ");
+                                    System.out.print("Enter the date (e.g. 05/07/2025): ");
                                     String input = scanner.nextLine();
                                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                                     LocalDate date = LocalDate.parse(input, formatter);
@@ -720,9 +749,9 @@ public class MainPage {
                                     NormalLoan normalLoan = new NormalLoan(slcRequest.getLoanAmount() , duration , date ,slcCustomer);
                                     slcCustomer.addLoan(normalLoan);
                                     slcAccount.deposit((int) slcRequest.getLoanAmount());
-                                    slcRequest.setStatus("مشتری گرامی درخواست وام عادی شما تایید شد و مبلغ:" +slcRequest.getLoanAmount() + " به حساب شما واریز شد\n" +
-                                            "شما موظف به باز پرداخت وام در طی" + duration + "ماه و در هر قسط به میزان:" + normalLoan.installmentPerMonth() + "هستید" );
-                                    System.out.println("وام به حساب مشتری واریز شد" + slcRequest.getLoanAmount());
+                                    slcRequest.setStatus("Dear Customer, your normal loan request has been approved and the amount:" +slcRequest.getLoanAmount() + " has been deposited into your account\n" +
+                                            "You are required to repay the loan during the" + duration + "months and in each installment of:" + normalLoan.installmentPerMonth() + "");
+                                    System.out.println("Loan credited to customer's account" + slcRequest.getLoanAmount());
                                     branch.getBranchManager().clearMessageBox(managerRequest);
 
                                 }else {
@@ -734,10 +763,10 @@ public class MainPage {
                                 if ((slcRequest.getLoanAmount() < slcCustomer.getTashilatCeiling()) &&  //The loan amount was checked to ensure it did not exceed the loan ceiling.
                                      (slcRequest.getLoanAmount() < branch.getQarzAlhasanehBalance())){ //The bank was checked to ensure it had sufficient financial resources.
 
-                                    System.out.println("تعداد اقصات ماهانه را واردکنید:");
+                                    System.out.println("Enter the number of monthly installments:");
                                     int duration = scanner.nextInt();
                                     scanner.nextLine();
-                                    System.out.print("تاریخ را وارد کنید (مثلاً 05/07/2025): ");
+                                    System.out.print("Enter the date (e.g. 05/07/2025): ");
                                     String input = scanner.nextLine();
                                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                                     LocalDate date = LocalDate.parse(input, formatter);
@@ -745,9 +774,9 @@ public class MainPage {
                                     TashilatLoan tashilatLoan = new TashilatLoan(slcRequest.getLoanAmount() , duration , date ,slcCustomer);
                                     slcCustomer.addLoan(tashilatLoan);
                                     slcAccount.deposit((int) slcRequest.getLoanAmount());
-                                    slcRequest.setStatus("مشتری گرامی درخواست وام تسهیلات شما تایید شد و مبلغ:" +slcRequest.getLoanAmount() + " به حساب شما واریز شد\n" +
-                                            "شما موظف به باز پرداخت وام در طی" + duration + "ماه و در هر قسط به میزان:" + tashilatLoan.installmentPerMonth() + "هستید" );
-                                    System.out.println("وام به حساب مشتری واریز شد" + slcRequest.getLoanAmount());
+                                    slcRequest.setStatus("Dear customer, your loan application has been approved and the amount:" +slcRequest.getLoanAmount() + " has been deposited into your account\n" +
+                                            "You are required to repay the loan during the" + duration + "month and in each installment of:" + tashilatLoan.installmentPerMonth() + "" );
+                                    System.out.println("The loan has been deposited into the customer's account" + slcRequest.getLoanAmount());
                                     branch.getBranchManager().clearMessageBox(managerRequest);
 
                                 }else {
@@ -756,7 +785,7 @@ public class MainPage {
                                 break;
 
                             default:
-                                System.out.println("گزینه نامعتبر.");
+                                System.out.println("Invalid option.");
                         }
                     }
                     break;
@@ -767,63 +796,74 @@ public class MainPage {
                     exit = true;
                     break;
                 default:
-                    System.out.println("گزینه نامعتبر.");
+                    System.out.println("Invalid option.");
             }
         }
     }
 
-    // منوی رئیس بانک: ایجاد تحویل‌دار و معاون شعبه
+    // Bank manager menu: Create cashier and branch assistant
     static void processBankManager(Scanner scanner, Branch branch ,Bank bank) {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\n--- منوی رئیس بانک ---");
-            System.out.println("1. ایجاد تحویل‌دار جدید");
-            System.out.println("2. ایجاد معاون شعبه جدید");
-            System.out.println("3.ایجاد رئیس شعبه جدید");
-            System.out.println("4.ایجاد شعبه جدید");
-            System.out.println("5. نمایش اطلاعات شعبه");
-            System.out.println("6. بازگشت به منوی اصلی");
-            System.out.print("انتخاب شما: ");
+            System.out.println("\n--- Bank Director Menu ---");
+
+            String[] directorMenuItems = {
+                    "1. Create New Teller",
+                    "2. Create New Branch Assistant",
+                    "3. Create New Branch Manager",
+                    "4. Create New Branch",
+                    "5. View Branch Information",
+                    "6. Return to Main Menu"
+            };
+
+            for (String item : directorMenuItems) {
+                System.out.println(item);
+            }
+
+            System.out.print("Your choice: ");
             int choice = scanner.nextInt();
             scanner.nextLine();
             switch(choice) {
                 case 1:
                     try{
-                        System.out.println("ایجاد تحویل‌دار جدید...");
-                        System.out.print("ID تحویل‌دار: ");
+                        System.out.println("Creating a new recipient...");
+                        System.out.print("Teller ID: ");
                         String tellerId = scanner.nextLine();
-                        System.out.print("نام: ");
-                        String tellerFirstName = scanner.nextLine();
-                        System.out.print("نام خانوادگی: ");
-                        String tellerLastName = scanner.nextLine();
-                        System.out.print("تاریخ تولد: ");
-                        String tellerBirthDay = scanner.nextLine();
-                        System.out.print("کد ملی: ");
-                        String tellerNationalCode = scanner.nextLine();
+                        while (!bank.isEmployeeIdUnique(tellerId)){
+                            System.out.print( "The Employee ID entered is duplicate\n" + "Enter the Employee ID: ");
+                            tellerId = scanner.nextLine();
+                        }
 
+                        System.out.print("First name: ");
+                        String tellerFirstName = scanner.nextLine();
+                        System.out.print("Last name: ");
+                        String tellerLastName = scanner.nextLine();
+                        System.out.print("Birthday: ");
+                        String tellerBirthDay = scanner.nextLine();
+                        System.out.print("National Code: ");
+                        String tellerNationalCode = scanner.nextLine();
                         while (!bank.isNationalCodeUnique(tellerNationalCode)){
-                            System.out.print( "کد ملی وارد شده تکراری است\n" + "کد ملی را وارد کنید: ");
+                            System.out.print( "The national code entered is duplicate\n" + "Enter the national code: ");
                             tellerNationalCode = scanner.nextLine();
                         }
 
-                        System.out.print("آدرس: ");
+                        System.out.print("Address: ");
                         String tellerAddress = scanner.nextLine();
-                        System.out.print("شماره تلفن: ");
+                        System.out.print("Phone Number: ");
                         String tellerPhone = scanner.nextLine();
-
                         while (!bank.isPhoneNumberUnique(tellerPhone)){
-                            System.out.println("شماره تلفن وارد شده تکراری است\n" + "شماره تلفن را وارد کنید: ");
+                            System.out.println("The phone number entered is a duplicate\n" + "Enter phone number: ");
                             tellerPhone = scanner.nextLine();
                         }
 
-                        System.out.println("رمز ورود");
+                        System.out.println("Password: ");
                         String passWord = scanner.nextLine();
 
                         Teller newTeller = new Teller(tellerFirstName, tellerLastName, tellerBirthDay,
                                 tellerNationalCode, tellerAddress, tellerPhone, tellerId, passWord);
                         branch.addTeller(newTeller);
                         bank.addEmployee(newTeller);
-                        System.out.println("تحویل‌دار جدید با شناسه " + tellerId + " ایجاد شد.");
+                        System.out.println("New teller with ID " + tellerId + " was created.");
                     }catch (InvalidNationalCodeException e){
                         System.out.println( e.getMessage());
                     }catch (InvalidPhoneNumberException e){
@@ -833,40 +873,44 @@ public class MainPage {
                 case 2:
                     try {
 
-                        System.out.println("ایجاد معاون شعبه جدید...");
-                        System.out.print("شناسه معاون شعبه: ");
+                        System.out.println("Creating a new branch assistant...");
+                        System.out.print("Branch Deputy ID: ");
                         String amId = scanner.nextLine();
-                        System.out.print("نام: ");
-                        String amFirstName = scanner.nextLine();
-                        System.out.print("نام خانوادگی: ");
-                        String amLastName = scanner.nextLine();
-                        System.out.print("تاریخ تولد: ");
-                        String amBirthDay = scanner.nextLine();
-                        System.out.print("کد ملی: ");
-                        String amNationalCode = scanner.nextLine();
+                        while (!bank.isEmployeeIdUnique(amId)){
+                            System.out.print( "The Employee ID code entered is duplicate\n" + "Enter the Employee ID: ");
+                            amId = scanner.nextLine();
+                        }
 
+                        System.out.print("First name: ");
+                        String amFirstName = scanner.nextLine();
+                        System.out.print("Last name: ");
+                        String amLastName = scanner.nextLine();
+                        System.out.print("Birthday: ");
+                        String amBirthDay = scanner.nextLine();
+                        System.out.print("National Code: ");
+                        String amNationalCode = scanner.nextLine();
                         while (!bank.isNationalCodeUnique(amNationalCode)) {
-                            System.out.print("کد ملی وارد شده تکراری است\n" + "کد ملی را وارد کنید: ");
+                            System.out.print("The entered national code is duplicate\n" + "Enter the national code: ");
                             amNationalCode = scanner.nextLine();
                         }
 
-                        System.out.print("آدرس: ");
+                        System.out.print("Address: ");
                         String amAddress = scanner.nextLine();
-                        System.out.print("شماره تلفن: ");
+                        System.out.print("Phone number: ");
                         String amPhone = scanner.nextLine();
 
                         while (!bank.isPhoneNumberUnique(amPhone)) {
-                            System.out.println("شماره تلفن وارد شده تکراری است\n" + "شماره تلفن را وارد کنید: ");
+                            System.out.println("The phone number entered is a duplicate\n" + "Enter the phone number: ");
                             amPhone = scanner.nextLine();
                         }
-                        System.out.println("رمز ورود");
+                        System.out.println("Password: ");
                         String passWord = scanner.nextLine();
 
                         AssistantManager newAM = new AssistantManager(amFirstName, amLastName, amBirthDay,
                                 amNationalCode, amAddress, amPhone, amId , passWord);
                         branch.setAssistantManager(newAM);
                         bank.addEmployee(newAM);
-                        System.out.println("معاون شعبه جدید با شناسه " + amId + " ایجاد شد.");
+                        System.out.println("New branch assistant created with ID " + amId + ".");
                     }catch (InvalidNationalCodeException e){
                         System.out.println(e.getMessage());
                     }catch (InvalidPhoneNumberException e){
@@ -875,40 +919,45 @@ public class MainPage {
                     break;
                 case 3:
                     try {
-                    System.out.println("ایجاد رئیس شعبه جدید...");
-                    System.out.print("شناسه رئیس شعبه: ");
-                    String amId = scanner.nextLine();
-                    System.out.print("نام: ");
+                    System.out.println("Creating a new branch manager...");
+                    System.out.print("Branch Manager ID: ");
+                    String bmId = scanner.nextLine();
+                    while (!bank.isEmployeeIdUnique(bmId)){
+                        System.out.print( "The Employee ID entered is duplicate\n" + "Enter the Employee ID: ");
+                        bmId = scanner.nextLine();
+                    }
+
+                    System.out.print("First name: ");
                     String amFirstName = scanner.nextLine();
-                    System.out.print("نام خانوادگی: ");
+                    System.out.print("Last name: ");
                     String amLastName = scanner.nextLine();
-                    System.out.print("تاریخ تولد: ");
+                    System.out.print("Birthday: ");
                     String amBirthDay = scanner.nextLine();
-                    System.out.print("کد ملی: ");
+                    System.out.print("National Code: ");
                     String amNationalCode = scanner.nextLine();
 
                     while (!bank.isNationalCodeUnique(amNationalCode)) {
-                        System.out.print("کد ملی وارد شده تکراری است\n" + "کد ملی را وارد کنید: ");
+                        System.out.print("The entered national code is duplicate\n" + "Enter the national code: ");
                         amNationalCode = scanner.nextLine();
                     }
 
-                    System.out.print("آدرس: ");
+                    System.out.print("Address: ");
                     String amAddress = scanner.nextLine();
-                    System.out.print("شماره تلفن: ");
+                    System.out.print("Phone number: ");
                     String amPhone = scanner.nextLine();
 
                     while (!bank.isPhoneNumberUnique(amPhone)) {
-                        System.out.println("شماره تلفن وارد شده تکراری است\n" + "شماره تلفن را وارد کنید: ");
+                        System.out.println("The phone number entered is a duplicate\n" + "Enter the phone number: ");
                         amPhone = scanner.nextLine();
                     }
-                    System.out.println("رمز ورود");
+                    System.out.println("Password");
                     String passWord = scanner.nextLine();
 
                     BranchManager Bmanager = new BranchManager(amFirstName, amLastName, amBirthDay,
-                            amNationalCode, amAddress, amPhone, amId , passWord);
+                            amNationalCode, amAddress, amPhone, bmId , passWord);
                     branch.setBranchManager(Bmanager);
                     bank.addEmployee(Bmanager);
-                    System.out.println("معاون شعبه جدید با شناسه " + amId + " ایجاد شد.");
+                        System.out.println("New branch assistant created with ID " + bmId + ".");
             }catch (InvalidNationalCodeException e){
                 System.out.println(e.getMessage());
             }catch (InvalidPhoneNumberException e){
@@ -916,14 +965,14 @@ public class MainPage {
             }
                     break;
                 case 4:
-                    System.out.println("شماره شعبه را وارد کنید:");
+                    System.out.println("Enter the branch number:");
                     String branchNumber = scanner.nextLine();
                     if ( !bank.isBranchNumberUnique(branchNumber)){
-                        System.out.println("شماره شعبه تکراری است دوباره سعی کنید:");
+                        System.out.println("The branch number is duplicate, try again:");
                         branchNumber = scanner.nextLine();
                     }
                     Branch branch1 = new Branch(branchNumber);
-                    System.out.println("شعبه با شماره: " + branchNumber + "ایجاد شد");
+                    System.out.println("Branch with number: " + branchNumber + "created");
                     break;
                 case 5:
                     branch.displayInfo();
@@ -932,7 +981,7 @@ public class MainPage {
                     exit = true;
                     break;
                 default:
-                    System.out.println("گزینه نامعتبر.");
+                    System.out.println("Invalid option.");
             }
         }
     }

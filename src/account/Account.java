@@ -15,6 +15,7 @@ public abstract class Account implements IsPassWordTrue{
     private String passWord;
     private Map<LocalDate, Integer> dailyTransfers ;
 
+
     public Account(String accountId, Customer owner, int balance ,String passWord) {
         if (accountId == null || !accountId.matches("\\d{13}")) {
             throw new IllegalArgumentException("Account number must be 13 digits.");
@@ -28,6 +29,7 @@ public abstract class Account implements IsPassWordTrue{
         this.passWord = passWord;
         this.dailyTransfers = new HashMap<>();
     }
+
 
     public String getAccountId() {
         return accountId;
@@ -72,7 +74,7 @@ public abstract class Account implements IsPassWordTrue{
         }
 
         balance -= amount;
-        System.out.println("💸 successful withdraw " + amount + " balance Tooman " + balance);
+        System.out.println(" successful withdraw " + amount + " balance Tooman " + balance);
     }
 
 
@@ -92,7 +94,7 @@ public abstract class Account implements IsPassWordTrue{
         }
 
         balance -= amount;
-        System.out.println("💸 successful withdraw " + amount + " balance Tooman " + balance);
+        System.out.println(" successful withdraw " + amount + " balance Tooman " + balance);
     }
 
     public void recordTransfer(int amount, LocalDate date) throws DailyTransferLimitExceededException {
@@ -105,6 +107,7 @@ public abstract class Account implements IsPassWordTrue{
         dailyTransfers.put(date, transferred + amount);
     }
 
+
     @Override
     public boolean isPassWordTrue(String inpPassWord){
         if (this.passWord.equals(inpPassWord)){
@@ -112,16 +115,6 @@ public abstract class Account implements IsPassWordTrue{
         }
         return false;
     }
-
-
-    public void transfer(Account toAccount, int amount , String passWord) throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
-        this.secureWithdraw(amount , passWord );
-        toAccount.deposit(amount);
-        System.out.println("Amount " + amount + " from account " + this.accountId +
-                " to account " + toAccount.getAccountId() + " transferred successfully.");
-    }
-
-    public abstract int calculateInterest();
 }
 
 

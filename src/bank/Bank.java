@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.security.SecureRandom;
 
+import static java.lang.System.out;
+
 public class Bank implements Displayable , FindAccount {
 
     public final String name = "Bit Bank";
@@ -67,6 +69,11 @@ public class Bank implements Displayable , FindAccount {
 
     public void addAccount(Account account){accounts.add(account);}
 
+    public void removeAccount(String accountNumber){
+        accounts.removeIf(acc -> acc.getAccountId().equals(accountNumber));
+        out.println("Account" + accountNumber + "deleted from the branch's accounts");
+    }
+
     public String accountNumberCreator(char accountType){
         long randomPart = (long) (secureRandom.nextDouble() * 1000_000_00000L);
         String randomPartStr =String.format("%011d" , randomPart);
@@ -82,11 +89,6 @@ public class Bank implements Displayable , FindAccount {
             return randomAccountNumber;
         }
         return null;
-    }
-
-    //Uniqueness check
-    public boolean isNationalIdDuplicate(String nationalId) {
-        return customers.stream().anyMatch(c -> c.getNationalCode().equals(nationalId));
     }
 
     // ---- search----

@@ -24,18 +24,11 @@ public class ShortTermAccount extends Account {
         dateOpenAccount = dateCheckBalance;
         if (getBalanceForBank() > 100_000 && monthsSinceStart >= 1 ){
             int profit = (int)(monthsSinceStart * 0.00416  * getBalanceForBank());
-            System.out.println("موجودی قبلی شما :" + balance + "میزان سود شما" + profit );
+            System.out.println("Your previous balance:" + balance + "Your profit amount" + profit );
             balance += profit;
             return profit ;
         }
         return 0;
     }
-    
-    @Override
-    public int calculateInterest() {
-        if (balance > 100_000) {
-            return (int)(balance * 0.05);
-        }
-        return 0;
-    }
+
 }

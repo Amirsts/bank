@@ -39,10 +39,6 @@ public class MessageBox {
                 .collect(Collectors.toList());
     }
 
-    public void clear() {
-        requests.clear();
-    }
-
     public void printAll() {
         if (requests.isEmpty()) {
             System.out.println("No messages.");
@@ -53,9 +49,6 @@ public class MessageBox {
         }
     }
 
-    public boolean isEmpty() {
-        return requests.isEmpty();
-    }
 
     public int size() {
         return requests.size();

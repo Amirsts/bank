@@ -82,7 +82,7 @@ public abstract class   BaseLoan {
             fDuration--;
             nowPayTime = datePay;
         }else {
-            System.out.println("مبلغ واریزی معتبر نمی باشد");
+            System.out.println("Deposit amount is not valid");
         }
     }
 
@@ -93,8 +93,6 @@ public abstract class   BaseLoan {
             System.out.println("Loan is already closed.");
             return;
         }
-
-        double installment = installmentPerMonth();
 
         int monthsSinceStart = nowPayTime.getMonthValue() - ldTime.getMonthValue() +
                 12 * (nowPayTime.getYear() - ldTime.getYear());
