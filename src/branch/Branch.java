@@ -120,7 +120,7 @@ public class Branch implements Displayable ,FindAccount {
         out.println("Account" + accountNumber + "deleted from the branch's accounts");
     }
 
-    public Teller getSolitudeTeller(){
+    public Teller   getSolitudeTeller(){
         int tmp1 , tmp2 ;
         int indexMin = 0;
         int min = tellers.get(0).getMessageBox().size();
@@ -140,6 +140,11 @@ public class Branch implements Displayable ,FindAccount {
         for (Teller teller : tellers) {
             out.println("Teller:" + teller.getFullName());
         }
+        for (Customer customer : customers) {
+            out.println("Customer:" + customer.getFullName());
+        }
+        out.println("Current & Shortterm Accounts balance: " + ((int) getCurrentShortTermBalance()));
+        out.println("QarzAlhasaneh Accounts: " + ((int) getQarzAlhasanehBalance()));
     }
 
     public void displayCustomers(){

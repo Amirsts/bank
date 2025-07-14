@@ -110,13 +110,6 @@ public class Bank implements Displayable , FindAccount {
                 .findFirst().orElse(null);
     }
 
-    // -----  balance of all accounts  -----
-    public int getTotalBankBalance(){
-        return branches.stream()
-                .flatMap(b -> b.getAccounts().stream())
-                .mapToInt(Account::getBalanceForBank)
-                .sum();
-    }
 
     //reports
     public List<Branch> getBranches(){
@@ -261,6 +254,7 @@ public class Bank implements Displayable , FindAccount {
     @Override
     public void displayInfo(){
         for (Branch branch : branches){
+            out.println("Branch: " + branch.getBranchNumber());
             branch.branchInfo();
         }
     }

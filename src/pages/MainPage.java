@@ -480,22 +480,21 @@ public class MainPage {
                         System.out.println("Your choice:");
                         int chose = scanner.nextInt();
                         Customer selectedCustomer = loanRequests.get(chose -1).getSender();
-                        Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(0);
-                        Request asistantRequest = curentBranch.getAssistantManager().getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(chose-1);
-                        Customer slcCustomer = slcRequest.getSender();
+                        Request selectedRequest = curentBranch.getAssistantManager().getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(chose-1);
+                        Customer slcCustomer = selectedRequest.getSender();
 
                         if (curentBranch.getAssistantManager().isEligibleForLoan(selectedCustomer)){
                             System.out.println("Customer does not have an active loan." + "\nLoan request sent to branch manager");
-                            curentBranch.getBranchManager().receiveRequest(slcRequest);
-                            curentBranch.getAssistantManager().clearMessageBox(asistantRequest);
-                            slcRequest.setStatus("Your loan application has been sent to the branch manager");
+                            curentBranch.getBranchManager().receiveRequest(selectedRequest);
+                            curentBranch.getAssistantManager().clearMessageBox(selectedRequest);
+                            selectedRequest.setStatus("Your loan application has been sent to the Branch Manager. || Assistant Manager: " + curentBranch.getAssistantManager().getFullName());
                         }else {
                             System.out.println("Active Customer Loans:");
                             for (int i = 0; i < slcCustomer.getActiveLoans().size(); i++) {
                                 slcCustomer.getActiveLoans().get(i).toString();
                             }
-                            curentBranch.getAssistantManager().clearMessageBox(asistantRequest);
-                            slcRequest.setStatus("You have an active loan. Your application has been denied.");
+                            curentBranch.getAssistantManager().clearMessageBox(selectedRequest);
+                            selectedRequest.setStatus("You have an active loan. Your application has been denied. || Assistant Manager: " + curentBranch.getAssistantManager().getFullName());
                         }
                     }
                     break;
@@ -511,7 +510,7 @@ public class MainPage {
         }
     }
 
-    // منوی تحویل‌دار: پردازش واریز/برداشت (با استفاده از secureWithdraw) و ارجاع درخواست معلق
+    // Teller menu
     static void processTeller(Scanner scanner , Teller selectedTeller , Branch curentBranch , Bank bank ) {
         boolean exit = false;
         while (!exit) {
@@ -576,13 +575,11 @@ public class MainPage {
                         }
                         System.out.println("Your choice:");
                         int chose = scanner.nextInt();
-                        Customer selectedCustomer = loanRequests.get(chose -1).getSender();
-                        Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(0);
-                        Request sltRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(chose-1);
-                        selectedTeller.clearMessageBox(sltRequest);
-                        curentBranch.getAssistantManager().receiveRequest(slcRequest);
-                            slcRequest.setStatus("Request referred to branch assistant"+ selectedTeller.getFullName() +"Delivery person");
-                        System.out.println("Request referred to the branch deputy");
+                        Request selectedRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(chose-1);
+                        selectedTeller.clearMessageBox(selectedRequest);
+                        curentBranch.getAssistantManager().receiveRequest(selectedRequest);
+                            selectedRequest.setStatus("Request referred to Assistant Manager || Teller: "+ selectedTeller.getFullName());
+                        System.out.println("Request referred to the Assistant manager");
 
                     }
                     break;
@@ -590,10 +587,10 @@ public class MainPage {
 
                    List<Request> opRequests = selectedTeller.getMessageBox().getRequestsByType(RequestType.OPEN_ACCOUNT);
                    if (opRequests.isEmpty()){
-                       System.out.println("No customer found in the waiting queue");
+                       System.out.println("No customer found in the waiting queue for Account opening");
                        break;
                        }else {
-                            System.out.println("Customers waiting for account opening");
+                            System.out.println("Customers waiting for account opening: ");
                             for (int i = 0 ; i < opRequests.size() ; i++){
                                 Request tmpR = opRequests.get(i);
                                 System.out.println((i + 1)  + "." +tmpR.getSender().getFullName());
@@ -601,20 +598,19 @@ public class MainPage {
                             System.out.println("Your choice:");
                             int chose = scanner.nextInt();
                             Customer selectedCustomer = opRequests.get(chose -1).getSender();
-                            Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.OPEN_ACCOUNT).get(0);
-                            Request sltRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.OPEN_ACCOUNT).get(chose-1);
+                            Request selectedRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.OPEN_ACCOUNT).get(chose-1);
 
-                            System.out.println("Client Message: " + slcRequest.getMessage() + "\n" + "Account opening operation in progress...");
+                            System.out.println("Client Message: " + selectedRequest.getMessage() + "\n" + "Account opening operation in progress...");
 
                             System.out.print("Please enter the initial deposit amount: ");
-                            int initialDeposit = scanner.nextInt();
+                            long initialDeposit = scanner.nextLong();
                             scanner.nextLine();
                             System.out.print("Please enter the account password: ");
                             String accountPassword = scanner.nextLine();
 
-                            selectedTeller.clearMessageBox(sltRequest);
+                            selectedTeller.clearMessageBox(selectedRequest);
 
-                            char accountType = slcRequest.getMessage().charAt(0);
+                            char accountType = selectedRequest.getMessage().charAt(0);
                             String newAccountNumber = bank.accountNumberCreator(accountType);
                             if (accountType == '1'){
 
@@ -622,8 +618,8 @@ public class MainPage {
                                 bank.addAccount(newAccount);
                                 curentBranch.addAccount(newAccount);
                                 selectedCustomer.openAccount(newAccount);
-                                slcRequest.setStatus("Dear Customer:" + selectedCustomer.getFullName() +"Your current account with password:" + accountPassword + " Account Number:" + newAccountNumber + "has been opened");
-                                System.out.print("Current account " + selectedCustomer.getFullName() + "opened");
+                                selectedRequest.setStatus("Dear Customer: " + selectedCustomer.getFullName() +" || Your current account with password: " + accountPassword + " || Account Number: " + newAccountNumber + " has been opened");
+                                System.out.print("Current account " + selectedCustomer.getFullName() + " opened");
                             }else if (accountType == '2'){
                                 System.out.println("Enter the date, for example (07/05/2025):");
                                 String input = scanner.nextLine();
@@ -635,15 +631,15 @@ public class MainPage {
                                 curentBranch.addAccount(newAccount);
                                 selectedCustomer.openAccount(newAccount);
                                 selectedCustomer.openShortTermAccount(newAccount);
-                                slcRequest.setStatus("Dear Customer:" + selectedCustomer.getFullName() +"Your short-term account with password:" + accountPassword + " Account Number:" + newAccountNumber + "has been opened");
+                                selectedRequest.setStatus("Dear Customer: " + selectedCustomer.getFullName() +" || Your short-term account with password: " + accountPassword + " || Account Number: " + newAccountNumber + " has been opened");
                                 System.out.print("Short-term account " + selectedCustomer.getFullName() + "opened");
                             }else if (accountType == '3') {
                                 QarzAlHasanehAccount newAccount = new QarzAlHasanehAccount(newAccountNumber , selectedCustomer , initialDeposit , accountPassword);
                                 bank.addAccount(newAccount);
                                 curentBranch.addAccount(newAccount);
                                 selectedCustomer.openAccount(newAccount);
-                                slcRequest.setStatus("Dear Mushtazi:" + selectedCustomer.getFullName() +"Your Qarz Al-Hasanah account with password:" + accountPassword + " Account Number:" + newAccountNumber + "has been opened");
-                                System.out.print("Qarz Al-Hasanah Account " + selectedCustomer.getFullName() + "Opened");
+                                selectedRequest.setStatus("Dear Mushtazi: " + selectedCustomer.getFullName() +" || Your Qarz Al-Hasanah account with password: " + accountPassword + " || Account Number: " + newAccountNumber + " has been opened");
+                                System.out.print("Qarz Al-Hasanah Account " + selectedCustomer.getFullName() + " Opened");
                             }
                        }
                     break;
@@ -653,7 +649,7 @@ public class MainPage {
                         System.out.println("No customer found in the waiting queue");
                         break;
                     }else {
-                        System.out.println("Customers waiting for account opening");
+                        System.out.println("Customers waiting for account closing");
                         for (int i = 0 ; i < clRequest.size() ; i++){
                             Request tmpR = clRequest.get(i);
                             System.out.println((i + 1)  + "." +tmpR.getSender().getFullName());
@@ -661,23 +657,22 @@ public class MainPage {
                         System.out.println("Your choice:");
                         int chose = scanner.nextInt();
                         Customer selectedCustomer = clRequest.get(chose -1).getSender();
-                        Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.CLOSE_ACCOUNT).get(0);
-                        Request sltRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.CLOSE_ACCOUNT).get(chose-1);
-                        String accountID = slcRequest.getMessage();
+                        Request selectedRequest = selectedTeller.getMessageBox().getRequestsByType(RequestType.CLOSE_ACCOUNT).get(chose-1);
+                        String accountID = selectedRequest.getMessage();
 
                         //checking Customer has active loan
                         if (selectedCustomer.hasActiveLoan()){
                             System.out.println("Customer has an active loan");
-                            slcRequest.setStatus("Dear customer, you have an active loan. Your account cannot be closed.");
-                            selectedTeller.clearMessageBox(sltRequest);
+                            selectedRequest.setStatus("Dear customer, you have an active loan. Your account cannot be closed.|| Teller: "+ selectedTeller.getFullName());
+                            selectedTeller.clearMessageBox(selectedRequest);
                             break;
                         }
                         System.out.println("Customer has no active loan, account closed successfully");
                         selectedCustomer.removeAccount(accountID);
                         curentBranch.removeAccount(accountID);
                         bank.removeAccount(accountID);
-                        slcRequest.setStatus("Your account with number: " + accountID + " has been successfully closed.");
-                        selectedTeller.clearMessageBox(sltRequest);
+                        selectedRequest.setStatus("Your account with number: " + accountID + " has been successfully closed.|| Teller: "+ selectedTeller.getFullName());
+                        selectedTeller.clearMessageBox(selectedRequest);
                     }
                     break;
 
@@ -691,7 +686,7 @@ public class MainPage {
     }
 
     // Branch Manager Menu: Approve or reject pending requests and view overall branch performance
-    static void processManager(Scanner scanner, Branch branch, Customer customer ,Bank bank) {
+    static void processManager(Scanner scanner, Branch curentBranch, Customer customer ,Bank bank) {
         boolean exit = false;
         while (!exit) {
             System.out.println("\n--- Branch Manager Menu ---");
@@ -712,7 +707,7 @@ public class MainPage {
             scanner.nextLine();
             switch(choice) {
                 case 1:
-                    List<Request> mRequests = branch.getBranchManager().getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST);
+                    List<Request> mRequests = curentBranch.getBranchManager().getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST);
                     if (mRequests.isEmpty()) {
                         System.out.println("No pending requests found.");
                     } else {
@@ -725,18 +720,21 @@ public class MainPage {
                         int chose = scanner.nextInt();
                         scanner.nextLine();
                         Customer selectedCustomer = mRequests.get(chose -1).getSender();
-                        Request slcRequest = selectedCustomer.getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(0);
-                        Request managerRequest = branch.getBranchManager().getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(chose-1);
-                        Customer slcCustomer = slcRequest.getSender();
-                        int loanType = Integer.parseInt(slcRequest.getMessage());
+                        Request selectedRequest = curentBranch.getBranchManager().getMessageBox().getRequestsByType(RequestType.LOAN_REQUEST).get(chose-1);
+                        int loanType = Integer.parseInt(selectedRequest.getMessage());
 
                         //Selecting customer's account for loan
-                        Account slcAccount = slcCustomer.findAccount(slcRequest.getAccountNumber());
+                        Account slcAccount = selectedCustomer.findAccount(selectedRequest.getAccountNumber());
 
                         switch (loanType) {
                             case 1:
-                                if ( (slcRequest.getLoanAmount() < slcCustomer.getNormalLoanCeiling()) &&  //The loan amount was checked to ensure it did not exceed the loan ceiling.
-                                     (slcRequest.getLoanAmount() < branch.getCurrentShortTermBalance())) {//The bank was checked to ensure it had sufficient financial resources.
+                                if ( (selectedRequest.getLoanAmount() > selectedCustomer.getNormalLoanCeiling()) ) {//The loan amount was checked to ensure it did not exceed the loan ceiling.
+                                    System.out.println("your loan amount is more than Normal loan ceiling");
+                                    selectedRequest.setStatus("your request REJECTED:  your loan amount is more than Normal loan ceiling || Branch Manager: " + curentBranch.getBranchManager().getFullName());
+                                    curentBranch.getBranchManager().clearMessageBox(selectedRequest);
+                                    break;
+                                }
+                                if ((selectedRequest.getLoanAmount() < curentBranch.getCurrentShortTermBalance())) {//The bank was checked to ensure it had sufficient financial resources.
 
                                     System.out.println("Enter the number of monthly installments:");
                                     int duration = scanner.nextInt();
@@ -746,22 +744,29 @@ public class MainPage {
                                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                                     LocalDate date = LocalDate.parse(input, formatter);
 
-                                    NormalLoan normalLoan = new NormalLoan(slcRequest.getLoanAmount() , duration , date ,slcCustomer);
-                                    slcCustomer.addLoan(normalLoan);
-                                    slcAccount.deposit((int) slcRequest.getLoanAmount());
-                                    slcRequest.setStatus("Dear Customer, your normal loan request has been approved and the amount:" +slcRequest.getLoanAmount() + " has been deposited into your account\n" +
-                                            "You are required to repay the loan during the" + duration + "months and in each installment of:" + normalLoan.installmentPerMonth() + "");
-                                    System.out.println("Loan credited to customer's account" + slcRequest.getLoanAmount());
-                                    branch.getBranchManager().clearMessageBox(managerRequest);
+                                    NormalLoan normalLoan = new NormalLoan(selectedRequest.getLoanAmount() , duration , date ,selectedCustomer);
+                                    selectedCustomer.addLoan(normalLoan);
+                                    slcAccount.deposit((int) selectedRequest.getLoanAmount());
+                                    selectedRequest.setStatus("Dear Customer, your normal loan request has been approved and the amount: (" +((int) selectedRequest.getLoanAmount()) + ")has been deposited into your account\n" +
+                                            "You are required to repay the loan during the: " + duration + "months || In each installment of: " + ((int) normalLoan.installmentPerMonth()) + "");
+                                    System.out.println("Loan credited to customer's account" + ((int) selectedRequest.getLoanAmount()));
+                                    curentBranch.getBranchManager().clearMessageBox(selectedRequest);
 
                                 }else {
-                                    System.out.println("something went wrong");
+                                    System.out.println("Bit bank balance  of midterm & short term accounts is not enough");
+                                    selectedRequest.setStatus("your request REJECTED:  Bit bank balance  of midterm & short term accounts is not enough. || Branch Manager: " + curentBranch.getBranchManager().getFullName());
+                                    curentBranch.getBranchManager().clearMessageBox(selectedRequest);
                                 }
                                 break;
 
                             case 2:
-                                if ((slcRequest.getLoanAmount() < slcCustomer.getTashilatCeiling()) &&  //The loan amount was checked to ensure it did not exceed the loan ceiling.
-                                     (slcRequest.getLoanAmount() < branch.getQarzAlhasanehBalance())){ //The bank was checked to ensure it had sufficient financial resources.
+                                if (! (selectedRequest.getLoanAmount() < selectedCustomer.getTashilatCeiling()) ) {  //The loan amount was checked to ensure it did not exceed the loan ceiling.
+                                    System.out.println("your loan amount is more than Normal loan ceiling");
+                                    selectedRequest.setStatus("your request REJECTED:  your loan amount is more than Normal loan ceiling. || Branch Manager: " + curentBranch.getBranchManager().getFullName());
+                                    curentBranch.getBranchManager().clearMessageBox(selectedRequest);
+                                    break;
+                                }
+                                if ((selectedRequest.getLoanAmount() < curentBranch.getQarzAlhasanehBalance())) { //The bank was checked to ensure it had sufficient financial resources.
 
                                     System.out.println("Enter the number of monthly installments:");
                                     int duration = scanner.nextInt();
@@ -771,16 +776,18 @@ public class MainPage {
                                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                                     LocalDate date = LocalDate.parse(input, formatter);
 
-                                    TashilatLoan tashilatLoan = new TashilatLoan(slcRequest.getLoanAmount() , duration , date ,slcCustomer);
-                                    slcCustomer.addLoan(tashilatLoan);
-                                    slcAccount.deposit((int) slcRequest.getLoanAmount());
-                                    slcRequest.setStatus("Dear customer, your loan application has been approved and the amount:" +slcRequest.getLoanAmount() + " has been deposited into your account\n" +
-                                            "You are required to repay the loan during the" + duration + "month and in each installment of:" + tashilatLoan.installmentPerMonth() + "" );
-                                    System.out.println("The loan has been deposited into the customer's account" + slcRequest.getLoanAmount());
-                                    branch.getBranchManager().clearMessageBox(managerRequest);
+                                    TashilatLoan tashilatLoan = new TashilatLoan(selectedRequest.getLoanAmount() , duration , date ,selectedCustomer);
+                                    selectedCustomer.addLoan(tashilatLoan);
+                                    slcAccount.deposit((int) selectedRequest.getLoanAmount());
+                                    selectedRequest.setStatus("Dear Customer, your tashilat loan request has been approved and the amount: (" +((int) selectedRequest.getLoanAmount()) + ")has been deposited into your account\n" +
+                                            "You are required to repay the loan during the: " + duration + "months || In each installment of: " + ((int) tashilatLoan.installmentPerMonth()) + "");
+                                    System.out.println("Loan credited to customer's account" + ((int) selectedRequest.getLoanAmount()));
+                                    curentBranch.getBranchManager().clearMessageBox(selectedRequest);
 
                                 }else {
-                                    System.out.println("something went wrong");
+                                    System.out.println("Bit bank balance  of Qarzalhasaneh accounts is not enough");
+                                    selectedRequest.setStatus("your request REJECTED:  Bit bank balance  of Qarzalhasaneh accounts is not enough|| Branch Manager: " + curentBranch.getBranchManager().getFullName());
+                                    curentBranch.getBranchManager().clearMessageBox(selectedRequest);
                                 }
                                 break;
 
@@ -790,7 +797,7 @@ public class MainPage {
                     }
                     break;
                 case 2:
-                    bank.displayInfo();
+                    curentBranch.displayInfo();
                     break;
                 case 3:
                     exit = true;
@@ -812,7 +819,7 @@ public class MainPage {
                     "2. Create New Branch Assistant",
                     "3. Create New Branch Manager",
                     "4. Create New Branch",
-                    "5. View Branch Information",
+                    "5. View Bank Information",
                     "6. Return to Main Menu"
             };
 
@@ -975,7 +982,7 @@ public class MainPage {
                     System.out.println("Branch with number: " + branchNumber + "created");
                     break;
                 case 5:
-                    branch.displayInfo();
+                    bank.displayInfo();
                     break;
                 case 6:
                     exit = true;

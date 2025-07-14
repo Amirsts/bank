@@ -12,7 +12,6 @@ import java.time.LocalDate;
 
 public class BranchManager extends Employee  {
 
-    private MessageBox messageBox = new MessageBox();
 
     public BranchManager(String firstName, String lastName, String birthDay, String nationalCode,
                          String address, String phoneNum, String employeeId , String passWord) {
@@ -20,10 +19,5 @@ public class BranchManager extends Employee  {
         super(firstName, lastName, birthDay, nationalCode, address, phoneNum, employeeId, 80000000 ,passWord);
 
     }
-
-    public MessageBox getMessageBox() {
-        return messageBox;
-    }
-
 
 }

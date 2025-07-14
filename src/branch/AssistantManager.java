@@ -9,7 +9,7 @@ import message.MessageBox;
 
 public class AssistantManager extends Employee  {
 
-    private MessageBox messageBox = new MessageBox();
+
 
     public AssistantManager(String firstName, String lastName, String birthDay, String nationalCode,
                             String address, String phoneNum, String employeeId , String passWord) {
@@ -20,10 +20,6 @@ public class AssistantManager extends Employee  {
     }
     public boolean isEligibleForLoan(Customer customer){
         return customer.getActiveLoans().isEmpty();
-    }
-
-    public MessageBox getMessageBox() {
-        return messageBox;
     }
 
 

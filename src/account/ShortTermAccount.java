@@ -9,7 +9,7 @@ public class ShortTermAccount extends Account {
     private LocalDate dateOpenAccount;
 
 
-    public ShortTermAccount(String accountNumber , Customer owner , int balance , String passWord ,LocalDate dateOpenAccount) {
+    public ShortTermAccount(String accountNumber , Customer owner , long balance , String passWord ,LocalDate dateOpenAccount) {
         super(accountNumber, owner , balance , passWord);
         if (!accountNumber.startsWith("02")) {
             throw new IllegalArgumentException("Short-term account number must start with '02'.");

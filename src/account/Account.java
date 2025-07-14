@@ -10,13 +10,13 @@ import java.util.Map;
 
 public abstract class Account implements IsPassWordTrue{
     private String accountId;
-    int balance;
+    long balance;
     private Customer owner;
     private String passWord;
     private Map<LocalDate, Integer> dailyTransfers ;
 
 
-    public Account(String accountId, Customer owner, int balance ,String passWord) {
+    public Account(String accountId, Customer owner, long balance ,String passWord) {
         if (accountId == null || !accountId.matches("\\d{13}")) {
             throw new IllegalArgumentException("Account number must be 13 digits.");
         }
@@ -35,11 +35,11 @@ public abstract class Account implements IsPassWordTrue{
         return accountId;
     }
 
-    public int getBalance() {
+    public long getBalance() {
         balance -= 1000;
         return balance;
     }
-    public int getBalanceForBank() {
+    public long getBalanceForBank() {
         return balance;
     }
 
