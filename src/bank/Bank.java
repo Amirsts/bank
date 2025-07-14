@@ -180,7 +180,7 @@ public class Bank implements Displayable , FindAccount {
 
 
 
-    public void transferBetweenCustomers(String fromAccountNumber, String toAccountNumber, int amount, String password)
+    public void transferBetweenCustomers(String fromAccountNumber, String toAccountNumber, int amount, String password , LocalDate dateTransfer)
             throws AccountNotFoundException, IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException, DailyTransferLimitExceededException {
 
         Account from = findAccount(fromAccountNumber);
@@ -189,8 +189,7 @@ public class Bank implements Displayable , FindAccount {
         if (from == null || to == null)
             throw new AccountNotFoundException("One of the accounts was not found.");
 
-        LocalDate testDate = LocalDate.of(2025,6,9);
-        from.recordTransfer(amount , testDate );
+        from.recordTransfer(amount , dateTransfer );
 
         from.secureWithdraw(amount, password);
         to.deposit(amount);

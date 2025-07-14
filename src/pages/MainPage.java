@@ -71,14 +71,14 @@ public class MainPage {
         boolean exitSystem = false;
         Branch currentBranch = branch; // Input Branch (several usage)
         while (!exitSystem) {
-            System.out.println("\n--- Main Menu ---");
+            System.out.println("\n--- " + bank.name + " ---\nMain Menu: ");
 
             String[] menuItems = {
                     "1. Customer Operations (Customer Login)",
-                    "2. Branch Assistant",
-                    "3. Teller",
+                    "2. Teller",
+                    "3. Assistant Manager",
                     "4. Branch Manager",
-                    "5. Bank Director",
+                    "5. Bank Manager",
                     "6. Change Branch",
                     "7. Register New Customer",
                     "8. Exit System"
@@ -101,13 +101,13 @@ public class MainPage {
                     }
                     break;
                 case 2:
-                    processAssistantManager(scanner, currentBranch ); // AssistantManager's menu
-                    break;
-                case 3:
                     Teller selectedTeller = selectTeller(scanner , branch); // Teller's enter point
                     if (selectedTeller != null) {
                         processTeller(scanner,selectedTeller , currentBranch ,bank ); // Teller's menu
                     }
+                    break;
+                case 3:
+                    processAssistantManager(scanner, currentBranch ); // AssistantManager's menu
                     break;
                 case 4:
                     processManager(scanner, currentBranch, customer , bank); // BranchManager's menu
@@ -251,13 +251,18 @@ public class MainPage {
                     String fromAccount = scanner.nextLine(); // Receive inputs for the money transfer method
                     System.out.print("Destination account number: ");
                     String toAccount = scanner.nextLine();
-                    System.out.print("Transfer amount: ");
+                    String name = bank.findAccount(toAccount).getOwner().getFullName();
+                    System.out.print("Destination customer is: " + name + "\nTransfer amount: ");
                     int amount = scanner.nextInt();
                     scanner.nextLine();
+                    System.out.println("Enter the payment date, for example (07/05/2025):");
+                    String inp = scanner.nextLine();
+                    DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDate dateTransfer = LocalDate.parse(inp, format);
                     System.out.print("Password: ");
                     String password = scanner.nextLine();
                     try {
-                        bank.transferBetweenCustomers(fromAccount, toAccount, amount, password); // Assigning values
+                        bank.transferBetweenCustomers(fromAccount, toAccount, amount, password , dateTransfer); // Assigning values
                         System.out.println("The transfer was successful.");
                     } catch (Exception e) {
                         System.out.println("Error in money transfer: " + e.getMessage());
@@ -303,7 +308,7 @@ public class MainPage {
                         // Show loan details
                         BaseLoan loan = customer.getActiveLoans().get(0);
                         System.out.println(MessageFormat.format("Loan Details:\nTotal Loan Amount:{0}\nTotal Amount Repaid by Customer:{1}\nTotal Amount Remaining in Installments:{2}\nNumber of Remaining Installments:{3} Installment Amount:{4}",
-                                loan.getLoanAmount(), loan.getPaidAmount(), loan.getRemainingAmount(), loan.getfDuration(), (int) loan.installmentPerMonth()));
+                                ((int) loan.getLoanAmount()), ((int) loan.getPaidAmount()), ((int) loan.getRemainingAmount()), loan.getfDuration(), (int) loan.installmentPerMonth()));
 
                         System.out.println("1. Installment Payment" + "\n2. Return" + "\nYour choice:");
                         int chose = scanner.nextInt();
@@ -449,7 +454,7 @@ public class MainPage {
     static void processAssistantManager(Scanner scanner, Branch curentBranch) {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\n--- Branch Assistant Menu ---");
+            System.out.println("\n--- Assistant Manager Menu ---");
 
             String[] assistantMenuItems = {
                     "1. Review Loan Requests",
@@ -489,12 +494,9 @@ public class MainPage {
                             curentBranch.getAssistantManager().clearMessageBox(selectedRequest);
                             selectedRequest.setStatus("Your loan application has been sent to the Branch Manager. || Assistant Manager: " + curentBranch.getAssistantManager().getFullName());
                         }else {
-                            System.out.println("Active Customer Loans:");
-                            for (int i = 0; i < slcCustomer.getActiveLoans().size(); i++) {
-                                slcCustomer.getActiveLoans().get(i).toString();
-                            }
+                            System.out.println("Customer has an active loan:");
                             curentBranch.getAssistantManager().clearMessageBox(selectedRequest);
-                            selectedRequest.setStatus("You have an active loan. Your application has been denied. || Assistant Manager: " + curentBranch.getAssistantManager().getFullName());
+                            selectedRequest.setStatus("Your request REJECTED ,Yuo have active loan. || Assistant Manager: " + curentBranch.getAssistantManager().getFullName());
                         }
                     }
                     break;
@@ -749,7 +751,7 @@ public class MainPage {
                                     slcAccount.deposit((int) selectedRequest.getLoanAmount());
                                     selectedRequest.setStatus("Dear Customer, your normal loan request has been approved and the amount: (" +((int) selectedRequest.getLoanAmount()) + ")has been deposited into your account\n" +
                                             "You are required to repay the loan during the: " + duration + "months || In each installment of: " + ((int) normalLoan.installmentPerMonth()) + "");
-                                    System.out.println("Loan credited to customer's account" + ((int) selectedRequest.getLoanAmount()));
+                                    System.out.println("Loan credited to customer's account: " + ((int) selectedRequest.getLoanAmount()));
                                     curentBranch.getBranchManager().clearMessageBox(selectedRequest);
 
                                 }else {
@@ -781,7 +783,7 @@ public class MainPage {
                                     slcAccount.deposit((int) selectedRequest.getLoanAmount());
                                     selectedRequest.setStatus("Dear Customer, your tashilat loan request has been approved and the amount: (" +((int) selectedRequest.getLoanAmount()) + ")has been deposited into your account\n" +
                                             "You are required to repay the loan during the: " + duration + "months || In each installment of: " + ((int) tashilatLoan.installmentPerMonth()) + "");
-                                    System.out.println("Loan credited to customer's account" + ((int) selectedRequest.getLoanAmount()));
+                                    System.out.println("Loan credited to customer's account: " + ((int) selectedRequest.getLoanAmount()));
                                     curentBranch.getBranchManager().clearMessageBox(selectedRequest);
 
                                 }else {
