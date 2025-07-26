@@ -62,13 +62,13 @@ public class Branch implements Displayable ,FindAccount {
         return customers;
     }
 
-    public double getCurrentShortTermBalance() {
-        double balance = 0;
+    public long getCurrentShortTermBalance() {
+        long balance = 0;
 
         for (int i = 0; i < accounts.size(); i++) {
             String accId = accounts.get(i).getAccountId();
             if (accId.startsWith("01") || accId.startsWith("02")) {
-                balance += accounts.get(i).getBalance();
+                balance += accounts.get(i).getBalanceForBank();
             }
         }
 
@@ -76,11 +76,11 @@ public class Branch implements Displayable ,FindAccount {
     }
 
 
-    public double getQarzAlhasanehBalance(){
-        double balance = 0;
+    public long getQarzAlhasanehBalance(){
+        long balance = 0;
         for (int i = 0 ; i < accounts.size() ; i++ ){
             if (accounts.get(i).getAccountId().startsWith("03")){
-                balance += accounts.get(i).getBalance();
+                balance += accounts.get(i).getBalanceForBank();
             }
         }
 
@@ -143,8 +143,8 @@ public class Branch implements Displayable ,FindAccount {
         for (Customer customer : customers) {
             out.println("Customer:" + customer.getFullName());
         }
-        out.println("Current & Shortterm Accounts balance: " + ((int) getCurrentShortTermBalance()));
-        out.println("QarzAlhasaneh Accounts: " + ((int) getQarzAlhasanehBalance()));
+        out.println("Current & Shortterm Accounts balance: " + ( getCurrentShortTermBalance()));
+        out.println("QarzAlhasaneh Accounts: " + ( getQarzAlhasanehBalance()));
     }
 
     public void displayCustomers(){

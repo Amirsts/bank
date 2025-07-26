@@ -74,7 +74,7 @@ public abstract class Account implements IsPassWordTrue{
         }
 
         balance -= amount;
-        System.out.println(" successful withdraw: " + amount + " || balance Tooman: " + balance);
+        System.out.println(" successful withdraw: " + amount + " ||     balance Tooman: " + balance);
     }
 
 
@@ -94,7 +94,7 @@ public abstract class Account implements IsPassWordTrue{
         }
 
         balance -= amount;
-        System.out.println(" successful withdraw " + amount + " balance Tooman " + balance);
+        System.out.println(" successful withdraw " + amount + " Tooman || balance: " + balance);
     }
 
     public void recordTransfer(int amount, LocalDate date) throws DailyTransferLimitExceededException {

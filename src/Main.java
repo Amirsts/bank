@@ -5,10 +5,9 @@ public class Main{
         /* Making this part of project is suggested by ROBIN (Mobin Rangsaz)
            to have more orderly Main class
 
-                          This project was created with passion
-                                         by:
-
-                                 AMIRMOHAMMAD & POURIA
+                      This project was created with passion
+                                     by:
+                                     AMIRMOHAMMAD & POURIA
 
 
 

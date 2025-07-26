@@ -640,7 +640,7 @@ public class MainPage {
                                 bank.addAccount(newAccount);
                                 curentBranch.addAccount(newAccount);
                                 selectedCustomer.openAccount(newAccount);
-                                selectedRequest.setStatus("Dear Mushtazi: " + selectedCustomer.getFullName() +" || Your Qarz Al-Hasanah account with password: " + accountPassword + " || Account Number: " + newAccountNumber + " has been opened");
+                                selectedRequest.setStatus("Dear Customer: " + selectedCustomer.getFullName() +" || Your Qarz Al-Hasanah account with password: " + accountPassword + " || Account Number: " + newAccountNumber + " has been opened");
                                 System.out.print("Qarz Al-Hasanah Account " + selectedCustomer.getFullName() + " Opened");
                             }
                        }
@@ -762,9 +762,9 @@ public class MainPage {
                                 break;
 
                             case 2:
-                                if (! (selectedRequest.getLoanAmount() < selectedCustomer.getTashilatCeiling()) ) {  //The loan amount was checked to ensure it did not exceed the loan ceiling.
-                                    System.out.println("your loan amount is more than Normal loan ceiling");
-                                    selectedRequest.setStatus("your request REJECTED:  your loan amount is more than Normal loan ceiling. || Branch Manager: " + curentBranch.getBranchManager().getFullName());
+                                if ((selectedRequest.getLoanAmount() > selectedCustomer.getTashilatCeiling()) ) {  //The loan amount was checked to ensure it did not exceed the loan ceiling.
+                                    System.out.println("your loan amount is more than Tashilat loan ceiling");
+                                    selectedRequest.setStatus("your request REJECTED:  your loan amount is more than Tashilat loan ceiling. || Branch Manager: " + curentBranch.getBranchManager().getFullName());
                                     curentBranch.getBranchManager().clearMessageBox(selectedRequest);
                                     break;
                                 }
@@ -814,7 +814,7 @@ public class MainPage {
     static void processBankManager(Scanner scanner, Branch branch ,Bank bank) {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\n--- Bank Director Menu ---");
+            System.out.println("\n--- Bank Manager Menu ---");
 
             String[] directorMenuItems = {
                     "1. Create New Teller",

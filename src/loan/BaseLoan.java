@@ -78,7 +78,7 @@ public abstract class   BaseLoan {
     public void pay(double amount ,LocalDate datePay) {
         if (amount == installmentPerMonth()) {
             this.paidAmount += amount;
-            System.out.println("amount: " + amount + "Toman was paid on the loan.");
+            System.out.println("amount: " + ((long) amount) + " Toman was paid on the loan.");
             fDuration--;
             nowPayTime = datePay;
         }else {
@@ -103,7 +103,7 @@ public abstract class   BaseLoan {
             double penalty = calculatePenalty(monthsSinceStart);
             totalAmount += penalty;
 
-            System.out.println("Penalty of " + penalty + " Toman applied due to " + (monthsSinceStart - 1) + " months delay.");
+            System.out.println("Penalty of: " + ((long) penalty) + " Toman applied due to " + (monthsSinceStart - 1) + " months delay.");
         }
 
         if (paidAmount >= totalAmount) {
