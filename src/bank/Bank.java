@@ -110,6 +110,13 @@ public class Bank implements Displayable , FindAccount {
                 .findFirst().orElse(null);
     }
 
+    public Customer findCustomerByID(String customerId){
+        for (Customer c : customers){
+            if (c.getCustomerId().equals(customerId)){return c;}
+        }
+        return null;
+    }
+
 
     //reports
     public List<Branch> getBranches(){

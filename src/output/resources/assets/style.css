@@ -1,0 +1,87 @@
+/* بارگذاری فونت */
+@font-face {
+    -fx-font-family: "Vazirmatn Light";
+    src: url('../fonts/Vazirmatn-Light.ttf');
+}
+
+
+.root {
+    -fx-background-color: #1E1F25;
+-fx-font-family: "Vazirmatn Light";
+
+    -fx-font-weight: 300; /* اعمال وزن Light */
+    -fx-padding: 20;
+}
+
+#username, #password, #loginButton, .hyperlink {
+-fx-font-family: "Vazirmatn Light";
+
+    -fx-font-weight: 300;
+}
+
+#logoView {
+    -fx-translate-y: -30px;
+}
+
+.label {
+    -fx-text-fill: #BBBBBB;
+    -fx-font-size: 14px;
+}
+
+.login-box {
+-fx-font-family: "Vazirmatn Light";
+
+    -fx-font-weight: 300;
+    -fx-background-color: #2C2E35;
+    -fx-background-radius: 15;
+    -fx-border-color: #5294e2;
+    -fx-border-radius: 15;
+    -fx-border-width: 0;
+    -fx-padding: 15;
+}
+
+#username {
+    -fx-padding: 0 0 17 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #5c5c5c transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: gray;
+    -fx-font-size: 14px;
+}
+
+#password {
+    -fx-padding: 7 0 0 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: gray;
+    -fx-font-size: 14px;
+}
+#loginButton {
+    -fx-font-size: 18px;
+}
+
+.button {
+    -fx-background-color: #4A90E2;
+    -fx-text-fill: black;
+    -fx-background-radius: 10;
+    -fx-font-size: 15px;
+    -fx-padding: 10;
+    -fx-min-width: 315px;
+}
+
+.button:hover {
+    -fx-background-color: #357ABD;
+}
+
+.hyperlink {
+    -fx-text-fill: #3498db;
+    -fx-font-size: 14px;
+    -fx-padding: 0 0 0 0;
+}
+
+.versionText {
+    -fx-font-size: 14px;
+}

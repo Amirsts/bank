@@ -1,4 +1,4 @@
-package pages;
+package output;
 
 import account.Account;
 import account.CurrentAccount;
