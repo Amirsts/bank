@@ -28,7 +28,7 @@ public class Main extends Application {
         SceneManager.addScene("login", LoginPage.getLoginScene());
         SceneManager.addScene("customerMenu", CustomerMenu.getCustomerMenu());
         SceneManager.addScene("creatingNewAccount", CustomerMenu.creatingNewAccount());
-
+        SceneManager.addScene("transfer" , CustomerMenu.transfer());
         SceneManager.switchTo("login");
     }
 }

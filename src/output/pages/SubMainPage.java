@@ -34,7 +34,6 @@ public class SubMainPage {
         // Creating a bankS and branches
         Bank bankS = bank;
 
-
         Branch branchS = branch;
 
         BranchManager branchManager = new BranchManager(

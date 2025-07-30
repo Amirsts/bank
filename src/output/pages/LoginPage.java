@@ -14,7 +14,7 @@ import output.SceneManager;
 import person.Customer;
 
 public class LoginPage {
-    static Customer selectedCustomer = new Customer();
+    static Customer selectedCustomer ;
 
     public static Scene getLoginScene() {
 
@@ -40,19 +40,20 @@ public class LoginPage {
         inputBox.getChildren().addAll(userNameField, passwordField);
         // END of input box
 
-        Button loginButton = new Button("ورود به بیت بانک");
+        Button loginButton = new Button("ورود به بیت بانک اصلی");
         loginButton.setOnAction(e -> {
             String user = userNameField.getText();
             String pass = passwordField.getText();
             if (SubMainPage.bank.findCustomerByID(user) != null ) {
                 selectedCustomer = SubMainPage.selectCustomer(user);
+                selectedCustomer.displayInfo();
                 SceneManager.switchTo("customerMenu");
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "نام کاربری و رمز عبور را وارد کنید");
                 alert.showAndWait();
             }
         });
-
+        loginButton.setId("loginButton");
         // نسخه
         Text versionText = new Text("Version 3.0.1");
         versionText.getStyleClass().add("versionText");

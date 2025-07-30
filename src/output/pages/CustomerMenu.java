@@ -1,33 +1,45 @@
 package output.pages;
 
 
+import account.Account;
 import bank.Bank;
 import branch.Branch;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import output.SceneManager;
 import person.Customer;
+import request.Request;
+import request.RequestType;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class CustomerMenu {
-    Bank bank = SubMainPage.bank;
-    Branch branch = SubMainPage.branch;
-    Customer customer = LoginPage.selectedCustomer;
 
     public static Scene getCustomerMenu() {
+        // فونت دلخواه (اختیاری)
+        Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
+
         // ریشه صفحه
         VBox root = new VBox(15);
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: #1c1f2e;");
 
-        // فونت دلخواه (اختیاری)
-        Font font = Font.loadFont(CustomerMenu.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
+
 
         // عنوان
         Text title = new Text("منوی خدمات");
@@ -52,18 +64,13 @@ public class CustomerMenu {
         for (String action : actions) {
             Button btn = new Button(action);
             btn.setPrefWidth(260);
-            btn.setStyle(
-                    "-fx-background-color: #2a2d3e; " +
-                            "-fx-text-fill: #ffffff; " +
-                            "-fx-background-radius: 10; " +
-                            "-fx-font-size: 14px;"
-            );
+            btn.setId("normal-buttons");
             switch (action) {
                 case "افتتاح حساب جدید" :
                     btn.setOnAction(e -> SceneManager.switchTo("creatingNewAccount"));
                     break;
                 case "انتقال وجه" :
-                    btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
+                    btn.setOnAction(e -> SceneManager.switchTo("transfer"));
                     break;
                 case "درخواست وام" :
                     btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
@@ -91,8 +98,9 @@ public class CustomerMenu {
         }
 
         root.getChildren().addAll(title, buttonBox);
-
-        return new Scene(root, 360, 640);
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+        return scene;
     }
 
 
@@ -106,7 +114,7 @@ public class CustomerMenu {
         root.setStyle("-fx-background-color: #1c1f2e;");
 
         // فونت دلخواه (اختیاری)
-        Font font = Font.loadFont(CustomerMenu.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
+        Font.loadFont(CustomerMenu.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
 
         // عنوان
         Text title = new Text("نوع حساب خود را انتخاب کنید");
@@ -117,8 +125,8 @@ public class CustomerMenu {
         String[] actions = {
                 "حساب جاری",
                 "حساب کوتاه مدت",
-                "حساب قرض الحسنه"
-                ,"بازگشت به منوی قبلی"
+                "حساب قرض الحسنه",
+                "بازگشت به منوی قبلی",
         };
 
         VBox buttonBox = new VBox(12);
@@ -127,35 +135,156 @@ public class CustomerMenu {
         for (String action : actions) {
             Button btn = new Button(action);
             btn.setPrefWidth(260);
-            btn.setStyle(
-                    "-fx-background-color: #2a2d3e; " +
-                            "-fx-text-fill: #ffffff; " +
-                            "-fx-background-radius: 10; " +
-                            "-fx-font-size: 14px;"
-            );
+            btn.setId("normal-buttons");
             switch (action) {
-                case "حساب جاری" :
-                    btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
-                    break;
-                case " حساب کوتاه مدت" :
-                    btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
-                    break;
-                case "حساب قرض الحسنه" :
-                    btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
+                case "حساب جاری", "حساب کوتاه مدت", "حساب قرض الحسنه":
+                    btn.setOnAction(e -> createRequest(action));
                     break;
                 case "بازگشت به منوی قبلی" :
                     btn.setOnAction(e -> SceneManager.switchTo("customerMenu"));
                     break;
-                default:
-                    System.out.println("دکمه ناموجود انتخاب شده است");
             }
 
             buttonBox.getChildren().add(btn);
         }
 
-        root.getChildren().addAll(title, buttonBox);
 
-        return new Scene(root, 360, 640);
+        root.getChildren().addAll(title, buttonBox);
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+        return scene;
+    }
+
+
+
+
+    public static Scene transfer() {
+
+        Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
+
+        // start of information box
+        VBox infoBox = new VBox(0);
+        infoBox.getStyleClass().add("login-box");
+
+        TextField fromAccount = new TextField();
+        fromAccount.setPromptText("شماره حساب مبدا");
+        fromAccount.setId("from-account");
+
+        TextField toAccount = new TextField();
+        toAccount.setPromptText("شماره حساب مقصد");
+        toAccount.setId("to-account");
+
+        TextField destinationAccountName = new TextField();
+        destinationAccountName.setEditable(false);
+        destinationAccountName.setId("DAName");
+        toAccount.setOnAction(e -> {
+            String accNumber = toAccount.getText();
+            Account acc = SubMainPage.bank.findAccount(accNumber);
+
+            if (acc != null) {
+                destinationAccountName.setPromptText("واریز به: " + acc.getOwner().getFullName());
+            } else {
+                destinationAccountName.setPromptText("حساب یافت نشد");
+            }
+        });
+
+        TextField amount = new TextField();
+        amount.setPromptText("مبلغ");
+        amount.setId("amount");
+
+        TextField date = new TextField();
+        date.setPromptText("تاریخ را وارد کنید (01/01/1404)");
+        date.setId("date");
+
+        TextField passWord = new TextField();
+        passWord.setPromptText("رمز");
+        passWord.setId("password");
+
+        infoBox.getChildren().addAll(fromAccount, toAccount , destinationAccountName, amount, date, passWord);
+        // END of information box
+
+
+        Button register = new Button("پرداخت");
+        register.setId("register");
+
+        register.setOnAction(e -> {
+            if (transferBetweenAccounts(fromAccount.getText(), toAccount.getText(), Integer.valueOf(amount.getText()), date.getText(), passWord.getText())) {
+                 SceneManager.switchTo("customerMenu");
+            } else {
+
+                Alert alert = new Alert(Alert.AlertType.ERROR, "تراکنش انجام نشد");
+                alert.showAndWait();
+            }
+        });
+        VBox centerBox = new VBox(10,infoBox, register);
+        centerBox.setAlignment(Pos.CENTER);
+
+
+        BorderPane root = new BorderPane();
+        root.setCenter(centerBox);
+        root.setPadding(new Insets(20));
+
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+
+        return scene;
+    }
+
+
+
+
+    public static void createRequest(String text) {
+        if (LoginPage.selectedCustomer == null) {
+            System.err.println("Customer is not selected!");
+            return;
+        }
+
+        if (LoginPage.selectedCustomer.getMessageBox() == null) {
+            // یا MessageBox را ایجاد کنید
+            // یا خطا نمایش دهید
+            System.err.println("MessageBox is not initialized for customer!");
+            return;
+        }
+
+        if (SubMainPage.currentBranch == null || SubMainPage.currentBranch.getSolitudeTeller() == null) {
+            System.err.println("Branch or Teller is not initialized!");
+            return;
+        }
+
+        Request openAccountRequest = new Request(RequestType.OPEN_ACCOUNT, text, LoginPage.selectedCustomer);
+        LoginPage.selectedCustomer.getMessageBox().addRequest(openAccountRequest);
+        SubMainPage.currentBranch.getSolitudeTeller().receiveRequest(openAccountRequest);
+        System.out.println("Your account creation request has been registered.");
+        LoginPage.selectedCustomer.displayInfo();
+        // نمایش پیام به کاربر
+    }
+
+    public static boolean transferBetweenAccounts(String FromAccount , String ToAccount , int Amount , String date , String PassWord) {
+
+        System.out.println("Transfer funds between your accounts...");
+        System.out.print("Originating account number: ");
+        String fromAccount = FromAccount; // Receive inputs for the money transfer method
+        System.out.print("Destination account number: ");
+        String toAccount = ToAccount;
+        String name = SubMainPage.bank.findAccount(toAccount).getOwner().getFullName();
+        System.out.print("Destination customer is: " + name + "\nTransfer amount: ");
+        int amount = Amount;
+        System.out.println("Enter the payment date, for example (07/05/2025):");
+        String inp = date;
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate dateTransfer = LocalDate.parse(inp, format);
+        System.out.print("Password: ");
+        String password = PassWord;
+        try {
+            SubMainPage.bank.transferBetweenCustomers(fromAccount, toAccount, amount, password , dateTransfer); // Assigning values
+            System.out.println("The transfer was successful.");
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("Error in money transfer: " + e.getMessage());
+            return false;
+        }
+
     }
 }
 

@@ -13,8 +13,7 @@ import loan.BaseLoan;
 import loan.NormalLoan;
 import loan.TashilatLoan;
 import person.Customer;
-import request.Request;
-import request.RequestType;
+import request.*;
 import exceptions.*;
 
 import java.text.MessageFormat;
