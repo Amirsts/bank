@@ -11,8 +11,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import output.SceneManager;
+import person.Customer;
 
 public class LoginPage {
+    static Customer selectedCustomer = new Customer();
 
     public static Scene getLoginScene() {
 
@@ -43,7 +45,8 @@ public class LoginPage {
             String user = userNameField.getText();
             String pass = passwordField.getText();
             if (SubMainPage.bank.findCustomerByID(user) != null ) {
-                SceneManager.switchTo("services");
+                selectedCustomer = SubMainPage.selectCustomer(user);
+                SceneManager.switchTo("customerMenu");
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "نام کاربری و رمز عبور را وارد کنید");
                 alert.showAndWait();

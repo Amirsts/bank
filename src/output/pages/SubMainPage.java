@@ -7,6 +7,9 @@ import branch.AssistantManager;
 import branch.Teller;
 import person.Customer;
 
+import java.util.List;
+import java.util.Scanner;
+
 public class SubMainPage {
 
     static Bank bank = new Bank();
@@ -65,5 +68,25 @@ public class SubMainPage {
         Teller teller = new Teller("Ali","asghari","1986-12-20", "0965656654","mashad" , "09064563232","2", "2");
         bankS.addEmployee(teller);
         branchS.addTeller(teller);
+    }
+
+    // Customer selection among bank customers
+    static Customer selectCustomer(String customerID) {
+        List<Customer> customers = bank.getCustomers(); // Creating a list from customers of bank
+        if (customers.isEmpty()) {
+            System.out.println("There are no registered customers.");
+            return null;
+        }
+        String cID = customerID;
+
+        for (int i = 0; i < customers.size(); i++) {
+            Customer tempC = customers.get(i);
+
+            if (tempC.getCustomerId().equals(cID)){
+                return customers.get(i);
+            }
+        }
+        System.out.println("Customer not found, please try again.");
+        return null;
     }
 }

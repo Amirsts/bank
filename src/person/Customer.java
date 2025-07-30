@@ -24,6 +24,7 @@ public class Customer extends Person implements Displayable , Loanable , FindAcc
     private Map<LocalDate, Integer> dailyTransfers ;
 
 
+    public Customer() {}
 
     public Customer(String firstName ,String lastName , String birthDay , String nationalId
             , String address , String phoneNum , String customerId  ){

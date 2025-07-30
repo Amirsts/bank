@@ -26,7 +26,8 @@ public class Main extends Application {
         SceneManager mainfx = new SceneManager();
         SceneManager.setStage(stage);
         SceneManager.addScene("login", LoginPage.getLoginScene());
-        SceneManager.addScene("services", ServicesPage.getServicesScene());
+        SceneManager.addScene("customerMenu", CustomerMenu.getCustomerMenu());
+        SceneManager.addScene("creatingNewAccount", CustomerMenu.creatingNewAccount());
 
         SceneManager.switchTo("login");
     }
