@@ -1,5 +1,6 @@
 package output.pages;
 
+import account.CurrentAccount;
 import bank.Bank;
 import branch.Branch;
 import branch.BranchManager;
@@ -55,6 +56,10 @@ public class SubMainPage {
         );
         bankS.addCustomer(customer);
         branchS.addCustomer(customer);
+        CurrentAccount accountMobin = new CurrentAccount("0113269874987",customer,500000000, "1384");
+        customer.openAccount(accountMobin);
+        bankS.addAccount(accountMobin);
+        branchS.addAccount(accountMobin);
 
         Customer customer1 = new Customer(
                 "Amirmohammad", "Mohammadi", "1985-07-20", "1029384756",
@@ -62,6 +67,11 @@ public class SubMainPage {
         );
         bankS.addCustomer(customer1);
         branchS.addCustomer(customer1);
+        CurrentAccount accountAmir = new CurrentAccount("0101919244970",customer1,500000000, "1384");
+        customer1.openAccount(accountAmir);
+        bankS.addAccount(accountAmir);
+        branchS.addAccount(accountAmir);
+
 
         // Creating Account for customer
         Teller teller = new Teller("Ali","asghari","1986-12-20", "0965656654","mashad" , "09064563232","2", "2");

@@ -15,9 +15,9 @@ public class Main extends Application {
 
 
                                                                             */
-       //MainPage.firstPage();
-       SubMainPage.subMainPage();
-       launch(args);
+     // MainPage.firstPage();
+     SubMainPage.subMainPage();
+     launch(args);
 
     }
 
@@ -29,6 +29,8 @@ public class Main extends Application {
         SceneManager.addScene("customerMenu", CustomerMenu.getCustomerMenu());
         SceneManager.addScene("creatingNewAccount", CustomerMenu.creatingNewAccount());
         SceneManager.addScene("transfer" , CustomerMenu.transfer());
+        SceneManager.addScene("loanRequest",CustomerMenu.loanRequest());
         SceneManager.switchTo("login");
+
     }
 }

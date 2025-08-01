@@ -61,12 +61,12 @@
 }
 
 #loginButton {
-        -fx-background-color: #4A90E2;
-        -fx-text-fill: black;
-        -fx-background-radius: 10;
-        -fx-font-size: 15px;
-        -fx-padding: 10;
-        -fx-min-width: 315px;
+    -fx-background-color: #4A90E2;
+    -fx-text-fill: black;
+    -fx-background-radius: 10;
+    -fx-font-size: 15px;
+    -fx-padding: 10;
+    -fx-min-width: 315px;
 }
 
 
@@ -97,7 +97,7 @@
 }
 
 #from-account {
-    -fx-padding: 0 0 17 0;
+    -fx-padding: -4 0 10 0;
     -fx-background-color: transparent;
     -fx-border-color: transparent transparent #5c5c5c transparent;
     -fx-border-width: 0 0 1 0;
@@ -106,7 +106,7 @@
     -fx-font-size: 14px;
 }
 #to-account {
-    -fx-padding: 0 0 17 0;
+    -fx-padding: 5 0 10 0;
     -fx-background-color: transparent;
     -fx-border-color: transparent transparent #5c5c5c transparent;
     -fx-border-width: 0 0 1 0;
@@ -115,7 +115,7 @@
     -fx-font-size: 14px;
 }
 #DAName {
-    -fx-padding: 0 0 17 0;
+    -fx-padding: 5 0 10 0;
     -fx-background-color: transparent;
     -fx-border-color: transparent transparent #5c5c5c transparent;
     -fx-border-width: 0 0 1 0;
@@ -124,20 +124,37 @@
     -fx-font-size: 14px;
 }
 #amount {
-        -fx-padding: 0 0 17 0;
-        -fx-background-color: transparent;
-        -fx-border-color: transparent transparent #5c5c5c transparent;
-        -fx-border-width: 0 0 1 0;
-        -fx-text-fill: white;
-        -fx-prompt-text-fill: gray;
-        -fx-font-size: 14px;
+    -fx-padding: 5 0 10 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #5c5c5c transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: gray;
+    -fx-font-size: 14px;
 }
 #date {
-        -fx-padding: 0 0 17 0;
-        -fx-background-color: transparent;
-        -fx-border-color: transparent transparent #5c5c5c transparent;
-        -fx-border-width: 0 0 1 0;
-        -fx-text-fill: white;
-        -fx-prompt-text-fill: gray;
-        -fx-font-size: 14px;
+    -fx-padding: 5 0 10 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #5c5c5c transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: gray;
+    -fx-font-size: 14px;
+}
+#buttonReturn {
+    -fx-background-color: #2a2d3e;
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 10;
+    -fx-font-size: 15px;
+    -fx-padding: 10;
+    -fx-min-width: 315px;
+}
+#buttonReturn: hover {
+    -fx-border-color: #5294e2;
+    -fx-border-radius: 10;
+}
+
+/* loan page */
+#title-account {
+    -fx-background-color: #2a2d3e;
 }

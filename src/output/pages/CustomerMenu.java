@@ -26,6 +26,7 @@ import request.RequestType;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class CustomerMenu {
 
@@ -73,7 +74,7 @@ public class CustomerMenu {
                     btn.setOnAction(e -> SceneManager.switchTo("transfer"));
                     break;
                 case "درخواست وام" :
-                    btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
+                    btn.setOnAction(e -> SceneManager.switchTo("loanRequest"));
                     break;
                 case "پرداخت اقساط وام" :
                     btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
@@ -205,7 +206,11 @@ public class CustomerMenu {
 
 
         Button register = new Button("پرداخت");
-        register.setId("register");
+        register.setId("loginButton");
+
+        Button buttonReturn = new Button("بازگشت به صفحه قبلی");
+        buttonReturn.setId("buttonReturn");
+        buttonReturn.setOnAction(e ->  SceneManager.switchTo("customerMenu"));
 
         register.setOnAction(e -> {
             if (transferBetweenAccounts(fromAccount.getText(), toAccount.getText(), Integer.valueOf(amount.getText()), date.getText(), passWord.getText())) {
@@ -216,7 +221,7 @@ public class CustomerMenu {
                 alert.showAndWait();
             }
         });
-        VBox centerBox = new VBox(10,infoBox, register);
+        VBox centerBox = new VBox(10,infoBox, register ,buttonReturn);
         centerBox.setAlignment(Pos.CENTER);
 
 
@@ -231,6 +236,64 @@ public class CustomerMenu {
     }
 
 
+    public static Scene loanRequest() {
+        // ریشه صفحه
+        VBox root = new VBox(15);
+        root.setPadding(new Insets(30));
+        root.setAlignment(Pos.CENTER);
+        root.setStyle("-fx-background-color: #1c1f2e;");
+
+        // فونت دلخواه (اختیاری)
+        Font.loadFont(CustomerMenu.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
+
+        // عنوان
+        Text title = new Text("نوع وام را انتخاب کنید");
+        title.setFill(Color.LIGHTGRAY);
+        title.setFont(Font.font("Vazirmatn", 20));
+
+        // لیست دکمه‌ها
+        String[] actions = {
+                "وام عادی",
+                "وام تسهیلات",
+                "بازگشت به منوی قبلی",
+        };
+
+
+        VBox buttonBox = new VBox(12);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        // باکس دکمه‌های حساب‌ها (در ابتدا خالی است)
+        VBox accountButtonsBox = new VBox(10);
+        accountButtonsBox.setAlignment(Pos.CENTER);
+
+        for (String action : actions) {
+            Button btn = new Button(action);
+            btn.setPrefWidth(260);
+            btn.setId("normal-buttons");
+
+            switch (action) {
+                case "وام عادی", "وام تسهیلات":
+                    btn.setOnAction(e -> {
+                        // هنگام کلیک، دکمه‌های حساب بارگذاری می‌شن
+                        accountButtonsBox.getChildren().clear();
+                        accountButtonsBox.getChildren().addAll(accountsButton().getChildren());
+                    });
+                    break;
+
+                case "بازگشت به منوی قبلی":
+                    btn.setOnAction(e -> SceneManager.switchTo("customerMenu"));
+                    break;
+            }
+
+            buttonBox.getChildren().add(btn);
+        }
+
+
+        root.getChildren().addAll(title, buttonBox ,accountButtonsBox);
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+        return scene;
+    }
 
 
     public static void createRequest(String text) {
@@ -240,8 +303,7 @@ public class CustomerMenu {
         }
 
         if (LoginPage.selectedCustomer.getMessageBox() == null) {
-            // یا MessageBox را ایجاد کنید
-            // یا خطا نمایش دهید
+
             System.err.println("MessageBox is not initialized for customer!");
             return;
         }
@@ -286,5 +348,78 @@ public class CustomerMenu {
         }
 
     }
+
+    public static void loanReq(String LoanType , int SelectedAccount, double LoanAmount){
+        System.out.println("Send a loan request...");
+        System.out.println("\nSelect loan type:" + "\n1.Regular loan" + "\n2.Facility loan");
+        String loanType = LoanType;
+
+        System.out.println("Your accounts: ");
+        List<Account> accounts1 = LoginPage.selectedCustomer.getAccounts();  // Checking customer accounts
+        for (int i = 0 ; i < accounts1.size() ; i++){
+            Account account = accounts1.get(i);
+            System.out.println( (i + 1) + "." + account.getAccountId());
+        }
+
+        System.out.println("Please select the desired account: "); // Choosing an account
+        int slcAccount = SelectedAccount;
+
+        System.out.println("Enter the loan amount requested:"); // Getting loan amount
+        double loanAmount = LoanAmount;
+        // Assigning values
+        Request loanRequest = new Request(RequestType.LOAN_REQUEST,LoginPage.selectedCustomer , loanType ,accounts1.get((slcAccount - 1)).getAccountId(), loanAmount);
+        LoginPage.selectedCustomer.getMessageBox().addRequest(loanRequest);
+        SubMainPage.currentBranch.getSolitudeTeller().receiveRequest(loanRequest);
+        System.out.println("Your loan application has been registered.");
+    }
+
+    public static VBox accountsButton() {
+        VBox accBtn = new VBox(10);
+        accBtn.setAlignment(Pos.CENTER);
+
+        Text title = new Text("حساب مورد نظر را انتخاب کنید:");
+        title.setFill(Color.LIGHTGRAY);
+        title.setFont(Font.font("Vazirmatn", 15));
+        title.setId("title-account");
+
+        accBtn.getChildren().add(title);
+
+
+        TextField amountField = new TextField();
+        amountField.setPromptText("مبلغ درخواستی را وارد کنید:");
+        amountField.setId("amount");
+        amountField.setVisible(false);
+
+        // loan accepting button
+        Button submitLoan = new Button("ثبت درخواست وام");
+        submitLoan.setId("loginButton");
+        submitLoan.setVisible(false);
+
+        submitLoan.setOnAction(e -> {
+            String amount = amountField.getText();
+            System.out.println("Loan requested with amount: " + amount);
+        });
+
+        List<Account> accounts = LoginPage.selectedCustomer.getAccounts();
+        for (Account account : accounts) {
+            Button accountButton = new Button(account.getAccountId());
+            accountButton.setPrefWidth(260);
+            accountButton.setId("normal-buttons");
+
+            accountButton.setOnAction(e -> {
+                System.out.println("Account selected: " + account.getAccountId());
+                amountField.setVisible(true);
+                submitLoan.setVisible(true);
+            });
+
+            accBtn.getChildren().add(accountButton);
+        }
+
+        // در انتها، فیلد و دکمه را اضافه می‌کنیم
+        accBtn.getChildren().addAll(amountField, submitLoan);
+
+        return accBtn;
+    }
+
 }
 
