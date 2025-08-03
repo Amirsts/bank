@@ -6,8 +6,11 @@ import branch.Branch;
 import branch.BranchManager;
 import branch.AssistantManager;
 import branch.Teller;
+import loan.NormalLoan;
 import person.Customer;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -71,6 +74,14 @@ public class SubMainPage {
         customer1.openAccount(accountAmir);
         bankS.addAccount(accountAmir);
         branchS.addAccount(accountAmir);
+        CurrentAccount accountAmir2 = new CurrentAccount("0101919244972",customer1,500000000, "1384");
+        customer1.openAccount(accountAmir2);
+        bankS.addAccount(accountAmir2);
+        branchS.addAccount(accountAmir2);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate date = LocalDate.parse("01/01/1404", formatter);
+        NormalLoan normalLoan = new NormalLoan(1000000 , 12 , date ,customer1);
+        customer1.addLoan(normalLoan);
 
 
         // Creating Account for customer

@@ -2,25 +2,21 @@ package output.pages;
 
 
 import account.Account;
-import bank.Bank;
-import branch.Branch;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import loan.BaseLoan;
 import output.SceneManager;
-import person.Customer;
 import request.Request;
 import request.RequestType;
 
@@ -29,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class CustomerMenu {
-
+    public static BaseLoan baseLoan ;
     public static Scene getCustomerMenu() {
         // فونت دلخواه (اختیاری)
         Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
@@ -59,6 +55,8 @@ public class CustomerMenu {
                 "بازگشت به منوی اصلی"
         };
 
+
+
         VBox buttonBox = new VBox(12);
         buttonBox.setAlignment(Pos.CENTER);
 
@@ -76,9 +74,34 @@ public class CustomerMenu {
                 case "درخواست وام" :
                     btn.setOnAction(e -> SceneManager.switchTo("loanRequest"));
                     break;
-                case "پرداخت اقساط وام" :
-                    btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
+                case "پرداخت اقساط وام":
+                    btn.setOnAction(e -> {
+                        if (
+                                LoginPage.selectedCustomer == null ||
+                                        LoginPage.selectedCustomer.getActiveLoans() == null ||
+                                        LoginPage.selectedCustomer.getActiveLoans().isEmpty()
+                        ) {
+                            System.out.println("56");
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle(null);
+                            alert.setHeaderText(null);
+                            alert.setContentText("شما دارای وام فعال نیستید.");
+
+                            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                            stage.getIcons().clear();
+
+                            DialogPane dialogPane = alert.getDialogPane();
+                            dialogPane.setId("custom-alert");
+                            dialogPane.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+
+                            alert.showAndWait();
+                        } else {
+                            SceneManager.switchTo("loanRepay");
+                        }
+                    });
+
                     break;
+
                 case "مشاهده پیام‌ها" :
                     btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
                     break;
@@ -154,6 +177,31 @@ public class CustomerMenu {
         Scene scene = new Scene(root, 360, 640);
         scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
         return scene;
+    }
+
+    public static void createRequest(String text) {
+        if (LoginPage.selectedCustomer == null) {
+            System.err.println("Customer is not selected!");
+            return;
+        }
+
+        if (LoginPage.selectedCustomer.getMessageBox() == null) {
+
+            System.err.println("MessageBox is not initialized for customer!");
+            return;
+        }
+
+        if (SubMainPage.currentBranch == null || SubMainPage.currentBranch.getSolitudeTeller() == null) {
+            System.err.println("Branch or Teller is not initialized!");
+            return;
+        }
+
+        Request openAccountRequest = new Request(RequestType.OPEN_ACCOUNT, text, LoginPage.selectedCustomer);
+        LoginPage.selectedCustomer.getMessageBox().addRequest(openAccountRequest);
+        SubMainPage.currentBranch.getSolitudeTeller().receiveRequest(openAccountRequest);
+        System.out.println("Your account creation request has been registered.");
+        LoginPage.selectedCustomer.displayInfo();
+        // نمایش پیام به کاربر
     }
 
 
@@ -236,6 +284,38 @@ public class CustomerMenu {
     }
 
 
+    public static boolean transferBetweenAccounts(String FromAccount , String ToAccount , int Amount , String date , String PassWord) {
+
+        System.out.println("Transfer funds between your accounts...");
+        System.out.print("Originating account number: ");
+        String fromAccount = FromAccount; // Receive inputs for the money transfer method
+        System.out.print("Destination account number: ");
+        String toAccount = ToAccount;
+        String name = SubMainPage.bank.findAccount(toAccount).getOwner().getFullName();
+        System.out.print("Destination customer is: " + name + "\nTransfer amount: ");
+        int amount = Amount;
+        System.out.println("Enter the payment date, for example (07/05/2025):");
+        String inp = date;
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate dateTransfer = LocalDate.parse(inp, format);
+        System.out.print("Password: ");
+        String password = PassWord;
+        try {
+            SubMainPage.bank.transferBetweenCustomers(fromAccount, toAccount, amount, password , dateTransfer); // Assigning values
+            System.out.println("The transfer was successful.");
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("Error in money transfer: " + e.getMessage());
+            return false;
+        }
+
+    }
+
+
+    public static String loanType;
+    public static String selectedAccount;
+    public static double loanAmount;
     public static Scene loanRequest() {
         // ریشه صفحه
         VBox root = new VBox(15);
@@ -266,20 +346,30 @@ public class CustomerMenu {
         VBox accountButtonsBox = new VBox(10);
         accountButtonsBox.setAlignment(Pos.CENTER);
 
+
         for (String action : actions) {
             Button btn = new Button(action);
             btn.setPrefWidth(260);
             btn.setId("normal-buttons");
 
+
             switch (action) {
-                case "وام عادی", "وام تسهیلات":
+                case "وام عادی":
                     btn.setOnAction(e -> {
                         // هنگام کلیک، دکمه‌های حساب بارگذاری می‌شن
                         accountButtonsBox.getChildren().clear();
-                        accountButtonsBox.getChildren().addAll(accountsButton().getChildren());
+                        accountButtonsBox.getChildren().addAll(loanAccountsButton().getChildren());
+                        loanType = "1";
                     });
                     break;
-
+                case "وام تسهیلات" :
+                    btn.setOnAction(e -> {
+                        // هنگام کلیک، دکمه‌های حساب بارگذاری می‌شن
+                        accountButtonsBox.getChildren().clear();
+                        accountButtonsBox.getChildren().addAll(loanAccountsButton().getChildren());
+                        loanType = "2";
+                    });
+                    break;
                 case "بازگشت به منوی قبلی":
                     btn.setOnAction(e -> SceneManager.switchTo("customerMenu"));
                     break;
@@ -295,85 +385,21 @@ public class CustomerMenu {
         return scene;
     }
 
-
-    public static void createRequest(String text) {
-        if (LoginPage.selectedCustomer == null) {
-            System.err.println("Customer is not selected!");
-            return;
-        }
-
-        if (LoginPage.selectedCustomer.getMessageBox() == null) {
-
-            System.err.println("MessageBox is not initialized for customer!");
-            return;
-        }
-
-        if (SubMainPage.currentBranch == null || SubMainPage.currentBranch.getSolitudeTeller() == null) {
-            System.err.println("Branch or Teller is not initialized!");
-            return;
-        }
-
-        Request openAccountRequest = new Request(RequestType.OPEN_ACCOUNT, text, LoginPage.selectedCustomer);
-        LoginPage.selectedCustomer.getMessageBox().addRequest(openAccountRequest);
-        SubMainPage.currentBranch.getSolitudeTeller().receiveRequest(openAccountRequest);
-        System.out.println("Your account creation request has been registered.");
-        LoginPage.selectedCustomer.displayInfo();
-        // نمایش پیام به کاربر
-    }
-
-    public static boolean transferBetweenAccounts(String FromAccount , String ToAccount , int Amount , String date , String PassWord) {
-
-        System.out.println("Transfer funds between your accounts...");
-        System.out.print("Originating account number: ");
-        String fromAccount = FromAccount; // Receive inputs for the money transfer method
-        System.out.print("Destination account number: ");
-        String toAccount = ToAccount;
-        String name = SubMainPage.bank.findAccount(toAccount).getOwner().getFullName();
-        System.out.print("Destination customer is: " + name + "\nTransfer amount: ");
-        int amount = Amount;
-        System.out.println("Enter the payment date, for example (07/05/2025):");
-        String inp = date;
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate dateTransfer = LocalDate.parse(inp, format);
-        System.out.print("Password: ");
-        String password = PassWord;
-        try {
-            SubMainPage.bank.transferBetweenCustomers(fromAccount, toAccount, amount, password , dateTransfer); // Assigning values
-            System.out.println("The transfer was successful.");
-            return true;
-
-        } catch (Exception e) {
-            System.out.println("Error in money transfer: " + e.getMessage());
-            return false;
-        }
-
-    }
-
-    public static void loanReq(String LoanType , int SelectedAccount, double LoanAmount){
+    public static void loanReq(String LoanType , String SelectedAccount, double LoanAmount){
         System.out.println("Send a loan request...");
         System.out.println("\nSelect loan type:" + "\n1.Regular loan" + "\n2.Facility loan");
         String loanType = LoanType;
 
-        System.out.println("Your accounts: ");
-        List<Account> accounts1 = LoginPage.selectedCustomer.getAccounts();  // Checking customer accounts
-        for (int i = 0 ; i < accounts1.size() ; i++){
-            Account account = accounts1.get(i);
-            System.out.println( (i + 1) + "." + account.getAccountId());
-        }
-
-        System.out.println("Please select the desired account: "); // Choosing an account
-        int slcAccount = SelectedAccount;
-
         System.out.println("Enter the loan amount requested:"); // Getting loan amount
         double loanAmount = LoanAmount;
         // Assigning values
-        Request loanRequest = new Request(RequestType.LOAN_REQUEST,LoginPage.selectedCustomer , loanType ,accounts1.get((slcAccount - 1)).getAccountId(), loanAmount);
+        Request loanRequest = new Request(RequestType.LOAN_REQUEST,LoginPage.selectedCustomer , loanType ,SelectedAccount, loanAmount);
         LoginPage.selectedCustomer.getMessageBox().addRequest(loanRequest);
         SubMainPage.currentBranch.getSolitudeTeller().receiveRequest(loanRequest);
         System.out.println("Your loan application has been registered.");
     }
 
-    public static VBox accountsButton() {
+    public static VBox loanAccountsButton() {
         VBox accBtn = new VBox(10);
         accBtn.setAlignment(Pos.CENTER);
 
@@ -398,6 +424,8 @@ public class CustomerMenu {
         submitLoan.setOnAction(e -> {
             String amount = amountField.getText();
             System.out.println("Loan requested with amount: " + amount);
+            System.out.println(loanType);
+            loanReq(loanType , selectedAccount ,Double.parseDouble(amountField.getText()));
         });
 
         List<Account> accounts = LoginPage.selectedCustomer.getAccounts();
@@ -410,6 +438,8 @@ public class CustomerMenu {
                 System.out.println("Account selected: " + account.getAccountId());
                 amountField.setVisible(true);
                 submitLoan.setVisible(true);
+                selectedAccount = account.getAccountId();
+
             });
 
             accBtn.getChildren().add(accountButton);
@@ -421,5 +451,76 @@ public class CustomerMenu {
         return accBtn;
     }
 
+
+
+    public static Scene loanRepay() {
+        Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
+        
+
+        BaseLoan loan = LoginPage.selectedCustomer.getActiveLoans().get(0);
+
+        // ساخت فرم اطلاعات
+        VBox infoBox = new VBox(10);
+        infoBox.getStyleClass().add("login-box");
+
+        // فیلدهای اطلاعاتی
+        String[] actions = {
+                "Total loan amount",
+                "Total amount refunded by customer",
+                "Total amount of remaining installments",
+                "Number of remaining installments",
+                "Installment amount"
+        };
+
+        for (String action : actions) {
+            TextField textField = new TextField();
+            textField.setEditable(false);
+            textField.setId("DAName");
+
+            switch (action) {
+                case "Total loan amount":
+                    textField.setPromptText("مبلغ کل وام:  " + ((int) loan.getLoanAmount()));
+                    break;
+                case "Total amount refunded by customer":
+                    textField.setPromptText("مبلغ کل بازپرداخت‌شده:  " + ((int) loan.getPaidAmount()));
+                    break;
+                case "Total amount of remaining installments":
+                    textField.setPromptText("مبلغ اقساط باقیمانده:  " + ((int) loan.getRemainingAmount()));
+                    break;
+                case "Number of remaining installments":
+                    textField.setPromptText("تعداد اقساط باقیمانده:  " + loan.getfDuration());
+                    break;
+                case "Installment amount":
+                    textField.setPromptText("مبلغ هر قسط:  " + ((int) loan.installmentPerMonth()));
+                    break;
+            }
+
+            infoBox.getChildren().add(textField);
+        }
+
+        // دکمه‌ها
+        Button register = new Button("پرداخت قسط");
+        register.setId("loginButton");
+
+        Button buttonReturn = new Button("بازگشت به صفحه قبلی");
+        buttonReturn.setId("buttonReturn");
+        buttonReturn.setOnAction(e -> SceneManager.switchTo("customerMenu"));
+
+        VBox centerBox = new VBox(10, infoBox, register, buttonReturn);
+        centerBox.setAlignment(Pos.CENTER);
+
+        BorderPane root = new BorderPane();
+        root.setCenter(centerBox);
+        root.setPadding(new Insets(20));
+
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+
+        return scene;
+    }
+
 }
+
+
+
 

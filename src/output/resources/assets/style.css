@@ -1,4 +1,4 @@
-/* بارگذاری فونت */
+/* FONT */
 @font-face {
     -fx-font-family: "Vazirmatn Light";
     src: url('../fonts/Vazirmatn-Light.ttf');
@@ -9,7 +9,7 @@
     -fx-background-color: #1E1F25;
 -fx-font-family: "Vazirmatn Light";
 
-    -fx-font-weight: 300; /* اعمال وزن Light */
+    -fx-font-weight: 300; /* Light */
     -fx-padding: 20;
 }
 
@@ -83,6 +83,34 @@
 .versionText {
     -fx-font-size: 14px;
 }
+
+
+/* Dialog Alert */
+#custom-alert {
+    -fx-background-color: #1c1f2e;
+    -fx-font-family: "Vazirmatn";
+        -fx-pref-width: 355px;
+        -fx-pref-height: 110px;
+}
+
+#custom-alert .content.label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-family: "Vazirmatn";
+}
+
+#custom-alert .header-panel {
+    -fx-background-color: #1c1f2e;
+}
+
+#custom-alert .button-bar .button {
+    -fx-background-color: #3a3f58;
+    -fx-text-fill: white;
+    -fx-font-family: "Vazirmatn";
+    -fx-cursor: hand;
+}
+
+
 
         /* CustomerMenu */
 #normal-buttons {

@@ -10,6 +10,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import output.SceneManager;
 import person.Customer;
 
@@ -49,8 +50,20 @@ public class LoginPage {
                 selectedCustomer.displayInfo();
                 SceneManager.switchTo("customerMenu");
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "نام کاربری و رمز عبور را وارد کنید");
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle(null);
+                alert.setHeaderText(null);
+                alert.setContentText("نام کاربری و رمز عبور را وارد کنید");
+
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.setId("custom-alert");
+                dialogPane.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(LoginPage.class.getResource("/assets/logo.png").toExternalForm()));
+
                 alert.showAndWait();
+
             }
         });
         loginButton.setId("loginButton");
@@ -78,6 +91,7 @@ public class LoginPage {
 
         Scene scene = new Scene(root, 360, 640);
         scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+
 
         return scene;
     }

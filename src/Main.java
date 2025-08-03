@@ -22,15 +22,17 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
-        SceneManager mainfx = new SceneManager();
+    public void start(Stage stage) {
         SceneManager.setStage(stage);
-        SceneManager.addScene("login", LoginPage.getLoginScene());
-        SceneManager.addScene("customerMenu", CustomerMenu.getCustomerMenu());
-        SceneManager.addScene("creatingNewAccount", CustomerMenu.creatingNewAccount());
-        SceneManager.addScene("transfer" , CustomerMenu.transfer());
-        SceneManager.addScene("loanRequest",CustomerMenu.loanRequest());
-        SceneManager.switchTo("login");
 
+        SceneManager.addScene("login", LoginPage::getLoginScene);
+        SceneManager.addScene("customerMenu", CustomerMenu::getCustomerMenu);
+        SceneManager.addScene("creatingNewAccount", CustomerMenu::creatingNewAccount);
+        SceneManager.addScene("transfer", CustomerMenu::transfer);
+        SceneManager.addScene("loanRequest", CustomerMenu::loanRequest);
+        SceneManager.addScene("loanRepay", CustomerMenu::loanRepay); // ✅ فقط در زمان نیاز اجرا می‌شود
+
+        SceneManager.switchTo("login");
     }
+
 }
