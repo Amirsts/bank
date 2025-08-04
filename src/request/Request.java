@@ -20,7 +20,7 @@ public class Request {
         this.message = message;
         this.sender = sender;
         this.accountNumber = accountNumber;
-        this.status = "pending";
+        this.status = "در انتظار برسی";
         this.timestamp = LocalDateTime.now();
     }
 
@@ -69,8 +69,9 @@ public class Request {
 
 
 
+
     @Override
     public String toString() {
-        return "(" + type + ") ||| sender: " + sender.getFullName() + " ||| status: " + status;
+        return "(" + type + ") \n sender: " + sender.getFullName() + "\n status: " + status;
     }
 }

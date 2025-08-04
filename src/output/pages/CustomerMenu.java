@@ -19,6 +19,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import loan.BaseLoan;
+import message.MessageBox;
 import output.SceneManager;
 import request.Request;
 import request.RequestType;
@@ -106,7 +107,7 @@ public class CustomerMenu {
                     break;
 
                 case "مشاهده پیام‌ها" :
-                    btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
+                    btn.setOnAction(e -> SceneManager.switchTo("messageDisplay"));
                     break;
                 case "نمایش موجودی حساب من" :
                     btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
@@ -569,6 +570,10 @@ public class CustomerMenu {
             } catch (InsufficientBalanceException c) {
                 System.out.println(c.getMessage());
             }
+
+            //decrease amount from loan & date of last time pay
+            loan.pay(loan.installmentPerMonth() , datePay);
+            loan.payInstallment();
         });
 
         Button buttonReturn = new Button("بازگشت به صفحه قبلی");
@@ -588,6 +593,67 @@ public class CustomerMenu {
         return scene;
     }
 
+
+
+    public static Scene messageDisplay() {
+        Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
+
+
+        List<Request> customerMessageBox = LoginPage.selectedCustomer.getMessageBox().getAllRequests();
+
+        // ساخت فرم اطلاعات
+        VBox infoBox = new VBox(10);
+        infoBox.getStyleClass().add("login-box");
+
+
+
+        if (customerMessageBox.isEmpty()) {
+            TextField textField = new TextField();
+            textField.setEditable(false);
+            textField.setId("repayInfo");
+            textField.setPromptText("پیامی وجود ندارد");
+
+            infoBox.getChildren().add(textField);
+        }else {
+            for (Request customerRequest : customerMessageBox) {
+                TextField textField1 = new TextField();
+                textField1.setEditable(false);
+                textField1.setId("password");
+                textField1.setPromptText(String.valueOf(customerRequest.getType()));
+
+                TextField textField2 = new TextField();
+                textField2.setEditable(false);
+                textField2.setId("password");
+                textField2.setPromptText(customerRequest.getSender().getFullName());
+
+                TextField textField3 = new TextField();
+                textField3.setEditable(false);
+                textField3.setId("repayInfo");
+                textField3.setPromptText(customerRequest.getStatus());
+
+                infoBox.getChildren().addAll(textField1 ,textField2 ,textField3 );
+            }
+        }
+
+        /* This page Buttons */
+
+
+        Button buttonReturn = new Button("بازگشت به صفحه قبلی");
+        buttonReturn.setId("buttonReturn");
+        buttonReturn.setOnAction(e -> SceneManager.switchTo("customerMenu"));
+
+        VBox centerBox = new VBox(10, infoBox, buttonReturn);
+        centerBox.setAlignment(Pos.CENTER);
+
+        BorderPane root = new BorderPane();
+        root.setCenter(centerBox);
+        root.setPadding(new Insets(20));
+
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+
+        return scene;
+    }
 }
 
 
