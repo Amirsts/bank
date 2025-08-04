@@ -30,7 +30,8 @@ public class Main extends Application {
         SceneManager.addScene("creatingNewAccount", CustomerMenu::creatingNewAccount);
         SceneManager.addScene("transfer", CustomerMenu::transfer);
         SceneManager.addScene("loanRequest", CustomerMenu::loanRequest);
-        SceneManager.addScene("loanRepay", CustomerMenu::loanRepay); // ✅ فقط در زمان نیاز اجرا می‌شود
+        SceneManager.addScene("loanRepayInfo", CustomerMenu::loanRepayInfo);
+        SceneManager.addScene("loanRepayment" , CustomerMenu::loanRepayment);
 
         SceneManager.switchTo("login");
     }

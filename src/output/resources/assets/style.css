@@ -186,3 +186,13 @@
 #title-account {
     -fx-background-color: #2a2d3e;
 }
+
+#repayInfo {
+    -fx-padding: 0 0 10 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #5c5c5c transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: gray;
+    -fx-font-size: 14px;
+}

@@ -2,6 +2,9 @@ package output.pages;
 
 
 import account.Account;
+import exceptions.IncorrectPasswordException;
+import exceptions.InsufficientBalanceException;
+import exceptions.InvalidAmountException;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -96,7 +99,7 @@ public class CustomerMenu {
 
                             alert.showAndWait();
                         } else {
-                            SceneManager.switchTo("loanRepay");
+                            SceneManager.switchTo("loanRepayInfo");
                         }
                     });
 
@@ -453,7 +456,7 @@ public class CustomerMenu {
 
 
 
-    public static Scene loanRepay() {
+    public static Scene loanRepayInfo() {
         Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
         
 
@@ -475,7 +478,7 @@ public class CustomerMenu {
         for (String action : actions) {
             TextField textField = new TextField();
             textField.setEditable(false);
-            textField.setId("DAName");
+            textField.setId("repayInfo");
 
             switch (action) {
                 case "Total loan amount":
@@ -491,6 +494,7 @@ public class CustomerMenu {
                     textField.setPromptText("تعداد اقساط باقیمانده:  " + loan.getfDuration());
                     break;
                 case "Installment amount":
+                    textField.setId("password");
                     textField.setPromptText("مبلغ هر قسط:  " + ((int) loan.installmentPerMonth()));
                     break;
             }
@@ -498,13 +502,78 @@ public class CustomerMenu {
             infoBox.getChildren().add(textField);
         }
 
-        // دکمه‌ها
-        Button register = new Button("پرداخت قسط");
-        register.setId("loginButton");
+
+        /* This page Buttons */
+
+        Button nextStep = new Button("پرداخت قسط");
+        nextStep.setId("loginButton");
+        nextStep.setOnAction(e -> SceneManager.switchTo("loanRepayment"));
 
         Button buttonReturn = new Button("بازگشت به صفحه قبلی");
         buttonReturn.setId("buttonReturn");
         buttonReturn.setOnAction(e -> SceneManager.switchTo("customerMenu"));
+
+        VBox centerBox = new VBox(10, infoBox, nextStep, buttonReturn);
+        centerBox.setAlignment(Pos.CENTER);
+
+        BorderPane root = new BorderPane();
+        root.setCenter(centerBox);
+        root.setPadding(new Insets(20));
+
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+
+        return scene;
+    }
+
+    public static Scene loanRepayment() {
+        Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
+
+
+        BaseLoan loan = LoginPage.selectedCustomer.getActiveLoans().get(0);
+
+        // getting information
+        VBox infoBox = new VBox(10);
+        infoBox.getStyleClass().add("login-box");
+
+        TextField dateRepay = new TextField();
+        dateRepay.setPromptText("تاریخ را وارد کنید(مثال 17/05/1402) : ");
+        dateRepay.setId("repayInfo");
+
+        TextField accountNumber = new TextField();
+        accountNumber.setPromptText("شماره حساب خود را وارد کنید: ");
+        accountNumber.setId("repayInfo");
+
+        TextField passWord = new TextField();
+        passWord.setPromptText("رمز خود را وارد کنید : ");
+        passWord.setId("password");
+
+        infoBox.getChildren().addAll(dateRepay, accountNumber,passWord );
+
+
+        /* This page Buttons */
+
+        Button register = new Button("پرداخت قسط");
+        register.setId("loginButton");
+        register.setOnAction(e -> {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate datePay = LocalDate.parse(dateRepay.getText() , formatter);
+
+            Account cAccount = LoginPage.selectedCustomer.findAccount(accountNumber.getText());
+            try {
+                cAccount.secureWithdrawForLoan((int) loan.installmentPerMonth(), passWord.getText()); // Paying monthly installment
+            } catch (IncorrectPasswordException a) {
+                System.out.println(a.getMessage());
+            } catch (InvalidAmountException b) {
+                System.out.println(b.getMessage());
+            } catch (InsufficientBalanceException c) {
+                System.out.println(c.getMessage());
+            }
+        });
+
+        Button buttonReturn = new Button("بازگشت به صفحه قبلی");
+        buttonReturn.setId("buttonReturn");
+        buttonReturn.setOnAction(e -> SceneManager.switchTo("loanRepayInfo"));
 
         VBox centerBox = new VBox(10, infoBox, register, buttonReturn);
         centerBox.setAlignment(Pos.CENTER);
