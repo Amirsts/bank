@@ -33,6 +33,7 @@ public class Main extends Application {
         SceneManager.addScene("loanRepayInfo", CustomerMenu::loanRepayInfo);
         SceneManager.addScene("loanRepayment" , CustomerMenu::loanRepayment);
         SceneManager.addScene("messageDisplay", CustomerMenu::messageDisplay);
+        SceneManager.addScene("accountsBalance", CustomerMenu::accountsBalance);
 
         SceneManager.switchTo("login");
     }

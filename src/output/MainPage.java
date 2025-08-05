@@ -357,6 +357,8 @@ public class MainPage {
                 case 6:
                     System.out.println("View account balances " + customer.getFullName() + ":");
                     System.out.print("Enter the date (e.g. 05/07/2025):");
+
+
                     String input = scanner.nextLine();
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                     LocalDate dateCheckAmount = LocalDate.parse(input, formatter);
@@ -365,6 +367,7 @@ public class MainPage {
                     // It is assumed that Customer has a getAccounts() method that returns a list of accounts.
                     List<Account> accounts = customer.getAccounts();
                     List<ShortTermAccount> shortTermAccounts = customer.getShortTermAccounts();
+
                     if (accounts == null || accounts.isEmpty()) {
                         System.out.println("No account has been registered for this customer.");
                     } else {

@@ -2,6 +2,7 @@ package output.pages;
 
 
 import account.Account;
+import account.ShortTermAccount;
 import exceptions.IncorrectPasswordException;
 import exceptions.InsufficientBalanceException;
 import exceptions.InvalidAmountException;
@@ -110,7 +111,7 @@ public class CustomerMenu {
                     btn.setOnAction(e -> SceneManager.switchTo("messageDisplay"));
                     break;
                 case "نمایش موجودی حساب من" :
-                    btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
+                    btn.setOnAction(e -> SceneManager.switchTo("accountsBalance"));
                     break;
                 case "بستن حساب" :
                     btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
@@ -643,6 +644,94 @@ public class CustomerMenu {
         buttonReturn.setOnAction(e -> SceneManager.switchTo("customerMenu"));
 
         VBox centerBox = new VBox(10, infoBox, buttonReturn);
+        centerBox.setAlignment(Pos.CENTER);
+
+        BorderPane root = new BorderPane();
+        root.setCenter(centerBox);
+        root.setPadding(new Insets(20));
+
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+
+        return scene;
+    }
+
+    public static Scene accountsBalance() {
+
+        Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
+
+
+        // start of information box
+        VBox dateBox = new VBox(0);
+        dateBox.getStyleClass().add("login-box");
+        VBox infoBox = new VBox(10);
+        infoBox.getStyleClass().add("login-box");
+
+        TextField dateCheck = new TextField();
+        dateCheck.setPromptText("تاریخ را وارد کنید(مثال 17/05/1402) : ");
+        dateCheck.setId("to-account");
+
+
+
+        dateCheck.setOnAction(e -> {
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate dateCheckAmount = LocalDate.parse(dateCheck.getText(), formatter);
+
+
+            // It is assumed that Customer has a getAccounts() method that returns a list of accounts.
+            List<Account> accounts = LoginPage.selectedCustomer.getAccounts();
+            List<ShortTermAccount> shortTermAccounts = LoginPage.selectedCustomer.getShortTermAccounts();
+
+            if (accounts == null || accounts.isEmpty()) {
+                dateCheck.setPromptText("حسابی یافت نشد");
+            } else {
+                for (Account accItem : accounts) {
+                    if (accItem.getAccountId().startsWith("02")) {      // These accounts aren't Profited than we continue
+                        continue;
+                    }
+                    TextField accNumber = new TextField();
+                    accNumber.setEditable(false);
+                    accNumber.setId("password");
+                    accNumber.setPromptText("حساب:   " + accItem.getAccountId());
+
+                    TextField accBalance = new TextField();
+                    accBalance.setEditable(false);
+                    accBalance.setId("repayInfo");
+                    accBalance.setPromptText("موجودی:  " + accItem.getBalance());
+
+                    infoBox.getChildren().addAll(accNumber, accBalance);
+
+                }
+                for (ShortTermAccount shortTermAccount :shortTermAccounts) {
+                    shortTermAccount.profitCheck(dateCheckAmount); // Checking short term accounts for monthly profit
+
+                    TextField accSNumber = new TextField();
+                    accSNumber.setEditable(false);
+                    accSNumber.setId("password");
+                    accSNumber.setPromptText("حساب:   " + shortTermAccount.getAccountId());
+
+                    TextField accSBalance = new TextField();
+                    accSBalance.setEditable(false);
+                    accSBalance.setId("repayInfo");
+                    accSBalance.setPromptText("موجودی: " + shortTermAccount.getBalance());
+
+                    infoBox.getChildren().addAll(accSNumber, accSBalance);
+                }
+            }
+        });
+
+
+        dateBox.getChildren().addAll( dateCheck, infoBox);
+        // END of information box
+
+
+        Button buttonReturn = new Button("بازگشت به صفحه قبلی");
+        buttonReturn.setId("buttonReturn");
+        buttonReturn.setOnAction(e ->  SceneManager.switchTo("customerMenu"));
+
+
+        VBox centerBox = new VBox(10,dateBox ,buttonReturn);
         centerBox.setAlignment(Pos.CENTER);
 
         BorderPane root = new BorderPane();
