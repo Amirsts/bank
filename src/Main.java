@@ -34,6 +34,7 @@ public class Main extends Application {
         SceneManager.addScene("loanRepayment" , CustomerMenu::loanRepayment);
         SceneManager.addScene("messageDisplay", CustomerMenu::messageDisplay);
         SceneManager.addScene("accountsBalance", CustomerMenu::accountsBalance);
+        SceneManager.addScene("closeAccount", CustomerMenu::closeAccount);
 
         SceneManager.switchTo("login");
     }

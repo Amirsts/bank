@@ -30,12 +30,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class CustomerMenu {
-    public static BaseLoan baseLoan ;
+
     public static Scene getCustomerMenu() {
-        // فونت دلخواه (اختیاری)
+
+        //Presenting the font
         Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
 
-        // ریشه صفحه
+        // Root of page
         VBox root = new VBox(15);
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.CENTER);
@@ -43,12 +44,12 @@ public class CustomerMenu {
 
 
 
-        // عنوان
+        // Title
         Text title = new Text("منوی خدمات");
         title.setFill(Color.LIGHTGRAY);
         title.setFont(Font.font("Vazirmatn", 20));
 
-        // لیست دکمه‌ها
+        //Buttons List
         String[] actions = {
                 "افتتاح حساب جدید",
                 "انتقال وجه",
@@ -57,7 +58,7 @@ public class CustomerMenu {
                 "مشاهده پیام‌ها",
                 "نمایش موجودی حساب من",
                 "بستن حساب",
-                "بازگشت به منوی اصلی"
+                "خروج از حساب"
         };
 
 
@@ -114,9 +115,9 @@ public class CustomerMenu {
                     btn.setOnAction(e -> SceneManager.switchTo("accountsBalance"));
                     break;
                 case "بستن حساب" :
-                    btn.setOnAction(e -> System.out.println("انتخاب شد: " + action));
+                    btn.setOnAction(e -> SceneManager.switchTo("closeAccount"));
                     break;
-                case "بازگشت به منوی اصلی" :
+                case "خروج از حساب" :
                     btn.setOnAction(e -> SceneManager.switchTo("login"));
                     break;
                 default:
@@ -136,21 +137,21 @@ public class CustomerMenu {
 
 
     public static Scene creatingNewAccount() {
-        // ریشه صفحه
+
         VBox root = new VBox(15);
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: #1c1f2e;");
 
-        // فونت دلخواه (اختیاری)
+
         Font.loadFont(CustomerMenu.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
 
-        // عنوان
+        // Title
         Text title = new Text("نوع حساب خود را انتخاب کنید");
         title.setFill(Color.LIGHTGRAY);
         title.setFont(Font.font("Vazirmatn", 20));
 
-        // لیست دکمه‌ها
+        //Buttons List
         String[] actions = {
                 "حساب جاری",
                 "حساب کوتاه مدت",
@@ -167,14 +168,26 @@ public class CustomerMenu {
             btn.setId("normal-buttons");
             switch (action) {
                 case "حساب جاری", "حساب کوتاه مدت", "حساب قرض الحسنه":
-                    btn.setOnAction(e -> createRequest(action));
+                    btn.setOnAction(e -> {
+                        createRequest(action);
+
+                        VBox attentionBox = new VBox(10);
+                        attentionBox.getStyleClass().add("login-box");
+                        TextField attention = new TextField();
+                        attention.setEditable(false);
+                        attention.setPromptText("درخواست افتتاح حساب " + action + " ثبت شد");
+                        attention.setId("attention");
+                        attention.setAlignment(Pos.CENTER);
+                        attentionBox.getChildren().add(attention);
+                        buttonBox.getChildren().add(attentionBox);
+                    });
                     break;
                 case "بازگشت به منوی قبلی" :
                     btn.setOnAction(e -> SceneManager.switchTo("customerMenu"));
                     break;
             }
 
-            buttonBox.getChildren().add(btn);
+            buttonBox.getChildren().addAll(btn);
         }
 
 
@@ -206,7 +219,6 @@ public class CustomerMenu {
         SubMainPage.currentBranch.getSolitudeTeller().receiveRequest(openAccountRequest);
         System.out.println("Your account creation request has been registered.");
         LoginPage.selectedCustomer.displayInfo();
-        // نمایش پیام به کاربر
     }
 
 
@@ -288,7 +300,6 @@ public class CustomerMenu {
         return scene;
     }
 
-
     public static boolean transferBetweenAccounts(String FromAccount , String ToAccount , int Amount , String date , String PassWord) {
 
         System.out.println("Transfer funds between your accounts...");
@@ -318,25 +329,27 @@ public class CustomerMenu {
     }
 
 
+
+
     public static String loanType;
     public static String selectedAccount;
     public static double loanAmount;
     public static Scene loanRequest() {
-        // ریشه صفحه
+
         VBox root = new VBox(15);
         root.setPadding(new Insets(30));
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: #1c1f2e;");
 
-        // فونت دلخواه (اختیاری)
+
         Font.loadFont(CustomerMenu.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
 
-        // عنوان
+        // Title
         Text title = new Text("نوع وام را انتخاب کنید");
         title.setFill(Color.LIGHTGRAY);
         title.setFont(Font.font("Vazirmatn", 20));
 
-        // لیست دکمه‌ها
+        //Buttons List
         String[] actions = {
                 "وام عادی",
                 "وام تسهیلات",
@@ -347,7 +360,6 @@ public class CustomerMenu {
         VBox buttonBox = new VBox(12);
         buttonBox.setAlignment(Pos.CENTER);
 
-        // باکس دکمه‌های حساب‌ها (در ابتدا خالی است)
         VBox accountButtonsBox = new VBox(10);
         accountButtonsBox.setAlignment(Pos.CENTER);
 
@@ -361,7 +373,8 @@ public class CustomerMenu {
             switch (action) {
                 case "وام عادی":
                     btn.setOnAction(e -> {
-                        // هنگام کلیک، دکمه‌های حساب بارگذاری می‌شن
+
+                        // Account buttons load when clicked
                         accountButtonsBox.getChildren().clear();
                         accountButtonsBox.getChildren().addAll(loanAccountsButton().getChildren());
                         loanType = "1";
@@ -369,7 +382,8 @@ public class CustomerMenu {
                     break;
                 case "وام تسهیلات" :
                     btn.setOnAction(e -> {
-                        // هنگام کلیک، دکمه‌های حساب بارگذاری می‌شن
+
+                        // Account buttons load when clicked
                         accountButtonsBox.getChildren().clear();
                         accountButtonsBox.getChildren().addAll(loanAccountsButton().getChildren());
                         loanType = "2";
@@ -450,11 +464,11 @@ public class CustomerMenu {
             accBtn.getChildren().add(accountButton);
         }
 
-        // در انتها، فیلد و دکمه را اضافه می‌کنیم
         accBtn.getChildren().addAll(amountField, submitLoan);
 
         return accBtn;
     }
+
 
 
 
@@ -464,11 +478,10 @@ public class CustomerMenu {
 
         BaseLoan loan = LoginPage.selectedCustomer.getActiveLoans().get(0);
 
-        // ساخت فرم اطلاعات
+        //START of information box
         VBox infoBox = new VBox(10);
         infoBox.getStyleClass().add("login-box");
 
-        // فیلدهای اطلاعاتی
         String[] actions = {
                 "Total loan amount",
                 "Total amount refunded by customer",
@@ -503,7 +516,7 @@ public class CustomerMenu {
 
             infoBox.getChildren().add(textField);
         }
-
+        //END of information Box
 
         /* This page Buttons */
 
@@ -527,6 +540,9 @@ public class CustomerMenu {
 
         return scene;
     }
+
+
+
 
     public static Scene loanRepayment() {
         Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
@@ -596,13 +612,14 @@ public class CustomerMenu {
 
 
 
+
     public static Scene messageDisplay() {
         Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
 
 
         List<Request> customerMessageBox = LoginPage.selectedCustomer.getMessageBox().getAllRequests();
 
-        // ساخت فرم اطلاعات
+        // START of information Box
         VBox infoBox = new VBox(10);
         infoBox.getStyleClass().add("login-box");
 
@@ -635,9 +652,10 @@ public class CustomerMenu {
                 infoBox.getChildren().addAll(textField1 ,textField2 ,textField3 );
             }
         }
+        //END if information Box
+
 
         /* This page Buttons */
-
 
         Button buttonReturn = new Button("بازگشت به صفحه قبلی");
         buttonReturn.setId("buttonReturn");
@@ -655,6 +673,9 @@ public class CustomerMenu {
 
         return scene;
     }
+
+
+
 
     public static Scene accountsBalance() {
 
@@ -687,7 +708,7 @@ public class CustomerMenu {
                 dateCheck.setPromptText("حسابی یافت نشد");
             } else {
                 for (Account accItem : accounts) {
-                    if (accItem.getAccountId().startsWith("02")) {      // These accounts aren't Profited than we continue
+                    if (accItem.getAccountId().startsWith("02")) {           // These accounts aren't Profited than we continue
                         continue;
                     }
                     TextField accNumber = new TextField();
@@ -704,7 +725,7 @@ public class CustomerMenu {
 
                 }
                 for (ShortTermAccount shortTermAccount :shortTermAccounts) {
-                    shortTermAccount.profitCheck(dateCheckAmount); // Checking short term accounts for monthly profit
+                shortTermAccount.profitCheck(dateCheckAmount);                   // Checking short term accounts for monthly profit
 
                     TextField accSNumber = new TextField();
                     accSNumber.setEditable(false);
@@ -730,8 +751,88 @@ public class CustomerMenu {
         buttonReturn.setId("buttonReturn");
         buttonReturn.setOnAction(e ->  SceneManager.switchTo("customerMenu"));
 
-
         VBox centerBox = new VBox(10,dateBox ,buttonReturn);
+        centerBox.setAlignment(Pos.CENTER);
+
+        BorderPane root = new BorderPane();
+        root.setCenter(centerBox);
+        root.setPadding(new Insets(20));
+
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+
+        return scene;
+    }
+
+
+
+
+    public static Scene closeAccount() {
+
+        Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
+
+
+        // START of information box
+        VBox infoBox = new VBox(10);
+        infoBox.getStyleClass().add("login-box");
+
+        TextField accNumber = new TextField();
+        accNumber.setPromptText("شماره حساب را وارد کنید : ");
+        accNumber.setId("to-account");
+        infoBox.getChildren().add(accNumber);
+
+        accNumber.setOnAction(e -> {
+
+            if (LoginPage.selectedCustomer.findAccount(accNumber.getText()) == null ){
+
+                TextField attention = new TextField();
+                attention.setPromptText("حساب یافت نشد");
+                attention.setId("password");
+                infoBox.getChildren().add(attention);
+            }else {
+
+                Request closeAccountRequest = new Request(RequestType.CLOSE_ACCOUNT, accNumber.getText(), LoginPage.selectedCustomer); // Assigning values
+                LoginPage.selectedCustomer.getMessageBox().addRequest(closeAccountRequest);
+                SubMainPage.currentBranch.getSolitudeTeller().receiveRequest(closeAccountRequest);
+
+                TextField attention = new TextField();
+                attention.setPromptText("درخواست بستن حساب  " + accNumber.getText() + "  ثبت شد");
+                attention.setId("password");
+                infoBox.getChildren().add(attention);
+            }
+        });
+        // END of information box
+
+        Button register = new Button("ایجاد درخواست");
+        register.setId("loginButton");
+            register.setOnAction(e ->{
+                if (LoginPage.selectedCustomer.findAccount(accNumber.getText()) == null ){
+
+                    TextField attention = new TextField();
+                    attention.setEditable(false);
+                    attention.setPromptText("حساب یافت نشد");
+                    attention.setId("password");
+                    infoBox.getChildren().add(attention);
+                }else {
+
+                    Request closeAccountRequest = new Request(RequestType.CLOSE_ACCOUNT, accNumber.getText(), LoginPage.selectedCustomer); // Assigning values
+                    LoginPage.selectedCustomer.getMessageBox().addRequest(closeAccountRequest);
+                    SubMainPage.currentBranch.getSolitudeTeller().receiveRequest(closeAccountRequest);
+
+                    TextField attention = new TextField();
+                    attention.setEditable(false);
+                    attention.setPromptText("درخواست بستن حساب  " + accNumber.getText() + "  ثبت شد");
+                    attention.setId("password");
+                    infoBox.getChildren().add(attention);
+                }
+            });
+
+
+        Button buttonReturn = new Button("بازگشت به صفحه قبلی");
+        buttonReturn.setId("buttonReturn");
+        buttonReturn.setOnAction(e ->  SceneManager.switchTo("customerMenu"));
+
+        VBox centerBox = new VBox(10,infoBox ,register ,buttonReturn);
         centerBox.setAlignment(Pos.CENTER);
 
         BorderPane root = new BorderPane();
