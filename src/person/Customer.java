@@ -16,6 +16,7 @@ import message.MessageBox;
 
 public class Customer extends Person implements Displayable , Loanable , FindAccount  {
     private String customerId;
+    private String passWord;
     private List<Account> accounts ;
     private List<ShortTermAccount> shortTermAccounts;
     private MessageBox messageBox;
@@ -35,6 +36,19 @@ public class Customer extends Person implements Displayable , Loanable , FindAcc
         this.messageBox = new MessageBox();
         this.loans = new ArrayList<>();
         this.dailyTransfers = new HashMap<>();
+    }
+
+    public Customer(String firstName ,String lastName , String birthDay , String nationalId
+            , String address , String phoneNum , String customerId , String password  ){
+        super(firstName ,lastName , birthDay, nationalId , address , phoneNum);
+
+        this.customerId = customerId;
+        this.accounts = new ArrayList<>();
+        this.shortTermAccounts = new ArrayList<>();
+        this.messageBox = new MessageBox();
+        this.loans = new ArrayList<>();
+        this.dailyTransfers = new HashMap<>();
+        this.passWord = password;
     }
 
     //getters
@@ -65,6 +79,13 @@ public class Customer extends Person implements Displayable , Loanable , FindAcc
             if (loan.isActive()) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    public boolean isPassWordTrue(String PassWord) {
+        if (passWord.equals(PassWord)) {
+            return true;
         }
         return false;
     }

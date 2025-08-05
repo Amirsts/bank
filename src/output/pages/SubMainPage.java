@@ -55,7 +55,7 @@ public class SubMainPage {
         // Creating customers & teller for test
         Customer customer = new Customer(
                 "Mobin", "Rangsaz", "1985-07-20", "1029384756",
-                "Shiraz, Iran", "09134567890", "mo1234"
+                "Shiraz, Iran", "09134567890", "mo1234", "1385"
         );
         bankS.addCustomer(customer);
         branchS.addCustomer(customer);
@@ -66,7 +66,7 @@ public class SubMainPage {
 
         Customer customer1 = new Customer(
                 "Amirmohammad", "Mohammadi", "1985-07-20", "1029384756",
-                "Shiraz, Iran", "09134567890", "1"
+                "Shiraz, Iran", "09134567890", "1", "1384"
         );
         bankS.addCustomer(customer1);
         branchS.addCustomer(customer1);

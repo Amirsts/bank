@@ -37,62 +37,58 @@ public class LoginPage {
         TextField passwordField = new TextField();
         passwordField.setPromptText("رمز عبور");
         passwordField.setId("password");
-        //username will change to password
-        userNameField.setOnAction(e -> {
+
+
+
+        passwordField.setOnAction(e -> {
             String user = userNameField.getText();
             String pass = passwordField.getText();
+
             if (SubMainPage.bank.findCustomerByID(user) != null ) {
+
                 selectedCustomer = SubMainPage.selectCustomer(user);
                 selectedCustomer.displayInfo();
-                SceneManager.switchTo("customerMenu");
+                if (selectedCustomer.isPassWordTrue(pass)) {
+                    SceneManager.switchTo("customerMenu");
+                }else {
+                    NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+                }
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(null);
-                alert.setHeaderText(null);
-                alert.setContentText("نام کاربری و رمز عبور را وارد کنید");
-
-                DialogPane dialogPane = alert.getDialogPane();
-                dialogPane.setId("custom-alert");
-                dialogPane.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
-
-                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(LoginPage.class.getResource("/assets/logo.png").toExternalForm()));
-
-                alert.showAndWait();
-
+                NewCustomer.showErrorAlert("نام کاربری وارد شده موجود نمی باشد");
             }
         });
 
         inputBox.getChildren().addAll(userNameField, passwordField);
         // END of input box
 
+
+
+
         Button loginButton = new Button("ورود به بیت بانک اصلی");
+        loginButton.setId("loginButton");
         loginButton.setOnAction(e -> {
+
             String user = userNameField.getText();
             String pass = passwordField.getText();
+
             if (SubMainPage.bank.findCustomerByID(user) != null ) {
+
                 selectedCustomer = SubMainPage.selectCustomer(user);
                 selectedCustomer.displayInfo();
-                SceneManager.switchTo("customerMenu");
+                if (selectedCustomer.isPassWordTrue(pass)) {
+                    SceneManager.switchTo("customerMenu");
+                }else {
+                    NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+                }
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(null);
-                alert.setHeaderText(null);
-                alert.setContentText("نام کاربری و رمز عبور را وارد کنید");
-
-                DialogPane dialogPane = alert.getDialogPane();
-                dialogPane.setId("custom-alert");
-                dialogPane.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
-
-                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(LoginPage.class.getResource("/assets/logo.png").toExternalForm()));
-
-                alert.showAndWait();
-
+                NewCustomer.showErrorAlert("نام کاربری وارد شده موجود نمی باشد");
             }
+
         });
-        loginButton.setId("loginButton");
-        // نسخه
+
+
+
+        // Version
         Text versionText = new Text("Version 3.0.1");
         versionText.getStyleClass().add("versionText");
         versionText.setFill(Color.GRAY);
@@ -100,6 +96,7 @@ public class LoginPage {
         //creating new customer
         Hyperlink createNewCustomer = new Hyperlink("ایجاد مشتری جدید");
         createNewCustomer.getStyleClass().add("hyperlink");
+        createNewCustomer.setOnAction(e -> SceneManager.switchTo("processNewCustomer"));
 
         VBox centerBox = new VBox(10, logoView,inputBox, loginButton, createNewCustomer);
         centerBox.setAlignment(Pos.CENTER);

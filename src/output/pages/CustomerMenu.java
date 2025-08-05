@@ -197,7 +197,7 @@ public class CustomerMenu {
         return scene;
     }
 
-    public static void createRequest(String text) {
+    private static void createRequest(String text) {
         if (LoginPage.selectedCustomer == null) {
             System.err.println("Customer is not selected!");
             return;
@@ -300,7 +300,7 @@ public class CustomerMenu {
         return scene;
     }
 
-    public static boolean transferBetweenAccounts(String FromAccount , String ToAccount , int Amount , String date , String PassWord) {
+    private static boolean transferBetweenAccounts(String FromAccount , String ToAccount , int Amount , String date , String PassWord) {
 
         System.out.println("Transfer funds between your accounts...");
         System.out.print("Originating account number: ");
