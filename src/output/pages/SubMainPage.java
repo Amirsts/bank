@@ -42,13 +42,14 @@ public class SubMainPage {
 
         BranchManager branchManager = new BranchManager(
                 "Ali", "Rezayi", "1990-01-01", "1234567890",
-                "Tehran, Iran", "09121234567", "BM001" , "1234"
+                "Tehran, Iran", "09121234567", "MA1234" , "1234"
         );
         branchS.setBranchManager(branchManager);
         bankS.addEmployee(branchManager);
         bankS.addBranch(branchS);
 
-        AssistantManager assistantManager = new AssistantManager("pouriya" , "Farahmand" , "1990-05-13" , "0986565654" , "Iran" ,"09896543298" , "pr1234"  , "1234");
+        AssistantManager assistantManager = new AssistantManager("pouriya" , "Farahmand" , "1990-05-13" , "0986565654" ,
+                "Iran" ,"09896543298" , "AS1234"  , "1234");
         bankS.addEmployee(assistantManager);
         branchS.setAssistantManager(assistantManager);
 
@@ -85,28 +86,9 @@ public class SubMainPage {
 
 
         // Creating Account for customer
-        Teller teller = new Teller("Ali","asghari","1986-12-20", "0965656654","mashad" , "09064563232","2", "2");
+        Teller teller = new Teller("Ali","asghari","1986-12-20", "0965656654",
+                "mashad" , "09064563232","TL1234", "1234");
         bankS.addEmployee(teller);
         branchS.addTeller(teller);
-    }
-
-    // Customer selection among bank customers
-    static Customer selectCustomer(String customerID) {
-        List<Customer> customers = bank.getCustomers(); // Creating a list from customers of bank
-        if (customers.isEmpty()) {
-            System.out.println("There are no registered customers.");
-            return null;
-        }
-        String cID = customerID;
-
-        for (int i = 0; i < customers.size(); i++) {
-            Customer tempC = customers.get(i);
-
-            if (tempC.getCustomerId().equals(cID)){
-                return customers.get(i);
-            }
-        }
-        System.out.println("Customer not found, please try again.");
-        return null;
     }
 }

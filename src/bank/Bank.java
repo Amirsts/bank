@@ -1,6 +1,9 @@
 package bank;
 
+import branch.AssistantManager;
 import branch.Branch;
+import branch.BranchManager;
+import branch.Teller;
 import interfaces.FindAccount;
 import loan.BaseLoan;
 import person.*;
@@ -21,6 +24,9 @@ public class Bank implements Displayable , FindAccount {
     public final String name = "Bit Bank";
     private List<Branch> branches;
     private List<Employee> employees;
+    private List<Teller> tellers;
+    private List<AssistantManager> assistantManagers;
+    private List<BranchManager> branchManagers;
     private List<Customer> customers;
     private List<Account> accounts;
     private List<String> logs;
@@ -33,12 +39,16 @@ public class Bank implements Displayable , FindAccount {
         this.accounts = new ArrayList<>();
         this.customers = new ArrayList<>();
         this.employees = new ArrayList<>();
+        this.tellers = new ArrayList<>();
+        this.assistantManagers = new ArrayList<>();
+        this.branchManagers = new ArrayList<>();
         this.logs = new ArrayList<>();
         this.currentDate =LocalDate.of(2025,6,2);
         this.secureRandom = new SecureRandom();
     }
 
-    //add and collect
+
+       /*  add and collect */
 
     public void addBranch(Branch branch){
         if (findBranch(branch.getBranchNumber()) != null ){
@@ -49,14 +59,32 @@ public class Bank implements Displayable , FindAccount {
         log("branch" + branch.getBranchNumber() + "registered.");
     }
 
+
     public void addEmployee(Employee employee){
-        if (findEmployee(employee.getEmployeeId()) != null){
-            System.out.println("Repetitive employee");
-            return;
+        String employeeType = employee.getEmployeeId().substring( 0 , 2 );
+
+        switch (employeeType) {
+
+            case "TL" :
+                tellers.add((Teller) employee);
+                log("TL employee" + employee.getEmployeeId() + "added .");
+                break;
+
+            case "AS" :
+                assistantManagers.add((AssistantManager) employee);
+                log("AS employee" + employee.getEmployeeId() + "added .");
+                break;
+
+            case "MA" :
+                branchManagers.add((BranchManager) employee);
+                log("TL employee" + employee.getEmployeeId() + "added .");
+                break;
         }
+
         employees.add(employee);
         log("employee" + employee.getEmployeeId() + "added .");
     }
+
 
     public void addCustomer(Customer customer){
         if (findCustomer(customer.getCustomerId()) != null){
@@ -67,12 +95,14 @@ public class Bank implements Displayable , FindAccount {
         log("customer" + customer.getCustomerId() + "added");
     }
 
+
     public void addAccount(Account account){accounts.add(account);}
 
     public void removeAccount(String accountNumber){
         accounts.removeIf(acc -> acc.getAccountId().equals(accountNumber));
         out.println("Account" + accountNumber + "deleted from the branch's accounts");
     }
+
 
     public String accountNumberCreator(char accountType){
         long randomPart = (long) (secureRandom.nextDouble() * 1000_000_00000L);
@@ -91,6 +121,38 @@ public class Bank implements Displayable , FindAccount {
         return null;
     }
 
+
+    public String tellerIdCreator(){
+        int randomPart = (secureRandom.nextInt() * 10000);
+        String randomPartStr =String.format("%04d" , randomPart);
+
+        String randomTellerId = "TL" + randomPartStr;
+        return randomTellerId;
+    }
+
+
+    public String assistantManagerIdCreator(){
+        int randomPart = (secureRandom.nextInt() * 10000);
+        String randomPartStr =String.format("%04d" , randomPart);
+
+        String randomAssitantId = "AS" + randomPartStr;
+        return randomAssitantId;
+    }
+
+
+    public String managerIdCreator(){
+        int randomPart = (secureRandom.nextInt() * 10000);
+        String randomPartStr =String.format("%04d" , randomPart);
+
+        String randomManagerId = "MA" + randomPartStr;
+        return randomManagerId;
+    }
+
+
+
+
+
+
     // ---- search----
     public Branch findBranch(String branchNumber){
         return branches.stream()
@@ -98,11 +160,36 @@ public class Bank implements Displayable , FindAccount {
                 .findFirst().orElse(null);
     }
 
+
     public Employee findEmployee(String employeeId){
-        return employees.stream()
-                .filter(e -> e.getEmployeeId().equals(employeeId))
-                .findFirst().orElse(null);
+        String employeeType = employeeId.substring(0 , 2);
+        switch (employeeType) {
+
+            case "TL" :
+                for (Teller teller : tellers) {
+                    if (teller.getEmployeeId().equals(employeeId))
+                        return teller;
+                }
+                break;
+
+            case "AS" :
+                for (AssistantManager assistantManager : assistantManagers) {
+                    if (assistantManager.getEmployeeId().equals(employeeId))
+                        return assistantManager;
+                }
+                break;
+
+            case "MA" :
+                for (BranchManager branchManager : branchManagers) {
+                    if (branchManager.getEmployeeId().equals(employeeId))
+                        return branchManager;
+                }
+                break;
+
+        }
+        return null;
     }
+
 
     public Customer findCustomer(String nationalId){
         return customers.stream()
@@ -110,12 +197,15 @@ public class Bank implements Displayable , FindAccount {
                 .findFirst().orElse(null);
     }
 
+
     public Customer findCustomerByID(String customerId){
         for (Customer c : customers){
             if (c.getCustomerId().equals(customerId)){return c;}
         }
         return null;
     }
+
+
 
 
     //reports
@@ -130,6 +220,9 @@ public class Bank implements Displayable , FindAccount {
     public List<String> getLogs(){
         return logs;
     }
+
+
+
 
 
     //unique check unit
@@ -187,6 +280,18 @@ public class Bank implements Displayable , FindAccount {
 
 
 
+
+
+    //time
+    public LocalDate getCurrentDate() {
+        return currentDate;
+    }
+
+    public void addedDays( int days){
+        currentDate = currentDate.plusDays(days);
+        log("time updated :"+ currentDate);
+    }
+
     public void transferBetweenCustomers(String fromAccountNumber, String toAccountNumber, int amount, String password , LocalDate dateTransfer)
             throws AccountNotFoundException, IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException, DailyTransferLimitExceededException {
 
@@ -201,19 +306,8 @@ public class Bank implements Displayable , FindAccount {
         from.secureWithdraw(amount, password);
         to.deposit(amount);
 
-            System.out.println(" Successful transfer between customers: " + amount + " Tooman");
+        System.out.println(" Successful transfer between customers: " + amount + " Tooman");
     }
-
-    //time
-    public LocalDate getCurrentDate() {
-        return currentDate;
-    }
-
-    public void addedDays( int days){
-        currentDate = currentDate.plusDays(days);
-        log("time updated :"+ currentDate);
-    }
-
 
     //display
     public void displayBranches(){

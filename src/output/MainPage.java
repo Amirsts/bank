@@ -539,25 +539,26 @@ public class MainPage {
             switch(choice) {
                 case 1:
                     System.out.println("Select operation type: 1. Deposit 2. Withdrawal");
-                    int op = scanner.nextInt();
+                    int operation = scanner.nextInt();
                     scanner.nextLine();
                     System.out.print("Account number: ");
-                    String accNum = scanner.nextLine();
+                    String accountNumber = scanner.nextLine();
                     System.out.print("Amount: ");
-                    int amt = scanner.nextInt();
+                    int amount = scanner.nextInt();
                     scanner.nextLine();
-                    CurrentAccount acc = (CurrentAccount) curentBranch.findAccount(accNum);
-                    if (acc == null) {
+                    CurrentAccount currentAccount = (CurrentAccount) curentBranch.findAccount(accountNumber);
+
+                    if (currentAccount == null) {
                         System.out.println("The requested account was not found.");
                     } else {
-                        if (op == 1) {
-                            acc.deposit(amt);
-                            System.out.println("Successful deposit. New balance: " + acc.getBalanceForBank());
-                        } else if (op == 2) {
+                        if (operation == 1) {
+                            currentAccount.deposit(amount);
+                            System.out.println("Successful deposit. New balance: " + currentAccount.getBalanceForBank());
+                        } else if (operation == 2) {
                             System.out.print("Password: ");
                             String pwd = scanner.nextLine();
                             try {
-                                acc.secureWithdraw(amt, pwd);
+                                currentAccount.secureWithdraw(amount, pwd);
                             } catch (IncorrectPasswordException | InvalidAmountException | InsufficientBalanceException ex) {
                                 System.out.println("Error in collection: " + ex.getMessage());
                             }

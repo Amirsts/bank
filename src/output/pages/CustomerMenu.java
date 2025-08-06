@@ -18,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import loan.BaseLoan;
 import message.MessageBox;
@@ -45,8 +46,9 @@ public class CustomerMenu {
 
 
         // Title
-        Text title = new Text("منوی خدمات");
+        Text title = new Text("منو مشتری\n" + LoginPage.selectedCustomer.getFullName());
         title.setFill(Color.LIGHTGRAY);
+        title.setTextAlignment(TextAlignment.CENTER);
         title.setFont(Font.font("Vazirmatn", 20));
 
         //Buttons List

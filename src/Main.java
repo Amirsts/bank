@@ -36,6 +36,8 @@ public class Main extends Application {
         SceneManager.addScene("accountsBalance", CustomerMenu::accountsBalance);
         SceneManager.addScene("closeAccount", CustomerMenu::closeAccount);
         SceneManager.addScene("processNewCustomer", NewCustomer::processNewCustomer);
+        SceneManager.addScene("getTellerMenu", TellerMenu::getTellerMenu);
+        SceneManager.addScene("depositWithdraw", TellerMenu::depositWithdraw);
 
         SceneManager.switchTo("login");
     }

@@ -1,5 +1,8 @@
 package output.pages;
 
+import branch.AssistantManager;
+import branch.BranchManager;
+import branch.Teller;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,6 +19,9 @@ import person.Customer;
 
 public class LoginPage {
     static Customer selectedCustomer ;
+    static Teller selectedTeller ;
+    static AssistantManager selectedAssistant;
+    static BranchManager selectedManager;
 
     public static Scene getLoginScene() {
 
@@ -30,31 +36,43 @@ public class LoginPage {
         VBox inputBox = new VBox(0);
         inputBox.getStyleClass().add("login-box");
 
+
         TextField userNameField = new TextField();
         userNameField.setPromptText("نام کاربری");
         userNameField.setId("username");
 
+
         TextField passwordField = new TextField();
         passwordField.setPromptText("رمز عبور");
         passwordField.setId("password");
-
-
-
         passwordField.setOnAction(e -> {
-            String user = userNameField.getText();
-            String pass = passwordField.getText();
-
-            if (SubMainPage.bank.findCustomerByID(user) != null ) {
-
-                selectedCustomer = SubMainPage.selectCustomer(user);
-                selectedCustomer.displayInfo();
-                if (selectedCustomer.isPassWordTrue(pass)) {
-                    SceneManager.switchTo("customerMenu");
-                }else {
-                    NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
-                }
+            if (userNameField.getText().isEmpty()) {
+                NewCustomer.showErrorAlert("لطفا نام کاربری خود را وارد کنید");
             } else {
-                NewCustomer.showErrorAlert("نام کاربری وارد شده موجود نمی باشد");
+
+                String user = userNameField.getText();
+                String pass = passwordField.getText();
+                String employeeType = user.substring(0, 1);
+
+
+                switch (employeeType) {
+
+                    case "T":
+                        handleTellerLogin(pass, user);
+                        break;
+
+                    case "A":
+                        handleAssistantLogin(pass, user);
+                        break;
+
+                    case "M":
+                        handleManagerLogin(pass, user);
+                        break;
+
+                    default:
+                        handleCustomerLogin(pass, user);
+                        break;
+                }
             }
         });
 
@@ -67,23 +85,34 @@ public class LoginPage {
         Button loginButton = new Button("ورود به بیت بانک اصلی");
         loginButton.setId("loginButton");
         loginButton.setOnAction(e -> {
-
-            String user = userNameField.getText();
-            String pass = passwordField.getText();
-
-            if (SubMainPage.bank.findCustomerByID(user) != null ) {
-
-                selectedCustomer = SubMainPage.selectCustomer(user);
-                selectedCustomer.displayInfo();
-                if (selectedCustomer.isPassWordTrue(pass)) {
-                    SceneManager.switchTo("customerMenu");
-                }else {
-                    NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
-                }
+            if (userNameField.getText().isEmpty()) {
+                NewCustomer.showErrorAlert("لطفا نام کاربری خود را وارد کنید");
             } else {
-                NewCustomer.showErrorAlert("نام کاربری وارد شده موجود نمی باشد");
-            }
 
+                String user = userNameField.getText();
+                String pass = passwordField.getText();
+                String employeeType = user.substring(0, 1);
+
+
+                switch (employeeType) {
+
+                    case "T":
+                        handleTellerLogin(pass, user);
+                        break;
+
+                    case "A":
+                        handleAssistantLogin(pass, user);
+                        break;
+
+                    case "M":
+                        handleManagerLogin(pass, user);
+                        break;
+
+                    default:
+                        handleCustomerLogin(pass, user);
+                        break;
+                }
+            }
         });
 
 
@@ -116,5 +145,69 @@ public class LoginPage {
 
 
         return scene;
+    }
+
+
+
+
+    /* Login methods */
+
+    private static void handleTellerLogin(String pass , String user) {
+        if (SubMainPage.bank.findEmployee(user) != null ) {
+
+            selectedTeller = (Teller) SubMainPage.bank.findEmployee(user);
+            selectedTeller.displayInfo();
+            if (selectedTeller.isPassWordTrue(pass)) {
+                SceneManager.switchTo("getTellerMenu");
+            }else {
+                NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+            }
+        } else {
+            NewCustomer.showErrorAlert("نام کاربری تحویلدار وارد شده موجود نمی باشد");
+        }
+    }
+
+    private static void handleAssistantLogin(String pass , String user) {
+        if (SubMainPage.bank.findEmployee(user) != null ) {
+            selectedAssistant = (AssistantManager) SubMainPage.bank.findEmployee(user);
+            selectedAssistant.displayInfo();
+            if (selectedAssistant.isPassWordTrue(pass)) {
+                SceneManager.switchTo("customerMenu");
+            }else {
+                NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+            }
+        } else {
+            NewCustomer.showErrorAlert("نام کاربری وارد شده موجود نمی باشد");
+        }
+    }
+
+    private static void handleManagerLogin(String pass , String user ) {
+        if (SubMainPage.bank.findEmployee(user) != null ) {
+
+            selectedManager = (BranchManager) SubMainPage.bank.findEmployee(user);
+            selectedManager.displayInfo();
+            if (selectedManager.isPassWordTrue(pass)) {
+                SceneManager.switchTo("customerMenu");
+            }else {
+                NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+            }
+        } else {
+            NewCustomer.showErrorAlert("نام کاربری وارد شده موجود نمی باشد");
+        }
+    }
+
+    private static void handleCustomerLogin(String pass , String user) {
+        if (SubMainPage.bank.findCustomerByID(user) != null ) {
+
+            selectedCustomer = SubMainPage.bank.findCustomerByID(user);
+            selectedCustomer.displayInfo();
+            if (selectedCustomer.isPassWordTrue(pass)) {
+                SceneManager.switchTo("customerMenu");
+            }else {
+                NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+            }
+        } else {
+            NewCustomer.showErrorAlert("نام کاربری وارد شدهS موجود نمی باشد");
+        }
     }
 }

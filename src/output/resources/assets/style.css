@@ -192,6 +192,8 @@
     -fx-border-radius: 10;
 }
 
+
+
 /* loan page */
 #title-account {
     -fx-background-color: #2a2d3e;
@@ -206,3 +208,7 @@
     -fx-prompt-text-fill: gray;
     -fx-font-size: 14px;
 }
+
+
+
+/* TellerPage */
