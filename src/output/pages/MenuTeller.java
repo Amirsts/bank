@@ -15,7 +15,7 @@ import request.RequestType;
 
 import java.util.List;
 
-public class TellerMenu {
+public class MenuTeller {
     public static Scene getTellerMenu() {
 
         //Presenting the font
@@ -96,7 +96,7 @@ public class TellerMenu {
         VBox handleInfo = new VBox(12);
 
 
-        Font.loadFont(CustomerMenu.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
+        Font.loadFont(MenuCustomer.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
 
         // Title
         Text title = new Text("نوع عملیات را وارد کنید");
@@ -222,7 +222,7 @@ public class TellerMenu {
 
                 btn.setOnAction(e -> {
                     handleInfo.getChildren().clear();
-                    handleInfo.getChildren().add(Methods.buttonRequestLo(request));
+                    handleInfo.getChildren().add(Methods.buttonRequestLoanTl(request));
                 });
 
                 buttonBox.getChildren().add(btn);

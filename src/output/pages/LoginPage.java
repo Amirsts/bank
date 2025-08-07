@@ -172,7 +172,7 @@ public class LoginPage {
             selectedAssistant = (AssistantManager) SubMainPage.bank.findEmployee(user);
             selectedAssistant.displayInfo();
             if (selectedAssistant.isPassWordTrue(pass)) {
-                SceneManager.switchTo("customerMenu");
+                SceneManager.switchTo("getAssistantMenu");
             }else {
                 NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
             }

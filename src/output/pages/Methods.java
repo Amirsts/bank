@@ -21,7 +21,7 @@ public class Methods {
 
         /* ---   Teller Menu   --- */
 
-         static VBox buttonRequestLo(Request request) {
+         static VBox buttonRequestLoanTl(Request request) {
             VBox infoBox = new VBox(10);
             infoBox.getStyleClass().add("login-box");
 
@@ -185,4 +185,27 @@ public class Methods {
         return reaction;
     }
 
+
+
+
+
+    /* ---   Assistant Menu   --- */
+    static VBox buttonRequestLoanAs(Request request) {
+        VBox infoBox = new VBox(10);
+        infoBox.getStyleClass().add("login-box");
+
+        LoginPage.selectedAssistant.clearMessageBox(request);
+        
+        if (! LoginPage.selectedAssistant.isEligibleForLoan(request.getSender()) ) {
+            infoBox.getChildren().add(reaction("مشتری دارای وام فعال است"));
+        }else {
+            LoginPage.selectedAssistant.clearMessageBox(request);
+            SubMainPage.currentBranch.getAssistantManager().receiveRequest(request);
+            request.setStatus("معاون شعبه " + LoginPage.selectedAssistant.getFullName() + ": درخواست وام شما به رئیس شعبه ارسال شد");
+
+            infoBox.getChildren().add(reaction("درخواست به رئیس شعبه ارسال شد"));
+        }
+
+        return infoBox;
+    }
 }

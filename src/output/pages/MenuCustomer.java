@@ -21,7 +21,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import loan.BaseLoan;
-import message.MessageBox;
 import output.SceneManager;
 import request.Request;
 import request.RequestType;
@@ -30,7 +29,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class CustomerMenu {
+public class MenuCustomer {
 
     public static Scene getCustomerMenu() {
 
@@ -146,7 +145,7 @@ public class CustomerMenu {
         root.setStyle("-fx-background-color: #1c1f2e;");
 
 
-        Font.loadFont(CustomerMenu.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
+        Font.loadFont(MenuCustomer.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
 
         // Title
         Text title = new Text("نوع حساب خود را انتخاب کنید");
@@ -344,7 +343,7 @@ public class CustomerMenu {
         root.setStyle("-fx-background-color: #1c1f2e;");
 
 
-        Font.loadFont(CustomerMenu.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
+        Font.loadFont(MenuCustomer.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 16);
 
         // Title
         Text title = new Text("نوع وام را انتخاب کنید");
