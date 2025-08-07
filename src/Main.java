@@ -39,6 +39,7 @@ public class Main extends Application {
         SceneManager.addScene("getTellerMenu", TellerMenu::getTellerMenu);
         SceneManager.addScene("depositWithdraw", TellerMenu::depositWithdraw);
         SceneManager.addScene("forwardLoan", TellerMenu::forwardLoan);
+        SceneManager.addScene("openAccountRequest", TellerMenu::openAccountRequest);
 
         SceneManager.switchTo("login");
     }

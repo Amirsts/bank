@@ -1,21 +1,14 @@
 package output.pages;
 
-import account.CurrentAccount;
-import exceptions.IncorrectPasswordException;
-import exceptions.InsufficientBalanceException;
-import exceptions.InvalidAmountException;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import output.SceneManager;
 import request.Request;
 import request.RequestType;
@@ -69,7 +62,7 @@ public class TellerMenu {
                     btn.setOnAction(e -> SceneManager.switchTo("forwardLoan"));
                     break;
                 case "تایید درخواست افتتاح حساب" :
-                    btn.setOnAction(e -> SceneManager.switchTo("loanRequest"));
+                    btn.setOnAction(e -> SceneManager.switchTo("openAccountRequest"));
                     break;
                 case "تایید درخواست بستن حساب":
                     break;
@@ -133,26 +126,12 @@ public class TellerMenu {
 
             register.setOnAction(a -> {
                 infoBox.getChildren().clear();
-
-                CurrentAccount currentAccount = (CurrentAccount) SubMainPage.currentBranch.findAccount(accountNumber.getText());
-                if (currentAccount == null) {
-                    NewCustomer.showErrorAlert("شماره حساب وارد شده موجود نمی‌باشد");
-                } else {
-                    currentAccount.deposit(Integer.parseInt(amount.getText()));
-
-                    TextField reaction = new TextField();
-                    reaction.setPromptText("مبلغ " + amount.getText() + "\nبه حساب " + currentAccount.getOwner().getFullName() + " واریز شد");
-                    reaction.setId("password");
-                    reaction.setEditable(false);
-
-                    infoBox.getChildren().add(reaction);
-                }
+                Methods.buttonRegisterDeposit(infoBox , accountNumber.getText(), amount.getText());
             });
 
             infoBox.getChildren().addAll(accountNumber, amount, register);
             handleInfo.getChildren().add(infoBox);
         });
-
 
         Button withdraw = new Button("برداشت");
         withdraw.setId("normal-buttons");
@@ -181,25 +160,7 @@ public class TellerMenu {
 
             register.setOnAction(a -> {
                 infoBox.getChildren().clear();
-
-                CurrentAccount currentAccount = (CurrentAccount) SubMainPage.currentBranch.findAccount(accountNumber.getText());
-                if (currentAccount == null) {
-                    NewCustomer.showErrorAlert("شماره حساب وارد شده موجود نمی‌باشد");
-                } else {
-                    try {
-                        currentAccount.secureWithdraw(Integer.parseInt(amount.getText()), passWord.getText());
-                    } catch (IncorrectPasswordException | InvalidAmountException |
-                             InsufficientBalanceException ex) {
-                        System.out.println("Error in collection: " + ex.getMessage());
-                    }
-
-                    TextField reaction = new TextField();
-                    reaction.setPromptText("مبلغ " + amount.getText() + "\nاز حساب " + currentAccount.getOwner().getFullName() + " برداشت شد");
-                    reaction.setId("password");
-                    reaction.setEditable(false);
-
-                    infoBox.getChildren().add(reaction);
-                }
+                Methods.buttonRegisterWithdraw(infoBox , accountNumber.getText() , amount.getText() , passWord.getText());
             });
 
             infoBox.getChildren().addAll(accountNumber, amount, passWord, register);
@@ -247,7 +208,7 @@ public class TellerMenu {
 
         if (loanRequests.isEmpty()) {
             TextField noRequest = new TextField("هیچ درخواستی برای وام وجود ندارد");
-            noRequest.setId("password");
+            noRequest.setId("repayInfo");
             noRequest.setEditable(false);
             noRequest.setAlignment(Pos.CENTER);
             buttonBox.getChildren().add(noRequest);
@@ -260,22 +221,7 @@ public class TellerMenu {
 
                 btn.setOnAction(e -> {
                     handleInfo.getChildren().clear();
-
-                    VBox infoBox = new VBox(10);
-                    infoBox.getStyleClass().add("login-box");
-
-                    // انتقال درخواست
-                    LoginPage.selectedTeller.clearMessageBox(request);
-                    SubMainPage.currentBranch.getAssistantManager().receiveRequest(request);
-                    request.setStatus("تحویلدار " + LoginPage.selectedTeller.getFullName() + ": درخواست وام شما به معاون شعبه ارسال شد");
-
-                    TextField reaction = new TextField("درخواست به معاون شعبه ارسال شد");
-                    reaction.setId("password");
-                    reaction.setAlignment(Pos.CENTER);
-                    reaction.setEditable(false);
-
-                    infoBox.getChildren().add(reaction);
-                    handleInfo.getChildren().add(infoBox);
+                    handleInfo.getChildren().add(Methods.buttonRequestLo(request));
                 });
 
                 buttonBox.getChildren().add(btn);
@@ -295,4 +241,63 @@ public class TellerMenu {
     }
 
 
+
+
+    public static Scene openAccountRequest() {
+        // Presenting the font
+        Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
+
+        // Root
+        VBox root = new VBox(15);
+        root.setPadding(new Insets(30));
+        root.setAlignment(Pos.CENTER);
+        root.setStyle("-fx-background-color: #1c1f2e;");
+
+        VBox handleInfo = new VBox(12); // نمایش بازخورد برای هر درخواست
+
+        // Title
+        Text title = new Text("منو تحویلدار\n" + LoginPage.selectedTeller.getFullName());
+        title.setFill(Color.LIGHTGRAY);
+        title.setFont(Font.font("Vazirmatn", 20));
+
+        // Buttons
+        VBox buttonBox = new VBox(12);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        List<Request> openAccountRequests = LoginPage.selectedTeller.getMessageBox().getRequestsByType(RequestType.OPEN_ACCOUNT);
+
+        if (openAccountRequests.isEmpty()) {
+            TextField noRequest = new TextField("هیچ درخواستی برای باز کردن حساب وجود ندارد");
+            noRequest.setId("password");
+            noRequest.setEditable(false);
+            noRequest.setAlignment(Pos.CENTER);
+            buttonBox.getChildren().add(noRequest);
+        } else {
+            title.setText("مشتریان در صف انتظار");
+            for (Request request : openAccountRequests) {
+
+                Button btn = new Button(request.getSender().getFullName());
+                btn.setPrefWidth(260);
+                btn.setId("normal-buttons");
+
+                btn.setOnAction(e -> {
+                    handleInfo.getChildren().clear();
+                    handleInfo.getChildren().add(Methods.buttonRequestOp(request));
+                });
+
+                buttonBox.getChildren().add(btn);
+            }
+        }
+
+        Button lastPage = new Button("بازگشت به صفحه قبلی");
+        lastPage.setId("normal-buttons");
+        lastPage.setPrefWidth(260);
+        lastPage.setOnAction(e -> SceneManager.switchTo("getTellerMenu"));
+
+        root.getChildren().addAll(title, buttonBox, handleInfo, lastPage);
+
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+        return scene;
+    }
 }
