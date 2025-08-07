@@ -65,6 +65,7 @@ public class TellerMenu {
                     btn.setOnAction(e -> SceneManager.switchTo("openAccountRequest"));
                     break;
                 case "تایید درخواست بستن حساب":
+                    btn.setOnAction(e -> SceneManager.switchTo("closeAccountRequest"));
                     break;
                 case "خروج از حساب" :
                     btn.setOnAction(e -> SceneManager.switchTo("login"));
@@ -283,6 +284,63 @@ public class TellerMenu {
                 btn.setOnAction(e -> {
                     handleInfo.getChildren().clear();
                     handleInfo.getChildren().add(Methods.buttonRequestOp(request));
+                });
+
+                buttonBox.getChildren().add(btn);
+            }
+        }
+
+        Button lastPage = new Button("بازگشت به صفحه قبلی");
+        lastPage.setId("normal-buttons");
+        lastPage.setPrefWidth(260);
+        lastPage.setOnAction(e -> SceneManager.switchTo("getTellerMenu"));
+
+        root.getChildren().addAll(title, buttonBox, handleInfo, lastPage);
+
+        Scene scene = new Scene(root, 360, 640);
+        scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+        return scene;
+    }
+
+
+
+
+    public static Scene closeAccountRequest() {
+        // Presenting the font
+        Font.loadFont(LoginPage.class.getResource("/fonts/Vazirmatn-Light.ttf").toExternalForm(), 14);
+
+        // Root
+        VBox root = new VBox(15);
+        root.setPadding(new Insets(30));
+        root.setAlignment(Pos.CENTER);
+        root.setStyle("-fx-background-color: #1c1f2e;");
+
+        VBox handleInfo = new VBox(12); // نمایش بازخورد برای هر درخواست
+
+        // Title
+        Text title = new Text("منو تحویلدار\n" + LoginPage.selectedTeller.getFullName());
+        title.setFill(Color.LIGHTGRAY);
+        title.setFont(Font.font("Vazirmatn", 20));
+
+        // Buttons
+        VBox buttonBox = new VBox(12);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        List<Request> closeAccountRequest = LoginPage.selectedTeller.getMessageBox().getRequestsByType(RequestType.CLOSE_ACCOUNT);
+
+        if (closeAccountRequest.isEmpty()) {
+            buttonBox.getChildren().add(Methods.reaction("هیچ درخواستی برای بستن حساب وجود ندارد"));
+        } else {
+            title.setText("مشتریان در صف انتظار");
+            for (Request request : closeAccountRequest) {
+
+                Button btn = new Button(request.getSender().getFullName());
+                btn.setPrefWidth(260);
+                btn.setId("normal-buttons");
+
+                btn.setOnAction(e -> {
+                    handleInfo.getChildren().clear();
+                    handleInfo.getChildren().add(Methods.buttonRequestCl(request));
                 });
 
                 buttonBox.getChildren().add(btn);

@@ -100,7 +100,7 @@ public class Methods {
         passWord.setPromptText("رمز");
         passWord.setId("password");
 
-        Button register = new Button("پرداخت");
+        Button register = new Button("تایید درخواست");
         register.setId("loginButton");
         register.setPrefWidth(260);
 
@@ -149,6 +149,30 @@ public class Methods {
         });
 
         infoBox.getChildren().addAll(amount, date, passWord , register);
+        return infoBox;
+    }
+
+    static VBox buttonRequestCl(Request request ) {
+        VBox infoBox = new VBox(10);
+        infoBox.getStyleClass().add("login-box");
+
+
+        LoginPage.selectedTeller.clearMessageBox(request);
+        String accountNumber = request.getMessage();
+        Customer senderRequest = request.getSender();
+
+        if (senderRequest.hasActiveLoan()) {
+            infoBox.getChildren().add(reaction("مشتری دارای وام فعال است"));
+            request.setStatus(" تحویلدار: " + LoginPage.selectedTeller.getFullName() + " ||مشتری گرامی، شما یک وام فعال دارید. حساب شما قابل بستن نیست.");
+            LoginPage.selectedTeller.clearMessageBox(request);
+        }else {
+            infoBox.getChildren().add(reaction("حساب مورد نظر با موفقیت بسته شد"));
+            senderRequest.removeAccount(accountNumber);
+            SubMainPage.currentBranch.removeAccount(accountNumber);
+            SubMainPage.bank.removeAccount(accountNumber);
+            request.setStatus(" تحویلدار: " + LoginPage.selectedTeller.getFullName() + " ||مشتری گرامی،حساب " + accountNumber + "بسته شد");
+        }
+
         return infoBox;
     }
 
