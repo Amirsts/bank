@@ -596,7 +596,7 @@ public class MenuCustomer {
 
         Button buttonReturn = new Button("بازگشت به صفحه قبلی");
         buttonReturn.setId("buttonReturn");
-        buttonReturn.setOnAction(e -> SceneManager.switchTo("loanRepayInfo"));
+        buttonReturn.setOnAction(e -> SceneManager.switchTo("customerMenu"));
 
         VBox centerBox = new VBox(10, infoBox, register, buttonReturn);
         centerBox.setAlignment(Pos.CENTER);

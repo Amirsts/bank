@@ -40,8 +40,12 @@ public class SubMainPage {
 
         Branch branchS = branch;
 
+        BranchManager bankManager = new BranchManager("محسن" , "زهره وند" , "01/01/01" , "0911111111" ,
+                ".one تهران هلدینگ" , "09111111111" , "BA" , "1234");
+        bank.addEmployee(bankManager);
+
         BranchManager branchManager = new BranchManager(
-                "Ali", "Rezayi", "1990-01-01", "1234567890",
+                "Ali", "Rezayi", "1990-01-01", "0956565656",
                 "Tehran, Iran", "09121234567", "MA1234" , "1234"
         );
         branchS.setBranchManager(branchManager);

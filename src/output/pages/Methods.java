@@ -1,5 +1,6 @@
 package output.pages;
 
+import account.Account;
 import account.CurrentAccount;
 import account.QarzAlHasanehAccount;
 import account.ShortTermAccount;
@@ -10,6 +11,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import loan.NormalLoan;
+import loan.TashilatLoan;
 import person.Customer;
 import request.Request;
 
@@ -176,9 +179,20 @@ public class Methods {
         return infoBox;
     }
 
+
+
     static TextField reaction (String input) {
         TextField reaction = new TextField(input);
         reaction.setId("repayInfo");
+        reaction.setAlignment(Pos.CENTER);
+        reaction.setEditable(false);
+
+        return reaction;
+    }
+
+    static TextField information(String input) {
+        TextField reaction = new TextField(input);
+        reaction.setId("information");
         reaction.setAlignment(Pos.CENTER);
         reaction.setEditable(false);
 
@@ -200,11 +214,127 @@ public class Methods {
             infoBox.getChildren().add(reaction("مشتری دارای وام فعال است"));
         }else {
             LoginPage.selectedAssistant.clearMessageBox(request);
-            SubMainPage.currentBranch.getAssistantManager().receiveRequest(request);
-            request.setStatus("معاون شعبه " + LoginPage.selectedAssistant.getFullName() + ": درخواست وام شما به رئیس شعبه ارسال شد");
+            SubMainPage.currentBranch.getBranchManager().receiveRequest(request);
+            request.setStatus("معاون شعبه: " + LoginPage.selectedAssistant.getFullName() + ": درخواست وام شما به رئیس شعبه ارسال شد");
 
             infoBox.getChildren().add(reaction("درخواست به رئیس شعبه ارسال شد"));
         }
+
+        return infoBox;
+    }
+
+
+
+
+
+    /* ---   Assistant Menu   --- */
+    static VBox buttonRequestLoanMa(Request request) {
+        VBox infoBox = new VBox(10);
+        infoBox.getStyleClass().add("login-box");
+
+        LoginPage.selectedManager.clearMessageBox(request);
+
+        int loanType = Integer.parseInt(request.getMessage());
+        
+        //Selecting customer's account for loan
+        Account accountNumber = request.getSender().findAccount(request.getAccountNumber());
+
+        switch (loanType) {
+            case 1:
+                if ( (request.getLoanAmount() > request.getSender().getNormalLoanCeiling()) ) {//The loan amount was checked to ensure it did not exceed the loan ceiling.
+                    infoBox.getChildren().add(reaction("مبلغ وام درخواستی بیشتر از سقف وام عادی است"));
+                    request.setStatus("رئیس شعبه: " + LoginPage.selectedManager.getFullName() + "درخواست شما رد شد: مبلغ وام شما بیشتر از سقف وام عادی است.");
+                    LoginPage.selectedManager.clearMessageBox(request);
+                    break;
+                }
+                if ((request.getLoanAmount() < SubMainPage.currentBranch.getCurrentShortTermBalance())) {//The bank was checked to ensure it had sufficient financial resources.
+
+                    TextField duration = new TextField();
+                    duration.setPromptText("تعداد اقساط ماهانه:");
+                    duration.setId("amount");
+
+                    TextField inoutDate = new TextField();
+                    inoutDate.setPromptText("تاریخ را وارد کنید (01/01/1404)");
+                    inoutDate.setId("date");
+
+                    Button register = new Button("تایید درخواست");
+                    register.setId("loginButton");
+                    register.setPrefWidth(260);
+
+
+                    register.setOnAction(e -> {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                        LocalDate date = LocalDate.parse(inoutDate.getText() , formatter);
+
+                        NormalLoan normalLoan = new NormalLoan(request.getLoanAmount() , Integer.parseInt(duration.getText()) , date , request.getSender());
+                        request.getSender().addLoan(normalLoan);
+                        accountNumber.deposit((int) request.getLoanAmount());
+                        request.setStatus("مشتری گرامی، درخواست وام عادی شما تأیید شده و مبلغ آن: (" +((int) request.getLoanAmount()) + ") به حساب شما واریز شده است.\n" +
+                                    "شما ملزم به بازپرداخت وام در طول مدت زیر هستید: " + duration.getText() + " ماه || در هر قسط از: " + ((int) normalLoan.installmentPerMonth()) + "");
+                        infoBox.getChildren().add(reaction("وام به حساب مشتری واریز شد: " + ((int) request.getLoanAmount())) );
+                        LoginPage.selectedManager.clearMessageBox(request);
+                    });
+
+                    infoBox.getChildren().addAll(duration , inoutDate , register);
+
+                }else {
+                    infoBox.getChildren().add(reaction("موجودی حساب های جاری و کوتاه مدت شعبه: " + SubMainPage.currentBranch.getBranchNumber() + " بیت بانک کافی نیست"));
+                    request.setStatus("رئیس شعبه:" + LoginPage.selectedManager.getFullName() + "درخواست شما رد شد || منابع تامین وام کمتر از میزان درخواستی شما هستند");
+                    LoginPage.selectedManager.clearMessageBox(request);
+                }
+                break;
+
+            case 2:
+                if ((request.getLoanAmount() > request.getSender().getTashilatCeiling()) ) {  //The loan amount was checked to ensure it did not exceed the loan ceiling.
+                    infoBox.getChildren().add(reaction("مبلغ وام درخواستی بیشتر از سقف وام تسهیلات است"));
+                    request.setStatus("رئیس شعبه: " + LoginPage.selectedManager.getFullName() + "درخواست شما رد شد: مبلغ وام شما بیشتر از سقف وام تسهیلات است.");
+                    LoginPage.selectedManager.clearMessageBox(request);
+                    break;
+                }
+                if ((request.getLoanAmount() < SubMainPage.currentBranch.getQarzAlhasanehBalance())) { //The bank was checked to ensure it had sufficient financial resources.
+
+                    TextField duration = new TextField();
+                    duration.setPromptText("تعداد اقساط ماهانه:");
+                    duration.setId("amount");
+
+                    TextField inoutDate = new TextField();
+                    inoutDate.setPromptText("تاریخ را وارد کنید (01/01/1404)");
+                    inoutDate.setId("date");
+
+                    Button register = new Button("تایید درخواست");
+                    register.setId("loginButton");
+                    register.setPrefWidth(260);
+
+
+
+                    register.setOnAction(e -> {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                        LocalDate date = LocalDate.parse(inoutDate.getText() , formatter);
+
+                        TashilatLoan tashilatLoan = new TashilatLoan(request.getLoanAmount() , Integer.parseInt(duration.getText()) , date ,request.getSender());
+                        request.getSender().addLoan(tashilatLoan);
+                        accountNumber.deposit((int) request.getLoanAmount());
+                        request.setStatus("\"مشتری گرامی، درخواست وام تسهیلات شما تأیید شده و مبلغ آن: (" +((int) request.getLoanAmount()) + ")به حساب شما واریز شده است.\n" +
+                                "شما ملزم به بازپرداخت وام در طول مدت زیر هستید: " + duration.getText() + " ماه || در هر قسط از: " + ((int) tashilatLoan.installmentPerMonth()) + "");
+                        infoBox.getChildren().add(reaction("وام به حساب مشتری واریز شد: " + ((int) request.getLoanAmount())) );
+                        SubMainPage.currentBranch.getBranchManager().clearMessageBox(request);
+                    });
+
+                    infoBox.getChildren().addAll(duration , inoutDate , register);;
+
+
+
+                }else {
+                    infoBox.getChildren().add(reaction("موجودی حساب های قرض الحسنه شعبه: " + SubMainPage.currentBranch.getBranchNumber() + " بیت بانک کافی نیست"));
+                    request.setStatus("رئیس شعبه:" + LoginPage.selectedManager.getFullName() + "درخواست شما رد شد || منابع تامین وام قرض الحسنه کمتر از میزان درخواستی شما هستند");
+                    LoginPage.selectedManager.clearMessageBox(request);
+                }
+                break;
+
+            default:
+                System.out.println("Invalid option.");
+        }
+
 
         return infoBox;
     }

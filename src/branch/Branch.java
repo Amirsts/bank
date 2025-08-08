@@ -54,6 +54,13 @@ public class Branch implements Displayable ,FindAccount {
         return tellers;
     }
 
+    public String getTellersName() {
+        for (Teller teller :tellers) {
+            return "\t " +  teller.getFullName();
+        }
+        return null;
+    }
+
     public List<Account>  getAccounts(){
         return accounts;
     }
@@ -87,6 +94,9 @@ public class Branch implements Displayable ,FindAccount {
         return balance;
     }
 
+    public long getBranchBalance() {
+        return getQarzAlhasanehBalance() + getCurrentShortTermBalance() ;
+    }
     //methods
     public void addTeller(Teller teller){
         tellers.add(teller);

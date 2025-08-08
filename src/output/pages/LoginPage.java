@@ -68,7 +68,9 @@ public class LoginPage {
                     case "M":
                         handleManagerLogin(pass, user);
                         break;
-
+                    case "B":
+                        handleBankManagerLogin(pass, user);
+                        break;
                     default:
                         handleCustomerLogin(pass, user);
                         break;
@@ -107,7 +109,9 @@ public class LoginPage {
                     case "M":
                         handleManagerLogin(pass, user);
                         break;
-
+                    case "B":
+                        handleBankManagerLogin(pass, user);
+                        break;
                     default:
                         handleCustomerLogin(pass, user);
                         break;
@@ -177,7 +181,7 @@ public class LoginPage {
                 NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
             }
         } else {
-            NewCustomer.showErrorAlert("نام کاربری وارد شده موجود نمی باشد");
+            NewCustomer.showErrorAlert("نام کاربری معاون شعبه وارد شده موجود نمی باشد");
         }
     }
 
@@ -187,12 +191,27 @@ public class LoginPage {
             selectedManager = (BranchManager) SubMainPage.bank.findEmployee(user);
             selectedManager.displayInfo();
             if (selectedManager.isPassWordTrue(pass)) {
-                SceneManager.switchTo("customerMenu");
+                SceneManager.switchTo("getManagerMenu");
             }else {
                 NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
             }
         } else {
-            NewCustomer.showErrorAlert("نام کاربری وارد شده موجود نمی باشد");
+            NewCustomer.showErrorAlert("نام کاربری رئیس شعبه وارد شده موجود نمی باشد");
+        }
+    }
+
+    private static void handleBankManagerLogin(String pass , String user ) {
+        if (SubMainPage.bank.findEmployee(user) != null ) {
+
+            selectedManager = (BranchManager) SubMainPage.bank.findEmployee(user);
+            selectedManager.displayInfo();
+            if (selectedManager.isPassWordTrue(pass)) {
+                SceneManager.switchTo("getBankManagerMenu");
+            }else {
+                NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+            }
+        } else {
+            NewCustomer.showErrorAlert("نام کاربری  ووارد شده موجود نمی باشد");
         }
     }
 

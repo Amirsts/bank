@@ -43,6 +43,11 @@ public class Main extends Application {
         SceneManager.addScene("closeAccountRequest", MenuTeller::closeAccountRequest);
         SceneManager.addScene("getAssistantMenu", MenuAssistantManager::getAssistantMenu);
         SceneManager.addScene("forwardLoanAs", MenuAssistantManager::forwardLoanAs);
+        SceneManager.addScene("getManagerMenu",MenuManager::getManagerMenu);
+        SceneManager.addScene("forwardLoanMa", MenuManager::forwardLoanMa);
+        SceneManager.addScene("branchInfo", MenuManager::branchInfo);
+        SceneManager.addScene("getBankManagerMenu", MenuBankManager::getBankManagerMenu);
+        SceneManager.addScene("createNewBranch", MenuBankManager::createNewBranch);
 
         SceneManager.switchTo("login");
     }

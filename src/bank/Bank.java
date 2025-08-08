@@ -75,7 +75,7 @@ public class Bank implements Displayable , FindAccount {
                 log("AS employee" + employee.getEmployeeId() + "added .");
                 break;
 
-            case "MA" :
+            case "MA" , "BA" :
                 branchManagers.add((BranchManager) employee);
                 log("TL employee" + employee.getEmployeeId() + "added .");
                 break;
@@ -179,7 +179,7 @@ public class Bank implements Displayable , FindAccount {
                 }
                 break;
 
-            case "MA" :
+            case "MA" ,"BA" :
                 for (BranchManager branchManager : branchManagers) {
                     if (branchManager.getEmployeeId().equals(employeeId))
                         return branchManager;
