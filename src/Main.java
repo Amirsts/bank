@@ -48,6 +48,11 @@ public class Main extends Application {
         SceneManager.addScene("branchInfo", MenuManager::branchInfo);
         SceneManager.addScene("getBankManagerMenu", MenuBankManager::getBankManagerMenu);
         SceneManager.addScene("createNewBranch", MenuBankManager::createNewBranch);
+        SceneManager.addScene("changeBranch", MenuBankManager::changeBranch);
+        SceneManager.addScene("newTeller", MenuBankManager::newTeller);
+        SceneManager.addScene("newAssistant", MenuBankManager::newAssistant);
+        SceneManager.addScene("newBranchManager", MenuBankManager::newBranchManager);
+        SceneManager.addScene("bankInfo", MenuBankManager::bankInfo);
 
         SceneManager.switchTo("login");
     }

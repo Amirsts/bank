@@ -208,10 +208,52 @@ public class Bank implements Displayable , FindAccount {
 
 
 
-    //reports
+    //getter & setter
     public List<Branch> getBranches(){
         return branches;
     }
+    public List<Teller> getTellers() {
+        return tellers;
+    }
+    public List<AssistantManager> getAssistantManagers() {
+        return assistantManagers;
+    }
+    public List<BranchManager> getBranchManagers() {
+        return branchManagers;
+    }
+    public List<Customer> getCustomers() {
+        return customers;
+    }
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+
+
+    public long getAllBalanceSC() {
+        long balance = 0 ;
+        for (Branch branch : branches) {
+            balance += branch.getCurrentShortTermBalance();
+        }
+        return balance;
+    }
+    public long getAllBalanceQ() {
+        long balance = 0 ;
+        for (Branch branch : branches) {
+            balance += branch.getQarzAlhasanehBalance();
+        }
+        return balance;
+    }
+    public long getAllBalance() {
+        long balance = 0 ;
+        for (Branch branch : branches) {
+            balance += branch.getBranchBalance();
+        }
+        return balance;
+    }
+
+
+
     public void log(String message){
         logs.add("'" + currentDate + "'" + message);
         System.out.println(message);
@@ -339,10 +381,6 @@ public class Bank implements Displayable , FindAccount {
             allLoans.addAll(c.getActiveLoans());
         }
         return allLoans;
-    }
-
-    public List<Customer> getCustomers() {
-        return customers;
     }
 
     public void setCustomers(List<Customer> customers) {

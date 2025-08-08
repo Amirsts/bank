@@ -21,7 +21,7 @@ public class SubMainPage {
 
     static Branch currentBranch = branch;
 
-    public void setCurrentBranch (Branch newBranch) {
+    public static void setCurrentBranch (Branch newBranch) {
         currentBranch = newBranch;
     }
 

@@ -977,14 +977,14 @@ public class MainPage {
             }
                     break;
                 case 4:
-                    System.out.println("Enter the branch number:");
-                    String branchNumber = scanner.nextLine();
-                    if ( !bank.isBranchNumberUnique(branchNumber)){
-                        System.out.println("The branch number is duplicate, try again:");
-                        branchNumber = scanner.nextLine();
-                    }
-                    Branch branch1 = new Branch(branchNumber);
-                    System.out.println("Branch with number: " + branchNumber + "created");
+                        System.out.println("Enter the branch number:");
+                        String branchNumber = scanner.nextLine();
+                        if ( !bank.isBranchNumberUnique(branchNumber)){
+                            System.out.println("The branch number is duplicate, try again:");
+                            branchNumber = scanner.nextLine();
+                        }
+                        Branch branch1 = new Branch(branchNumber);
+                        System.out.println("Branch with number: " + branchNumber + "created");
                     break;
                 case 5:
                     bank.displayInfo();

@@ -159,7 +159,7 @@ public class MenuManager {
                 Methods.information("تحویلداران شعبه: " + SubMainPage.currentBranch.getTellersName()),
                 Methods.information("تعداد مشتریان شعبه: " + SubMainPage.currentBranch.getCustomers().size() + "  تعداد حساب های شعبه: " + SubMainPage.currentBranch.getAccounts().size()),
                 Methods.information("موجودی حساب های کوتاه مدت و جاری شعبه: " +  SubMainPage.currentBranch.getCurrentShortTermBalance()),
-                Methods.information("موجودی حساب های جاری شعبه: " + SubMainPage.currentBranch.getQarzAlhasanehBalance()),
+                Methods.information("موجودی حساب های قرض الحسنه شعبه: " + SubMainPage.currentBranch.getQarzAlhasanehBalance()),
                 Methods.information("موجودی کل شعبه: " + SubMainPage.currentBranch.getBranchBalance() ));
 
 
