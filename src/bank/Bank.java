@@ -123,7 +123,7 @@ public class Bank implements Displayable , FindAccount {
 
 
     public String tellerIdCreator(){
-        int randomPart = (secureRandom.nextInt() * 10000);
+        int randomPart = secureRandom.nextInt(10000);
         String randomPartStr =String.format("%04d" , randomPart);
 
         String randomTellerId = "TL" + randomPartStr;
@@ -132,7 +132,7 @@ public class Bank implements Displayable , FindAccount {
 
 
     public String assistantManagerIdCreator(){
-        int randomPart = (secureRandom.nextInt() * 10000);
+        int randomPart = secureRandom.nextInt(10000);
         String randomPartStr =String.format("%04d" , randomPart);
 
         String randomAssitantId = "AS" + randomPartStr;
@@ -141,7 +141,7 @@ public class Bank implements Displayable , FindAccount {
 
 
     public String managerIdCreator(){
-        int randomPart = (secureRandom.nextInt() * 10000);
+        int randomPart = secureRandom.nextInt(10000);
         String randomPartStr =String.format("%04d" , randomPart);
 
         String randomManagerId = "MA" + randomPartStr;

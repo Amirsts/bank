@@ -1,7 +1,7 @@
 package exceptions;
 
 public class IncorrectPasswordException extends Exception{
-   public IncorrectPasswordException(String dw){
-        super(dw);
+   public IncorrectPasswordException(String message){
+        super(message);
     }
 }

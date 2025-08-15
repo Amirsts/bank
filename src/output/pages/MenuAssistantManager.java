@@ -31,7 +31,7 @@ public class MenuAssistantManager {
 
 
         // Title
-        Text title = new Text("منو تحویلدار\n" + LoginPage.selectedAssistant.getFullName());
+        Text title = new Text("منو معاون شعبه\n" + LoginPage.selectedAssistant.getFullName());
         title.setFill(Color.LIGHTGRAY);
         title.setTextAlignment(TextAlignment.CENTER);
         title.setFont(Font.font("Vazirmatn", 20));

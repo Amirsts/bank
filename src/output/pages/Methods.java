@@ -8,9 +8,13 @@ import exceptions.IncorrectPasswordException;
 import exceptions.InsufficientBalanceException;
 import exceptions.InvalidAmountException;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import loan.NormalLoan;
 import loan.TashilatLoan;
 import person.Customer;
@@ -21,8 +25,43 @@ import java.time.format.DateTimeFormatter;
 
 public class Methods {
 
+        /* ---   Methods   --- */
+        protected static void showErrorAlert(String message) {
 
-        /* ---   Teller Menu   --- */
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText(message);
+
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.setId("custom-alert");
+            dialogPane.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
+
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(LoginPage.class.getResource("/assets/logo.png").toExternalForm()));
+
+            alert.showAndWait();
+        }
+
+        static TextField reaction (String input) {
+            TextField reaction = new TextField(input);
+            reaction.setId("repayInfo");
+            reaction.setAlignment(Pos.CENTER);
+            reaction.setEditable(false);
+
+            return reaction;
+        }
+
+        static TextField information(String input) {
+            TextField reaction = new TextField(input);
+            reaction.setId("information");
+            reaction.setAlignment(Pos.CENTER);
+            reaction.setEditable(false);
+
+            return reaction;
+        }
+
+
+
+    /* ---   Teller Menu   --- */
 
          static VBox buttonRequestLoanTl(Request request) {
             VBox infoBox = new VBox(10);
@@ -48,7 +87,7 @@ public class Methods {
 
         CurrentAccount currentAccount = (CurrentAccount) SubMainPage.currentBranch.findAccount(accountNumber);
         if (currentAccount == null) {
-            NewCustomer.showErrorAlert("شماره حساب وارد شده موجود نمی‌باشد");
+            showErrorAlert("شماره حساب وارد شده موجود نمی‌باشد");
         } else {
             try {
                 currentAccount.secureWithdraw(Integer.parseInt(amount), passWord);
@@ -56,26 +95,19 @@ public class Methods {
                      InsufficientBalanceException ex) {
                 System.out.println("Error in collection: " + ex.getMessage());
             }
-
-            TextField reaction = new TextField();
-            reaction.setPromptText("مبلغ " + amount + "\nاز حساب " + currentAccount.getOwner().getFullName() + " برداشت شد");
-            reaction.setId("password");
-            reaction.setEditable(false);
-
-            infoBox.getChildren().add(reaction);
         }
     }
 
     static void buttonRegisterDeposit(VBox infoBox , String accountNumber , String amount) {
 
-        CurrentAccount currentAccount = (CurrentAccount) SubMainPage.currentBranch.findAccount(accountNumber);
-        if (currentAccount == null) {
-            NewCustomer.showErrorAlert("شماره حساب وارد شده موجود نمی‌باشد");
+        Account account = SubMainPage.currentBranch.findAccount(accountNumber);
+        if (account == null) {
+            showErrorAlert("شماره حساب وارد شده موجود نمی‌باشد");
         } else {
-            currentAccount.deposit(Integer.parseInt(amount));
+            account.deposit(Integer.parseInt(amount));
 
             TextField reaction = new TextField();
-            reaction.setPromptText("مبلغ " + amount + "\nبه حساب " + currentAccount.getOwner().getFullName() + " واریز شد");
+            reaction.setPromptText("مبلغ " + amount + "\nبه حساب " + account.getOwner().getFullName() + " واریز شد");
             reaction.setId("password");
             reaction.setEditable(false);
 
@@ -181,27 +213,6 @@ public class Methods {
 
 
 
-    static TextField reaction (String input) {
-        TextField reaction = new TextField(input);
-        reaction.setId("repayInfo");
-        reaction.setAlignment(Pos.CENTER);
-        reaction.setEditable(false);
-
-        return reaction;
-    }
-
-    static TextField information(String input) {
-        TextField reaction = new TextField(input);
-        reaction.setId("information");
-        reaction.setAlignment(Pos.CENTER);
-        reaction.setEditable(false);
-
-        return reaction;
-    }
-
-
-
-
 
     /* ---   Assistant Menu   --- */
     static VBox buttonRequestLoanAs(Request request) {
@@ -227,7 +238,7 @@ public class Methods {
 
 
 
-    /* ---   Assistant Menu   --- */
+    /* ---   Manager Menu   --- */
     static VBox buttonRequestLoanMa(Request request) {
         VBox infoBox = new VBox(10);
         infoBox.getStyleClass().add("login-box");

@@ -261,15 +261,14 @@ public class MenuBankManager {
             SubMainPage.bank.addEmployee(newTeller);
             SubMainPage.currentBranch.addTeller(newTeller);
             infoBox.getChildren().add(Methods.information("تحویدار جدید به شعبه: " + SubMainPage.currentBranch.getBranchNumber() + "افزوده شد"));
+            infoBox.getChildren().add(Methods.information("نام کاربری تحویلدار: " + tellerId ));
         });
 
         Button buttonReturn = new Button("بازگشت به صفحه قبلی");
         buttonReturn.setId("buttonReturn");
         buttonReturn.setOnAction(e ->  SceneManager.switchTo("getBankManagerMenu"));
 
-        register.setOnAction(e -> {
 
-        });
         VBox centerBox = new VBox(10,title , infoBox, register ,buttonReturn);
         centerBox.setAlignment(Pos.CENTER);
 
@@ -339,15 +338,14 @@ public class MenuBankManager {
             SubMainPage.bank.addEmployee(newAssistant);
             SubMainPage.currentBranch.setAssistantManager(newAssistant);
             infoBox.getChildren().add(Methods.information("معاون جدید به شعبه: " + SubMainPage.currentBranch.getBranchNumber() + "افزوده شد"));
+            infoBox.getChildren().add(Methods.information("نام کاربری معاون شعبه: " + assistantId ));
+            System.out.println("ok");
         });
 
         Button buttonReturn = new Button("بازگشت به صفحه قبلی");
         buttonReturn.setId("buttonReturn");
         buttonReturn.setOnAction(e ->  SceneManager.switchTo("getBankManagerMenu"));
 
-        register.setOnAction(e -> {
-
-        });
         VBox centerBox = new VBox(10,title , infoBox, register ,buttonReturn);
         centerBox.setAlignment(Pos.CENTER);
 
@@ -415,21 +413,20 @@ public class MenuBankManager {
         Button register = new Button("ثبت");
         register.setId("loginButton");
         register.setOnAction(e -> {
-            String BranchManagerId = SubMainPage.bank.managerIdCreator();
+            String branchManagerId = SubMainPage.bank.managerIdCreator();
             BranchManager newBranchManager = new BranchManager(firstName.getText(), lastName.getText() , birthday.getText() , nationalCode.getText() ,
-                    address.getText() , phoneNumber.getText() , BranchManagerId , passWord.getText() );
+                    address.getText() , phoneNumber.getText() , branchManagerId , passWord.getText() );
             SubMainPage.bank.addEmployee(newBranchManager);
             SubMainPage.currentBranch.setBranchManager(newBranchManager);
             infoBox.getChildren().add(Methods.information("رئیس جدید به شعبه: " + SubMainPage.currentBranch.getBranchNumber() + "افزوده شد"));
+            infoBox.getChildren().add(Methods.information("نام کاربری رئیس شعبه: " + branchManagerId ));
         });
 
         Button buttonReturn = new Button("بازگشت به صفحه قبلی");
         buttonReturn.setId("buttonReturn");
         buttonReturn.setOnAction(e ->  SceneManager.switchTo("getBankManagerMenu"));
 
-        register.setOnAction(e -> {
 
-        });
         VBox centerBox = new VBox(10,title , infoBox, register ,buttonReturn);
         centerBox.setAlignment(Pos.CENTER);
 

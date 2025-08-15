@@ -327,7 +327,7 @@ public class MainPage {
                                 String accountPassWord = scanner.nextLine();
                                 Account cAccount = customer.findAccount(accountNumber);
                                 try {
-                                    cAccount.secureWithdrawForLoan((int) loan.installmentPerMonth(), accountPassWord); // Paying monthly installment
+                                    cAccount.secureWithdrawForLoan((int) loan.installmentPerMonth(), accountPassWord, loan, datePay); // Paying monthly installment
                                 } catch (IncorrectPasswordException e) {
                                     System.out.println(e.getMessage());
                                 } catch (InvalidAmountException e) {
@@ -335,11 +335,6 @@ public class MainPage {
                                 } catch (InsufficientBalanceException e) {
                                     System.out.println(e.getMessage());
                                 }
-
-                                //decrease amount from loan & date of last time pay
-                                loan.pay(loan.installmentPerMonth() , datePay);
-                                loan.payInstallment();
-
 
                                 break;
                             case 2:

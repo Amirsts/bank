@@ -47,7 +47,7 @@ public class LoginPage {
         passwordField.setId("password");
         passwordField.setOnAction(e -> {
             if (userNameField.getText().isEmpty()) {
-                NewCustomer.showErrorAlert("لطفا نام کاربری خود را وارد کنید");
+                Methods.showErrorAlert("لطفا نام کاربری خود را وارد کنید");
             } else {
 
                 String user = userNameField.getText();
@@ -84,11 +84,11 @@ public class LoginPage {
 
 
 
-        Button loginButton = new Button("ورود به بیت بانک اصلی");
+        Button loginButton = new Button("ورود به بیت بانک");
         loginButton.setId("loginButton");
         loginButton.setOnAction(e -> {
             if (userNameField.getText().isEmpty()) {
-                NewCustomer.showErrorAlert("لطفا نام کاربری خود را وارد کنید");
+                Methods.showErrorAlert("لطفا نام کاربری خود را وارد کنید");
             } else {
 
                 String user = userNameField.getText();
@@ -164,10 +164,10 @@ public class LoginPage {
             if (selectedTeller.isPassWordTrue(pass)) {
                 SceneManager.switchTo("getTellerMenu");
             }else {
-                NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+                Methods.showErrorAlert("رمز وارد شده صحیح نمی باشد");
             }
         } else {
-            NewCustomer.showErrorAlert("نام کاربری تحویلدار وارد شده موجود نمی باشد");
+            Methods.showErrorAlert("نام کاربری تحویلدار وارد شده موجود نمی باشد");
         }
     }
 
@@ -178,10 +178,10 @@ public class LoginPage {
             if (selectedAssistant.isPassWordTrue(pass)) {
                 SceneManager.switchTo("getAssistantMenu");
             }else {
-                NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+                Methods.showErrorAlert("رمز وارد شده صحیح نمی باشد");
             }
         } else {
-            NewCustomer.showErrorAlert("نام کاربری معاون شعبه وارد شده موجود نمی باشد");
+            Methods.showErrorAlert("نام کاربری معاون شعبه وارد شده موجود نمی باشد");
         }
     }
 
@@ -193,10 +193,10 @@ public class LoginPage {
             if (selectedManager.isPassWordTrue(pass)) {
                 SceneManager.switchTo("getManagerMenu");
             }else {
-                NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+                Methods.showErrorAlert("رمز وارد شده صحیح نمی باشد");
             }
         } else {
-            NewCustomer.showErrorAlert("نام کاربری رئیس شعبه وارد شده موجود نمی باشد");
+            Methods.showErrorAlert("نام کاربری رئیس شعبه وارد شده موجود نمی باشد");
         }
     }
 
@@ -208,10 +208,10 @@ public class LoginPage {
             if (selectedManager.isPassWordTrue(pass)) {
                 SceneManager.switchTo("getBankManagerMenu");
             }else {
-                NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+                Methods.showErrorAlert("رمز وارد شده صحیح نمی باشد");
             }
         } else {
-            NewCustomer.showErrorAlert("نام کاربری  ووارد شده موجود نمی باشد");
+            Methods.showErrorAlert("نام کاربری  ووارد شده موجود نمی باشد");
         }
     }
 
@@ -223,10 +223,10 @@ public class LoginPage {
             if (selectedCustomer.isPassWordTrue(pass)) {
                 SceneManager.switchTo("customerMenu");
             }else {
-                NewCustomer.showErrorAlert("رمز وارد شده صحیح نمی باشد");
+                Methods.showErrorAlert("رمز وارد شده صحیح نمی باشد");
             }
         } else {
-            NewCustomer.showErrorAlert("نام کاربری وارد شدهS موجود نمی باشد");
+            Methods.showErrorAlert("نام کاربری وارد شدهS موجود نمی باشد");
         }
     }
 }

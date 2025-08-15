@@ -70,15 +70,15 @@ public class NewCustomer {
         register.setOnAction(e -> {
 
             if (!SubMainPage.bank.isNationalCodeUnique(nationalCode.getText())) {
-                showErrorAlert("کد ملی وارد شده تکراری است");
+                Methods.showErrorAlert("کد ملی وارد شده تکراری است");
             } else if (nationalCode.getText() == null || !nationalCode.getText().matches("\\d{10}")) {
-                showErrorAlert("کد ملی وارد صحیح نمی باشد");
+                Methods.showErrorAlert("کد ملی وارد صحیح نمی باشد");
             } else if (!SubMainPage.bank.isPhoneNumberUnique(phone.getText())) {
-                showErrorAlert("شماره تلفن وارد شده تکراری است");
+                Methods.showErrorAlert("شماره تلفن وارد شده تکراری است");
             } else if (phone.getText() == null || !phone.getText().matches("09\\d{9}")) {
-                showErrorAlert("شماره تلفن وارد شده صحیح نمی باشد");
+                Methods.showErrorAlert("شماره تلفن وارد شده صحیح نمی باشد");
             } else if (! SubMainPage.bank.isCustomerIdUnique(customerID.getText()) ) {
-                showErrorAlert("نام کاربری وارد شده تکراری است");
+                Methods.showErrorAlert("نام کاربری وارد شده تکراری است");
             }else {
                 try {
                     Customer newCustomer = new Customer(firstName.getText(), lastName.getText(), birthDay.getText(), nationalCode.getText(), address.getText(), phone.getText(), customerID.getText(),passWord.getText() );
@@ -119,20 +119,4 @@ public class NewCustomer {
     }
 
 
-
-
-    protected static void showErrorAlert(String message) {
-
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setContentText(message);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setId("custom-alert");
-        dialogPane.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
-
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(LoginPage.class.getResource("/assets/logo.png").toExternalForm()));
-
-        alert.showAndWait();
-    }
 }

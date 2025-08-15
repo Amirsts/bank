@@ -1,7 +1,7 @@
 package exceptions;
 
 public class InvalidAmountException extends Exception{
-    public InvalidAmountException(String dw){
-        super(dw);
+    public InvalidAmountException(String message){
+        super(message);
     }
 }

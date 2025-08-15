@@ -1,6 +1,8 @@
 package account;
 
+import bank.Bank;
 import exceptions.*;
+import loan.BaseLoan;
 import person.Customer;
 import interfaces.IsPassWordTrue;
 import java.time.LocalDate;
@@ -66,7 +68,7 @@ public abstract class Account implements IsPassWordTrue{
         }
 
         if (amount <= 0) {
-            throw new InvalidAmountException("amount should be more than zero");
+            throw new   InvalidAmountException("amount should be more than zero");
         }
 
         if (amount > balance) {
@@ -78,7 +80,7 @@ public abstract class Account implements IsPassWordTrue{
     }
 
 
-    public void secureWithdrawForLoan(int amount, String inputPassword)
+    public void secureWithdrawForLoan(int amount, String inputPassword, BaseLoan loan, LocalDate datePay )
             throws IncorrectPasswordException, InvalidAmountException, InsufficientBalanceException {
 
         if (!isPassWordTrue(inputPassword)) {
@@ -95,6 +97,10 @@ public abstract class Account implements IsPassWordTrue{
 
         balance -= amount;
         System.out.println(" successful withdraw " + amount + " Tooman || balance: " + balance);
+
+        //decrease amount from loan & date of last time pay
+        loan.pay(loan.installmentPerMonth() , datePay);
+        loan.payInstallment();
     }
 
     public void recordTransfer(int amount, LocalDate date) throws DailyTransferLimitExceededException {

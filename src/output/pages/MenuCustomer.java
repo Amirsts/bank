@@ -88,7 +88,6 @@ public class MenuCustomer {
                                         LoginPage.selectedCustomer.getActiveLoans() == null ||
                                         LoginPage.selectedCustomer.getActiveLoans().isEmpty()
                         ) {
-                            System.out.println("56");
                             Alert alert = new Alert(Alert.AlertType.ERROR);
                             alert.setTitle(null);
                             alert.setHeaderText(null);
@@ -249,7 +248,7 @@ public class MenuCustomer {
             Account acc = SubMainPage.bank.findAccount(accNumber);
 
             if (acc != null) {
-                destinationAccountName.setPromptText("واریز به: " + acc.getOwner().getFullName());
+                destinationAccountName.setPromptText( acc.getOwner().getFullName());
             } else {
                 destinationAccountName.setPromptText("حساب یافت نشد");
             }
@@ -280,7 +279,8 @@ public class MenuCustomer {
 
         register.setOnAction(e -> {
             if (transferBetweenAccounts(fromAccount.getText(), toAccount.getText(), Integer.valueOf(amount.getText()), date.getText(), passWord.getText())) {
-                 SceneManager.switchTo("customerMenu");
+                 infoBox.getChildren().add(Methods.information("مبلغ: " + amount.getText() + " تومان"));
+                 infoBox.getChildren().add(Methods.information("به حساب " + destinationAccountName.getPromptText() + "  نشست"));
             } else {
 
                 Alert alert = new Alert(Alert.AlertType.ERROR, "تراکنش انجام نشد");
@@ -303,19 +303,14 @@ public class MenuCustomer {
 
     private static boolean transferBetweenAccounts(String FromAccount , String ToAccount , int Amount , String date , String PassWord) {
 
-        System.out.println("Transfer funds between your accounts...");
-        System.out.print("Originating account number: ");
         String fromAccount = FromAccount; // Receive inputs for the money transfer method
-        System.out.print("Destination account number: ");
         String toAccount = ToAccount;
         String name = SubMainPage.bank.findAccount(toAccount).getOwner().getFullName();
         System.out.print("Destination customer is: " + name + "\nTransfer amount: ");
         int amount = Amount;
-        System.out.println("Enter the payment date, for example (07/05/2025):");
         String inp = date;
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate dateTransfer = LocalDate.parse(inp, format);
-        System.out.print("Password: ");
         String password = PassWord;
         try {
             SubMainPage.bank.transferBetweenCustomers(fromAccount, toAccount, amount, password , dateTransfer); // Assigning values
@@ -332,9 +327,8 @@ public class MenuCustomer {
 
 
 
-    public static String loanType;
-    public static String selectedAccount;
-    public static double loanAmount;
+    private static String loanType;
+    private static String selectedAccount;
     public static Scene loanRequest() {
 
         VBox root = new VBox(15);
@@ -364,53 +358,45 @@ public class MenuCustomer {
         VBox accountButtonsBox = new VBox(10);
         accountButtonsBox.setAlignment(Pos.CENTER);
 
+        Button normalLoan = new Button("وام عادی");
+        normalLoan.setPrefWidth(260);
+        normalLoan.setId("normal-buttons");
+        normalLoan.setOnAction(e -> {
+            // Account buttons load when clicked
+            accountButtonsBox.getChildren().clear();
+            accountButtonsBox.getChildren().addAll(loanAccountsButton().getChildren());
+            loanType = "1";
+        });
 
-        for (String action : actions) {
-            Button btn = new Button(action);
-            btn.setPrefWidth(260);
-            btn.setId("normal-buttons");
+        Button tashilatLoan = new Button("وام تسهیلات");
+        tashilatLoan.setPrefWidth(260);
+        tashilatLoan.setId("normal-buttons");
+        tashilatLoan.setOnAction(e -> {
 
+            // Account buttons load when clicked
+            accountButtonsBox.getChildren().clear();
+            accountButtonsBox.getChildren().addAll(loanAccountsButton().getChildren());
+            loanType = "2";
+        });
 
-            switch (action) {
-                case "وام عادی":
-                    btn.setOnAction(e -> {
+        Button lastPage = new Button("بازگشت به صفحه قبلی");
+        lastPage.setPrefWidth(260);
+        lastPage.setId("normal-buttons");
+        lastPage.setOnAction(e -> SceneManager.switchTo("customerMenu"));
 
-                        // Account buttons load when clicked
-                        accountButtonsBox.getChildren().clear();
-                        accountButtonsBox.getChildren().addAll(loanAccountsButton().getChildren());
-                        loanType = "1";
-                    });
-                    break;
-                case "وام تسهیلات" :
-                    btn.setOnAction(e -> {
+        buttonBox.getChildren().addAll(normalLoan , tashilatLoan);
 
-                        // Account buttons load when clicked
-                        accountButtonsBox.getChildren().clear();
-                        accountButtonsBox.getChildren().addAll(loanAccountsButton().getChildren());
-                        loanType = "2";
-                    });
-                    break;
-                case "بازگشت به منوی قبلی":
-                    btn.setOnAction(e -> SceneManager.switchTo("customerMenu"));
-                    break;
-            }
-
-            buttonBox.getChildren().add(btn);
-        }
-
-
-        root.getChildren().addAll(title, buttonBox ,accountButtonsBox);
+        root.getChildren().addAll(title, buttonBox ,accountButtonsBox , lastPage);
         Scene scene = new Scene(root, 360, 640);
         scene.getStylesheets().add(LoginPage.class.getResource("/assets/style.css").toExternalForm());
         return scene;
     }
 
-    public static void loanReq(String LoanType , String SelectedAccount, double LoanAmount){
-        System.out.println("Send a loan request...");
-        System.out.println("\nSelect loan type:" + "\n1.Regular loan" + "\n2.Facility loan");
+    private static void loanReq(String LoanType , String SelectedAccount, double LoanAmount){
+
         String loanType = LoanType;
 
-        System.out.println("Enter the loan amount requested:"); // Getting loan amount
+        // Getting loan amount
         double loanAmount = LoanAmount;
         // Assigning values
         Request loanRequest = new Request(RequestType.LOAN_REQUEST,LoginPage.selectedCustomer , loanType ,SelectedAccount, loanAmount);
@@ -419,9 +405,12 @@ public class MenuCustomer {
         System.out.println("Your loan application has been registered.");
     }
 
-    public static VBox loanAccountsButton() {
+    private static VBox loanAccountsButton() {
         VBox accBtn = new VBox(10);
         accBtn.setAlignment(Pos.CENTER);
+
+        VBox again = new VBox(10);
+        again.setAlignment(Pos.CENTER);
 
         Text title = new Text("حساب مورد نظر را انتخاب کنید:");
         title.setFill(Color.LIGHTGRAY);
@@ -442,10 +431,10 @@ public class MenuCustomer {
         submitLoan.setVisible(false);
 
         submitLoan.setOnAction(e -> {
-            String amount = amountField.getText();
-            System.out.println("Loan requested with amount: " + amount);
+            again.getChildren().add(Methods.information("درخواست وام شما ثبت شد"));
             System.out.println(loanType);
             loanReq(loanType , selectedAccount ,Double.parseDouble(amountField.getText()));
+
         });
 
         List<Account> accounts = LoginPage.selectedCustomer.getAccounts();
@@ -459,13 +448,12 @@ public class MenuCustomer {
                 amountField.setVisible(true);
                 submitLoan.setVisible(true);
                 selectedAccount = account.getAccountId();
-
             });
 
             accBtn.getChildren().add(accountButton);
         }
 
-        accBtn.getChildren().addAll(amountField, submitLoan);
+        accBtn.getChildren().addAll(amountField, submitLoan, again);
 
         return accBtn;
     }
@@ -580,18 +568,16 @@ public class MenuCustomer {
 
             Account cAccount = LoginPage.selectedCustomer.findAccount(accountNumber.getText());
             try {
-                cAccount.secureWithdrawForLoan((int) loan.installmentPerMonth(), passWord.getText()); // Paying monthly installment
+                cAccount.secureWithdrawForLoan((int) loan.installmentPerMonth(), passWord.getText(), loan, datePay); // Paying monthly installment
             } catch (IncorrectPasswordException a) {
+                Methods.showErrorAlert("رمز وارد شده صحیح نمی باشد");
                 System.out.println(a.getMessage());
             } catch (InvalidAmountException b) {
                 System.out.println(b.getMessage());
             } catch (InsufficientBalanceException c) {
+                Methods.showErrorAlert("موجودی کافی نمی باشد");
                 System.out.println(c.getMessage());
             }
-
-            //decrease amount from loan & date of last time pay
-            loan.pay(loan.installmentPerMonth() , datePay);
-            loan.payInstallment();
         });
 
         Button buttonReturn = new Button("بازگشت به صفحه قبلی");
